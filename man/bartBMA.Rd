@@ -36,6 +36,8 @@ bartBMA(x, ...)
 \item{gridpoint}{Binary variable. If equals 1, then a grid search changepoint detection algorithm will be used. If equals 0, then the Pruned Exact Linear Time (PELT) changepoint detection algorithm will be used (Killick et al. 2012). Default gridpoint=0.}
 
 \item{maxOWsize}{Maximum number of models to keep in Occam's window. Default maxOWsize=100.}
+
+\item{gridsize}{This integer determines the size of the grid across which to search if gridpoint=1 when finding changepoints for constructing trees.}
 }
 \value{
 The following objects are returned by bartbma:

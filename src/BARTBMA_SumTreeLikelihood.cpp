@@ -1720,7 +1720,7 @@ return(ret);
 // [[Rcpp::export]]
 
 List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
-int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize
+int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize, int gridsize
 ){
 List eval_model;
 NumericVector lik_list;
@@ -1897,7 +1897,7 @@ List cp_mat_list1;
 if(gridpoint==0){
 cp_mat_list1=make_pelt_cpmat(wrap(D1),curr_resids(_,f),pen,num_cp);
 }else{
-cp_mat_list1=make_gridpoint_cpmat(wrap(D1),curr_resids(_,f),pen,num_cp);
+cp_mat_list1=make_gridpoint_cpmat(wrap(D1),curr_resids(_,f),gridsize,num_cp);
 }
 
 cp_mat_list.push_back(cp_mat_list1[0]);      
@@ -1951,7 +1951,7 @@ return(ret);
 // [[Rcpp::export]]
 
 List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
-int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled
+int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled, int gridsize
 ){
 List eval_model;
 NumericVector lik_list;
@@ -2153,7 +2153,7 @@ List cp_mat_list1;
 if(gridpoint==0){
 cp_mat_list1=make_pelt_cpmat(wrap(D1),curr_resids(_,f),pen,num_cp);
 }else{
-cp_mat_list1=make_gridpoint_cpmat(wrap(D1),curr_resids(_,f),pen,num_cp);
+cp_mat_list1=make_gridpoint_cpmat(wrap(D1),curr_resids(_,f),gridsize,num_cp);
 }
 
 cp_mat_list.push_back(cp_mat_list1[0]);      
@@ -2224,7 +2224,7 @@ return(original_y);
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,int c,
-double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize){
+double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int gridsize){
 bool is_test_data=0;
 if(test_data.nrow()>0){
 is_test_data=1;
@@ -2325,7 +2325,7 @@ for(int f=0;f<resids.ncol();f++){
 if(gridpoint==0){
 cp_mat_list=make_pelt_cpmat(data,resids(_,f),pen,num_cp);
 }else{
-cp_mat_list=make_gridpoint_cpmat(data,resids(_,f),pen,num_cp);
+cp_mat_list=make_gridpoint_cpmat(data,resids(_,f),gridsize,num_cp);
 }
 resids_cp_mat[resids_count]=cp_mat_list[0];
 err_list[resids_count]=cp_mat_list[1];
@@ -2343,11 +2343,11 @@ throw std::range_error("No trees can be grown for the number of iterations desir
 } 
 //get current set of trees.
 if(j==0){
-CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize);
+CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,gridsize);
 
 }else{
 //if j >0 then sum of trees become a list so need to read in list and get likelihood for each split point and terminal node
-CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled);
+CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,gridsize);
 }
 curr_round_lik=CART_BMA[0];
 curr_round_trees=CART_BMA[1];      

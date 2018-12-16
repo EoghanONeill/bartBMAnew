@@ -16,6 +16,7 @@
 #' @param split_rule_node Binary variable. If equals 1, then find a new set of potential splitting points via a changepoint algorithm after adding each split to a tree. If equals zero, use the same set of potential split points for all splits in a tree. Default split_rule_node=0.
 #' @param gridpoint Binary variable. If equals 1, then a grid search changepoint detection algorithm will be used. If equals 0, then the Pruned Exact Linear Time (PELT) changepoint detection algorithm will be used (Killick et al. 2012). Default gridpoint=0.
 #' @param maxOWsize Maximum number of models to keep in Occam's window. Default maxOWsize=100.
+#' @param gridsize This integer determines the size of the grid across which to search if gridpoint=1 when finding changepoints for constructing trees.
 #' @export 
 #' @return The following objects are returned by bartbma:
 #' \item{fitted.values}{The vector of predictions of the outcome for all training observations.} 
@@ -37,7 +38,7 @@
 bartBMA<-function(x,...)UseMethod("bartBMA")
 
 bartBMA.default<-function(x.train,y.train,a=3,nu=3,sigquant=0.9,c=1000,
-                          pen=12,num_cp=20,x.test=matrix(0.0,0,0),num_rounds=5,alpha=0.95,beta=1,split_rule_node=0,gridpoint=0,maxOWsize=100){
+                          pen=12,num_cp=20,x.test=matrix(0.0,0,0),num_rounds=5,alpha=0.95,beta=1,split_rule_node=0,gridpoint=0,maxOWsize=100, gridsize=10){
   binary=FALSE
   start_mean=0
   start_sd=1
@@ -58,6 +59,7 @@ bartBMA.default<-function(x.train,y.train,a=3,nu=3,sigquant=0.9,c=1000,
       #stop("Response must be a numeric vector")
     }
   }
+  if(gridsize<1) stop("gridsize must be a positive integer")
   
   if(is.vector(x.train) | is.factor(x.train)| is.data.frame(x.train)) x.train = as.matrix(x.train)
   if(is.vector(x.test) | is.factor(x.test)| is.data.frame(x.train)) x.test = as.matrix(x.test)
@@ -84,7 +86,7 @@ bartBMA.default<-function(x.train,y.train,a=3,nu=3,sigquant=0.9,c=1000,
   if(num_cp<0 || num_cp>100)stop("Value of num_cp should be a value between 1 and 100."); 
   
   bartBMA_call=BART_BMA_sumLikelihood(x.train,y.train,start_mean,start_sd,a,mu,nu,lambda,c,sigma_mu,
-                                      pen,num_cp,x.test,num_rounds,alpha,beta,split_rule_node,gridpoint,maxOWsize)
+                                      pen,num_cp,x.test,num_rounds,alpha,beta,split_rule_node,gridpoint,maxOWsize,gridsize)
   
   if(length(bartBMA_call)==6){
     #length of bartBMA_call is 6 if test data was included in the call
