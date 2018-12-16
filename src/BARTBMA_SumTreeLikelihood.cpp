@@ -1720,7 +1720,7 @@ return(ret);
 // [[Rcpp::export]]
 
 List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
-int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize, int gridsize
+int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize
 ){
 List eval_model;
 NumericVector lik_list;
@@ -1735,7 +1735,7 @@ std::vector<int> overall_parent(overall_size);
 std::vector<double> overall_lik(overall_size);
 NumericVector test_preds;
 
-for(int j=0;j<5;j++){
+for(int j=0;j<num_splits;j++){
 int lsize=1000;
 List table_subset_curr_round(lsize);
 std::vector<double> lik_subset_curr_round(lsize);
@@ -1951,7 +1951,7 @@ return(ret);
 // [[Rcpp::export]]
 
 List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
-int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled, int gridsize
+int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled,int num_splits,int gridsize
 ){
 List eval_model;
 NumericVector lik_list;
@@ -1966,7 +1966,7 @@ std::vector<int> overall_parent(overall_size);
 std::vector<double> overall_lik(overall_size);
 NumericVector test_preds;
 
-for(int j=0;j<5;j++){
+for(int j=0;j<num_splits;j++){
 int lsize=1000;
 List table_subset_curr_round(lsize);
 std::vector<double> lik_subset_curr_round(lsize);
@@ -2224,7 +2224,7 @@ return(original_y);
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,int c,
-double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int gridsize){
+double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize){
 bool is_test_data=0;
 if(test_data.nrow()>0){
 is_test_data=1;
@@ -2343,11 +2343,11 @@ throw std::range_error("No trees can be grown for the number of iterations desir
 } 
 //get current set of trees.
 if(j==0){
-CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,gridsize);
+CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize);
 
 }else{
 //if j >0 then sum of trees become a list so need to read in list and get likelihood for each split point and terminal node
-CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,gridsize);
+CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,num_splits,gridsize);
 }
 curr_round_lik=CART_BMA[0];
 curr_round_trees=CART_BMA[1];      

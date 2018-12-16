@@ -37,6 +37,8 @@ bartBMA(x, ...)
 
 \item{maxOWsize}{Maximum number of models to keep in Occam's window. Default maxOWsize=100.}
 
+\item{num_splits}{Maximum number of splits in a tree}
+
 \item{gridsize}{This integer determines the size of the grid across which to search if gridpoint=1 when finding changepoints for constructing trees.}
 }
 \value{
