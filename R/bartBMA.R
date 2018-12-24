@@ -1,3 +1,4 @@
+
 #' @title Bayesian Additive Regression Trees Using Bayesian Model Averaging (BART-BMA)
 #' 
 #' @description This is an implementation of Bayesian Additive Regression Trees (Chipman et al. 2018) using Bayesian Model Averaging (Hernandez et al. 2018). 
@@ -18,6 +19,7 @@
 #' @param maxOWsize Maximum number of models to keep in Occam's window. Default maxOWsize=100.
 #' @param num_splits Maximum number of splits in a tree
 #' @param gridsize This integer determines the size of the grid across which to search if gridpoint=1 when finding changepoints for constructing trees.
+#' @rdname bartBMA
 #' @export 
 #' @return The following objects are returned by bartbma:
 #' \item{fitted.values}{The vector of predictions of the outcome for all training observations.} 
@@ -28,26 +30,33 @@
 #' \item{sum_residuals}{CURRENTLY INCORRECT OUTPUT. A List (over sum-of-tree models) of lists (over single trees in a model) of vectors of partial residuals. Unless the maximum number of trees in a model is one, in which case the output is a list (over single tree models) of vectors of partial residuals, which are all equal to the outcome vector.} 
 #' \item{numvars}{This is the total number of variables in the input training data matrix.} 
 #' \item{call}{match.call returns a call in which all of the specified arguments are specified by their full names.} 
-#' \item{y_minmax}{Range of the input training data outcome vector.} 
+#' \item{y_minmax}{Range of the input training data outcome vector.}
 #' \item{response}{Input taining data outcome vector.}
-#' \item{nrowTrain}{number of observations in the input training data.} 
-#' \item{sigma}{sd(y.train)/(max(y.train)-min(y.train))} 
-#' \item{a}{input parameter} 
-#' \item{nu}{input parameter} 
-#' \item{lambda}{parameter determined by the inputs sigma, sigquant, and nu} 
-
+#' \item{nrowTrain}{number of observations in the input training data.}
+#' \item{sigma}{sd(y.train)/(max(y.train)-min(y.train))}
+#' \item{a}{input parameter}
+#' \item{nu}{input parameter}
+#' \item{lambda}{parameter determined by the inputs sigma, sigquant, and nu}
+#' @useDynLib bartBMAnew, .registration = TRUE
 bartBMA<-function(x,...)UseMethod("bartBMA")
 
-bartBMA.default<-function(x.train,y.train,a=3,nu=3,sigquant=0.9,c=1000,
-                          pen=12,num_cp=20,x.test=matrix(0.0,0,0),num_rounds=5,alpha=0.95,beta=1,split_rule_node=0,gridpoint=0,maxOWsize=100,num_splits=5,gridsize=10){
+#' @rdname bartBMA
+#' @export bartBMA.default
+#' @export
+bartBMA.default<-function(x.train,y.train,
+                          a=3,nu=3,sigquant=0.9,c=1000,
+                          pen=12,num_cp=20,x.test=matrix(0.0,0,0),
+                          num_rounds=5,alpha=0.95,beta=1,split_rule_node=0,
+                          gridpoint=0,maxOWsize=100,num_splits=5,gridsize=10){
+
   binary=FALSE
   start_mean=0
   start_sd=1
   mu=0
-  sigma_mu=0; 
+  sigma_mu=0
   sigma=sd(y.train)/(max(y.train)-min(y.train))
-  qchi = qchisq(1.0-sigquant,nu,1,0);
-  lambda = (sigma*sigma*qchi)/nu;
+  qchi = qchisq(1.0-sigquant,nu,1,0)
+  lambda = (sigma*sigma*qchi)/nu
   if(is.factor(y.train)) {
     # if(length(levels(y.train)) != 2) stop("y.train is a factor with number of levels != 2")
     binary = TRUE
@@ -70,9 +79,9 @@ bartBMA.default<-function(x.train,y.train,a=3,nu=3,sigquant=0.9,c=1000,
       if(!is.matrix(x.test)) stop('x.test must be a matrix')
     } 
   }
-  #check input arguments:
+  # check input arguments:
   # if((!is.matrix(x.train)) || (typeof(x.train)!="double")) stop("argument x.train must be a double matrix")
-  #if((!is.matrix(x.test)) || (typeof(x.test)!="double")) stop("argument x.test must be a double matrix")
+  # if((!is.matrix(x.test)) || (typeof(x.test)!="double")) stop("argument x.test must be a double matrix")
   if((!is.matrix(x.train))) stop("argument x.train must be a double matrix")
   if((!is.matrix(x.test)) ) stop("argument x.test must be a double matrix")
   if(!binary) {

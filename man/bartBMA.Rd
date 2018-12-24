@@ -2,9 +2,16 @@
 % Please edit documentation in R/bartBMA.R
 \name{bartBMA}
 \alias{bartBMA}
+\alias{bartBMA.default}
 \title{Bayesian Additive Regression Trees Using Bayesian Model Averaging (BART-BMA)}
 \usage{
 bartBMA(x, ...)
+
+\method{bartBMA}{default}(x.train, y.train, a = 3, nu = 3,
+  sigquant = 0.9, c = 1000, pen = 12, num_cp = 20,
+  x.test = matrix(0, 0, 0), num_rounds = 5, alpha = 0.95, beta = 1,
+  split_rule_node = 0, gridpoint = 0, maxOWsize = 100,
+  num_splits = 5, gridsize = 10)
 }
 \arguments{
 \item{x.train}{Training data covariate matrix}
@@ -51,12 +58,12 @@ The following objects are returned by bartbma:
 \item{sum_residuals}{CURRENTLY INCORRECT OUTPUT. A List (over sum-of-tree models) of lists (over single trees in a model) of vectors of partial residuals. Unless the maximum number of trees in a model is one, in which case the output is a list (over single tree models) of vectors of partial residuals, which are all equal to the outcome vector.} 
 \item{numvars}{This is the total number of variables in the input training data matrix.} 
 \item{call}{match.call returns a call in which all of the specified arguments are specified by their full names.} 
-\item{y_minmax}{Range of the input training data outcome vector.} 
+\item{y_minmax}{Range of the input training data outcome vector.}
 \item{response}{Input taining data outcome vector.}
-\item{nrowTrain}{number of observations in the input training data.} 
-\item{sigma}{sd(y.train)/(max(y.train)-min(y.train))} 
-\item{a}{input parameter} 
-\item{nu}{input parameter} 
+\item{nrowTrain}{number of observations in the input training data.}
+\item{sigma}{sd(y.train)/(max(y.train)-min(y.train))}
+\item{a}{input parameter}
+\item{nu}{input parameter}
 \item{lambda}{parameter determined by the inputs sigma, sigquant, and nu}
 }
 \description{
