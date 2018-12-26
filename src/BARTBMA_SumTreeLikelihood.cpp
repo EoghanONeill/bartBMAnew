@@ -577,7 +577,7 @@ double get_tree_prior(NumericMatrix tree_table,NumericMatrix tree_matrix,double 
       arma::vec armacol=tree_matrix2.col(j);
       arma::uvec found=find(armacol==internal_nodes_prop[k]);      
       if(found.size()>0){        
-        int_nodes_index[index_count]=j+1;
+        int_nodes_index[index_count]=j;
         index_count++;
         break;
       }        
