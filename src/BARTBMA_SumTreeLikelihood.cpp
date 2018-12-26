@@ -111,16 +111,15 @@ NumericMatrix set_daughter_to_end_mat(double d,NumericMatrix prior_tree_matrix_t
   NumericVector colmat2=wrap(colmat);
   
   if(d+1==ncol_mat){
-    //update prior_tree_matrix
-    //insert extra column for the new split node
-    
-    N.insert_cols(ncol_mat,1); 
-    colmat2[ld_obs]=left_daughter;
-    colmat2[rd_obs]=left_daughter+1;
-    colmat=Rcpp::as<arma::vec>(colmat2);
+    N.insert_cols(ncol_mat,1);
+    int nrow_mat=prior_tree_matrix_temp.nrow();
+    NumericVector colmatzero(nrow_mat);
+    colmatzero[ld_obs]=left_daughter;
+    colmatzero[rd_obs]=left_daughter+1;
+    colmat=Rcpp::as<arma::vec>(colmatzero);
     N.col(d+1)=colmat;
-    
   }else{
+    //else just update existing column
     colmat2[ld_obs]=left_daughter;
     colmat2[rd_obs]=left_daughter+1;
     colmat=Rcpp::as<arma::vec>(colmat2);
