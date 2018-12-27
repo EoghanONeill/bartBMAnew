@@ -406,6 +406,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// orderforOW
+IntegerVector orderforOW(NumericVector x);
+RcppExport SEXP _bartBMAnew_orderforOW(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(orderforOW(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_tree_prior
 double get_tree_prior(NumericMatrix tree_table, NumericMatrix tree_matrix, double alpha, double beta);
 RcppExport SEXP _bartBMAnew_get_tree_prior(SEXP tree_tableSEXP, SEXP tree_matrixSEXP, SEXP alphaSEXP, SEXP betaSEXP) {
@@ -1176,6 +1187,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bartBMAnew_grow_tree", (DL_FUNC) &_bartBMAnew_grow_tree, 12},
     {"_bartBMAnew_set_daughter", (DL_FUNC) &_bartBMAnew_set_daughter, 6},
     {"_bartBMAnew_order_", (DL_FUNC) &_bartBMAnew_order_, 1},
+    {"_bartBMAnew_orderforOW", (DL_FUNC) &_bartBMAnew_orderforOW, 1},
     {"_bartBMAnew_get_tree_prior", (DL_FUNC) &_bartBMAnew_get_tree_prior, 4},
     {"_bartBMAnew_start_tree", (DL_FUNC) &_bartBMAnew_start_tree, 2},
     {"_bartBMAnew_start_matrix", (DL_FUNC) &_bartBMAnew_start_matrix, 1},

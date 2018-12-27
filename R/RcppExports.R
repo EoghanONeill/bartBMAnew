@@ -121,6 +121,10 @@ order_ <- function(x) {
     .Call(`_bartBMAnew_order_`, x)
 }
 
+orderforOW <- function(x) {
+    .Call(`_bartBMAnew_orderforOW`, x)
+}
+
 get_tree_prior <- function(tree_table, tree_matrix, alpha, beta) {
     .Call(`_bartBMAnew_get_tree_prior`, tree_table, tree_matrix, alpha, beta)
 }

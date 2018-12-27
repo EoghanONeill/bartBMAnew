@@ -545,6 +545,16 @@ IntegerVector order_(NumericVector x) {
   return match(sorted, x);
 }
 //######################################################################################################################//
+
+// [[Rcpp::export]]
+
+IntegerVector orderforOW(NumericVector x) {	// gives vector of position of smallest value, then position of second smallest value, and so on.
+  NumericVector sorted = clone(x).sort();		// sorted is x in ascending order
+  //std::reverse(sorted.begin(), sorted.end()); // reverse so that it is in descending order. Could use one line with std::sort(clone(x).begin(), clone(x).end(), std::greater<>())
+  
+  return match(sorted, x);	//  match is the Rcpp sugar version of the R function match, which returns a vector of the positions of the first matches of the first argument in the second.
+}
+//######################################################################################################################//
   
   // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
@@ -1010,7 +1020,7 @@ if(count>0){
   if(testlik.size()>0){
     //check if number of trees to be returned is greater than maxOWsize if so only return the best maxOWsize models
     if(testlik.size()>maxOWsize){
-      IntegerVector owindices=order_(testlik);
+      IntegerVector owindices=orderforOW(testlik);
       owindices=owindices-1;
       //get the top maxOWsize indices to keep in OW
       NumericVector temp_olik(maxOWsize);
@@ -1222,7 +1232,7 @@ if(count>0){
   if(testlik.size()>0){
     //check if number of trees to be returned is greater than maxOWsize if so only return the best maxOWsize models
     if(testlik.size()>maxOWsize){
-      IntegerVector owindices=order_(testlik);
+      IntegerVector owindices=orderforOW(testlik);
       owindices=owindices-1;
       //get the top maxOWsize indices to keep in OW
       NumericVector temp_olik(maxOWsize);
@@ -1799,7 +1809,7 @@ overall_count=overall_trees.size();
 overall_parent2=eval_model[3];
 //add in check to see if OW accepted more than the top maxOW models...
 if(overall_lik2.size()>maxOWsize){
-IntegerVector owindices=order_(overall_lik2);
+IntegerVector owindices=orderforOW(overall_lik2);
 owindices=owindices-1;
 //get the top maxOWsize indices to keep in OW
 NumericVector temp_olik(maxOWsize);
@@ -2055,7 +2065,7 @@ overall_parent2=eval_model[3];
 //add in check to see if OW accepted more than the top maxOW models...
 if(overall_lik2.size()>maxOWsize){
 //find the maxOWsize best models and continue with those!
-IntegerVector owindices=order_(overall_lik2);
+IntegerVector owindices=orderforOW(overall_lik2);
 owindices=owindices-1;
 //get the top maxOWsize indices to keep in OW
 NumericVector temp_olik(maxOWsize);
