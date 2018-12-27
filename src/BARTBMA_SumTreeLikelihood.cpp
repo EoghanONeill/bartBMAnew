@@ -375,19 +375,6 @@ NumericMatrix find_obs_to_update_grow(NumericMatrix prior_tree_matrix_temp,doubl
   
   return(prior_tree_matrix_temp);
 }
-//######################################################################################################################// 
-  // [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::export]]
-arma::mat get_subset(arma::mat& xmat,NumericVector grow_obs){
-  int p = xmat.n_cols;
-  arma::mat B(grow_obs.size(),p);
-  
-  for(int i=0;i<grow_obs.size();i++){
-    B.row(i)=xmat.row(i);
-  }
-  
-  return(B);
-}
 //######################################################################################################################//
   
   // [[Rcpp::depends(RcppArmadillo)]]
@@ -915,7 +902,7 @@ NumericVector int_nodes;
 arma::colvec curr_col=data.col(0);
 arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
 NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
-arma::mat data_curr_node=get_subset(data,wrap(grow_obs));
+arma::mat data_curr_node=data.rows(grow_obs);
 double d=d1[0];
 NumericVector get_min=get_grow_obs(data,wrap(grow_obs),cp_mat(0,0)+1);
 double lik;
@@ -925,7 +912,7 @@ for(int l=0;l<terminal_nodes.size();l++){
   grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
   //depth of tree at current terminal node
   d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
-  data_curr_node=get_subset(data,wrap(grow_obs));
+  data_curr_node=data.rows(grow_obs);
   d=d1[0];
   int w=cp_mat.nrow();
   if(data_curr_node.n_rows<=2){
@@ -1099,7 +1086,7 @@ NumericVector int_nodes;
 arma::colvec curr_col=data.col(0);
 arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
 NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
-arma::mat data_curr_node=get_subset(data,wrap(grow_obs));
+arma::mat data_curr_node=data.rows(grow_obs);
 double d=d1[0];
 NumericVector get_min=get_grow_obs(data,wrap(grow_obs),cp_mat(0,0)+1);
 double lik;
@@ -1109,7 +1096,7 @@ for(int l=0;l<terminal_nodes.size();l++){
   grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
   //depth of tree at current terminal node
   d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
-  data_curr_node=get_subset(data,wrap(grow_obs));
+  data_curr_node=data.rows(grow_obs);
   d=d1[0];
   int w=cp_mat.nrow();
   if(data_curr_node.n_rows<=2){

@@ -318,18 +318,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_subset
-arma::mat get_subset(arma::mat& xmat, NumericVector grow_obs);
-RcppExport SEXP _bartBMAnew_get_subset(SEXP xmatSEXP, SEXP grow_obsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat& >::type xmat(xmatSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type grow_obs(grow_obsSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_subset(xmat, grow_obs));
-    return rcpp_result_gen;
-END_RCPP
-}
 // get_daughter_obs
 List get_daughter_obs(arma::mat& xmat, NumericVector obs_to_update, int split_var, double split_point);
 RcppExport SEXP _bartBMAnew_get_daughter_obs(SEXP xmatSEXP, SEXP obs_to_updateSEXP, SEXP split_varSEXP, SEXP split_pointSEXP) {
@@ -1182,7 +1170,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bartBMAnew_set_tree_to_middle", (DL_FUNC) &_bartBMAnew_set_tree_to_middle, 4},
     {"_bartBMAnew_update_grow_obs", (DL_FUNC) &_bartBMAnew_update_grow_obs, 6},
     {"_bartBMAnew_find_obs_to_update_grow", (DL_FUNC) &_bartBMAnew_find_obs_to_update_grow, 5},
-    {"_bartBMAnew_get_subset", (DL_FUNC) &_bartBMAnew_get_subset, 2},
     {"_bartBMAnew_get_daughter_obs", (DL_FUNC) &_bartBMAnew_get_daughter_obs, 4},
     {"_bartBMAnew_find_term_cols", (DL_FUNC) &_bartBMAnew_find_term_cols, 2},
     {"_bartBMAnew_get_grow_obs", (DL_FUNC) &_bartBMAnew_get_grow_obs, 3},

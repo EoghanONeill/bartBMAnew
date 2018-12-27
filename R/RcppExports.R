@@ -97,10 +97,6 @@ find_obs_to_update_grow <- function(prior_tree_matrix_temp, left_daughter, d, ld
     .Call(`_bartBMAnew_find_obs_to_update_grow`, prior_tree_matrix_temp, left_daughter, d, ld_obs, rd_obs)
 }
 
-get_subset <- function(xmat, grow_obs) {
-    .Call(`_bartBMAnew_get_subset`, xmat, grow_obs)
-}
-
 get_daughter_obs <- function(xmat, obs_to_update, split_var, split_point) {
     .Call(`_bartBMAnew_get_daughter_obs`, xmat, obs_to_update, split_var, split_point)
 }
