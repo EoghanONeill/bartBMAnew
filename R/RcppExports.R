@@ -25,6 +25,8 @@ get_imp_vars <- function(split_vars, num_col, current_vars) {
     .Call(`_bartBMAnew_get_imp_vars`, split_vars, num_col, current_vars)
 }
 
+#' @title Obtain weighted variable importances
+#' @export
 get_weighted_var_imp <- function(num_vars, BIC, sum_trees) {
     .Call(`_bartBMAnew_get_weighted_var_imp`, num_vars, BIC, sum_trees)
 }
@@ -237,6 +239,8 @@ get_original <- function(low, high, sp_low, sp_high, sum_preds) {
     .Call(`_bartBMAnew_get_original`, low, high, sp_low, sp_high, sum_preds)
 }
 
+#' @title Obtain BARTBMA predictions, trees, BICs etc. to be called by R functions
+#' @export
 BART_BMA_sumLikelihood <- function(data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize) {
     .Call(`_bartBMAnew_BART_BMA_sumLikelihood`, data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize)
 }

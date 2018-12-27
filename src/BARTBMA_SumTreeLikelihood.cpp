@@ -2216,9 +2216,10 @@ return(original_y);
 }
 //###########################################################################################################################//
 
+
+// [[Rcpp::depends(RcppArmadillo)]]
 //' @title Obtain BARTBMA predictions, trees, BICs etc. to be called by R functions
 //' @export
-// [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,int c,
 double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize){

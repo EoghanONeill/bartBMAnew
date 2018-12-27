@@ -2,8 +2,10 @@
 
 S3method(bartBMA,default)
 S3method(predict,bartBMA)
+export(BART_BMA_sumLikelihood)
 export(bartBMA)
 export(bartBMA.default)
+export(get_weighted_var_imp)
 export(jointnessBartBMA)
 export(pred_intervals)
 export(varImpScores)
