@@ -568,6 +568,7 @@ double get_tree_prior(NumericMatrix tree_table,NumericMatrix tree_matrix,double 
   arma::uvec internal_nodes_prop=find_internal_nodes(tree_table);
   arma::mat tree_matrix2(tree_matrix.begin(),tree_matrix.nrow(),tree_matrix.ncol(),false);
   int count=internal_nodes_prop.size();
+  if(count==0) propsplit=1-alpha;
   
   for(int k=0;k<count;k++){ 
     for(int j=0;j<tree_matrix.ncol();j++){
@@ -1091,8 +1092,10 @@ double tree_prior=0;
 List changetree;
 double BIC;
 int p;
+int p_other=0;
 List eval_model;
 NumericVector int_nodes;
+NumericVector other_int_nodes;
 arma::colvec curr_col=data.col(0);
 arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
 NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
@@ -1152,12 +1155,16 @@ for(int l=0;l<terminal_nodes.size();l++){
         lik=sumtree_likelihood_function(y_scaled,sum_trees2,sum_trees_mat2,y_scaled.size(),a,nu,lambda);  
         for(int t=0;t<sum_trees2.size();t++){
           NumericMatrix tree=sum_trees2[t];
+          other_int_nodes = find_term_nodes(tree);
+          p_other+=other_int_nodes.size();
           NumericMatrix mat=sum_trees_mat2[t];
           tree_prior+=get_tree_prior(tree,mat,alpha,beta);
         }
       }else{
         NumericMatrix sum_trees2=sum_trees[parent2[i]];
         NumericMatrix sum_trees_mat2=sum_trees_mat[parent2[i]];
+        other_int_nodes = find_term_nodes(sum_trees2);
+        p_other=other_int_nodes.size();
         List st(2);
         List st_mat(2);
         st[0]=sum_trees2;
@@ -1176,7 +1183,7 @@ for(int l=0;l<terminal_nodes.size();l++){
     //at the moment tree prior is only for current tree need to get it for entire sum of tree list.
     
     int_nodes=find_term_nodes(proposal_tree[0]);
-    p=int_nodes.size();
+    p=int_nodes.size()+p_other; //COULD ADD 1 for the variance parameter, and more numbers for other parameters. (This might influence probability-weights, but not the ranking of BICs)
     BIC=-2*(lik+log(tree_prior))+p*log(data.n_rows);  
     if(BIC<lowest_BIC){
       lowest_BIC=BIC;
@@ -1739,9 +1746,10 @@ List mat_subset_curr_round(lsize);
 std::vector<int> parent_curr_round(lsize);
 int count=0;
 for(int i=0;i<tree_table.size();i++){
-parent=-1;
-NumericMatrix temp_list=cp_mat_list[0];
+ parent=-1;
+//NumericMatrix temp_list=cp_mat_list[0];
 best_subset=get_best_split(resids(_,0),D1,tree_table[i],tree_mat[i],a,mu,nu,lambda,log(c),lowest_BIC,parent[0],cp_mat_list[0],alpha,beta,maxOWsize,first_round); 
+
 if(best_subset.size()==1){
 continue;
 }
@@ -1972,8 +1980,9 @@ int count=0;
 for(int i=0;i<tree_table.size();i++){
 if(first_round==1){
 parent=-1;
-NumericMatrix temp_list=cp_mat_list[0];
+//NumericMatrix temp_list=cp_mat_list[0];
 best_subset=get_best_split(resids(_,0),D1,tree_table[i],tree_mat[i],a,mu,nu,lambda,log(c),lowest_BIC,parent[0],cp_mat_list[0],alpha,beta,maxOWsize,first_round); 
+
 }else{
 if(err_list[i]==0){
 NumericMatrix test_tree=tree_table[i];

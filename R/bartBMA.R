@@ -72,10 +72,10 @@ bartBMA.default<-function(x.train,y.train,
   if(gridsize<1) stop("gridsize must be a positive integer")
   
   if(is.vector(x.train) | is.factor(x.train)| is.data.frame(x.train)) x.train = as.matrix(x.train)
-  if(is.vector(x.test) | is.factor(x.test)| is.data.frame(x.train)) x.test = as.matrix(x.test)
+  if(is.vector(x.test) | is.factor(x.test)| is.data.frame(x.test)) x.test = as.matrix(x.test)
   
   if(is.matrix(x.train)) {
-    if(nrow(x.test)) {
+    if(nrow(x.test)>0) {
       if(!is.matrix(x.test)) stop('x.test must be a matrix')
     } 
   }
