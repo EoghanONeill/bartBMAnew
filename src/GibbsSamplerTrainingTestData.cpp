@@ -507,7 +507,7 @@ for(int i=0;i<overall_sum_trees.size();i++){
     NumericMatrix post_test_predictions(num_iter,num_test_obs);
     NumericMatrix post_test_predictions_orig(num_iter,num_test_obs);
     NumericMatrix sum_new_predictions(sum_predictions.nrow(),sum_predictions.ncol());
-    NumericMatrix sum_new_test_predictions(sum_test_predictions.nrow(),sum_test_predictions.ncol());
+    NumericMatrix sum_new_test_predictions(num_test_obs,sum_predictions.ncol());
     
     for(int j=0;j<num_iter;j++){
       for(int k =0;k<sum_tree.size();k++){
