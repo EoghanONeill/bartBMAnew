@@ -507,7 +507,7 @@ for(int i=0;i<overall_sum_trees.size();i++){
     NumericMatrix post_test_predictions(num_iter,num_test_obs);
     NumericMatrix post_test_predictions_orig(num_iter,num_test_obs);
     NumericMatrix sum_new_predictions(sum_predictions.nrow(),sum_predictions.ncol());
-    NumericMatrix sum_new_test_predictions(sum_predictions.nrow(),sum_predictions.ncol());
+    NumericMatrix sum_new_test_predictions(sum_test_predictions.nrow(),sum_test_predictions.ncol());
     
     for(int j=0;j<num_iter;j++){
       for(int k =0;k<sum_tree.size();k++){
@@ -531,7 +531,7 @@ for(int i=0;i<overall_sum_trees.size();i++){
         sum_new_predictions(_,k)=temp_preds;
         
         
-        List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_test_obs);         
+        List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         NumericVector temp_test_preds=updated_test_preds[1];
         sum_new_test_predictions(_,k)=temp_test_preds;
         
@@ -721,7 +721,7 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
   //NumericMatrix post_test_predictions(num_iter,num_test_obs);
   //NumericMatrix post_test_predictions_orig(num_iter,num_test_obs);
   NumericMatrix sum_new_predictions(sum_predictions.nrow(),sum_predictions.ncol());
-  NumericMatrix sum_new_test_predictions(sum_predictions.nrow(),sum_predictions.ncol());
+  //NumericMatrix sum_new_test_predictions(sum_predictions.nrow(),sum_predictions.ncol());
   
   for(int j=0;j<num_iter;j++){
   for(int k =0;k<sum_tree.size();k++){
