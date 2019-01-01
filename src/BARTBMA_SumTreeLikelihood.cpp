@@ -2645,7 +2645,7 @@ if(j==1){
 NumericMatrix other_tree=prev_sum_trees[curr_round_parent[k]];
 NumericVector other_resids=prev_sum_tree_resids[curr_round_parent[k]];
 sum_of_trees[count]= other_tree;  
-sum_of_tree_resids[count]=other_resids;
+sum_of_tree_resids[count]=other_resids-curr_round_preds(_,k);
 NumericMatrix other_mat=prev_sum_trees_mat[curr_round_parent[k]];
 sum_of_trees_mat[count]=other_mat;
 count++;
@@ -2670,7 +2670,9 @@ if(is<NumericVector>(other_tree_resids[f])){
 }else{
 throw std::range_error("other resids not a numeric matrix!");
 }
-NumericVector residstoadd=other_tree_resids[f];
+NumericVector resids_prevroundtemp=other_tree_resids[f];
+NumericVector residstoadd=resids_prevroundtemp-curr_round_preds(_,k);
+
 if(is<NumericMatrix>(other_mat[f])){
 
 }else{
