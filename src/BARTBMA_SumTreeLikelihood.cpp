@@ -1969,6 +1969,8 @@ return(ret);
 List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
 int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled,int num_splits,int gridsize
 ){
+  //Rcout << "Get to start of get_best_trees_sum. \n";
+  
 List eval_model;
 NumericVector lik_list;
 List best_subset;
@@ -2571,6 +2573,8 @@ CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_ma
 //if j >0 then sum of trees become a list so need to read in list and get likelihood for each split point and terminal node
 CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,num_splits,gridsize);
 }
+//Rcout << "Get past get_best_trees in outer loop number " << j << " . \n";
+
 curr_round_lik=CART_BMA[0];
 curr_round_trees=CART_BMA[1];      
 curr_round_mat=CART_BMA[2];
@@ -2579,6 +2583,7 @@ NumericMatrix curr_round_preds=CART_BMA[5];
 NumericMatrix curr_round_test_preds=CART_BMA[7];
 curr_BIC=CART_BMA[6];
 if(curr_round_lik.size()==0) {
+  //Rcout << "Break because curr_round_lik.size()==0 in outer loop number " << j << " . \n";
 break;
 } 
 
@@ -2724,6 +2729,7 @@ overall_sum_trees_mat=resize_bigger(overall_sum_trees_mat,overall_size);
 }
 }  
 }
+//Rcout << "Get to checking for models from previous rounds in outer loop number " << j << " . \n";
 //check if there were any trees from the previous round that didn't have daughter trees grown.
 //create vector to count number of possible parents for previous round
 if(j>0){
@@ -2833,15 +2839,25 @@ overall_trees[j]=curr_round_trees;
 overall_mat.push_back(curr_round_mat);
 overall_lik.push_back(curr_round_lik);
 prev_par=seq_len(overall_sum_trees.size())-1;
-} 
+//Rcout << "Get to end of outer loop number " << j << " . \n";
+
+}
+//Rcout << "Get past outer loop \n";
+
+if(oo_count==0){
+  throw std::range_error("BART-BMA didnt find any suitable model for the data. Maybe limit for Occam's window is too small. Alternatively, try using more observations or change parameter values.");
+}
 overall_overall_sum_trees=resize(overall_overall_sum_trees,oo_count);
 overall_overall_sum_tree_resids=resize(overall_overall_sum_tree_resids,oo_count);
 overall_overall_sum_trees_mat=resize(overall_overall_sum_trees_mat,oo_count);
 overall_overall_sum_BIC=resize(overall_overall_sum_BIC,oo_count);
+//Rcout << "Get to defining end_BIC \n";
 NumericVector end_BIC=overall_overall_sum_BIC[overall_overall_sum_BIC.size()-1] ;
+//Rcout << "Get to defining past defining end_BIC \n";
 NumericMatrix overallpreds(n,end_BIC.size());
 NumericMatrix overall_test_preds(test_data.nrow(),end_BIC.size());
 NumericVector post_weights(end_BIC.size());
+//Rcout << "Get to loop that defines temp_pred M1 \n";
 for(int k=0;k<end_BIC.size();k++){
 NumericMatrix oosp=Rcpp::as<NumericMatrix>(wrap(overall_overall_sum_preds));
 NumericVector temp_preds=oosp(_,k);
@@ -2850,6 +2866,7 @@ if(is_test_data==1){
 NumericMatrix oostp=Rcpp::as<NumericMatrix>(wrap(overall_overall_sum_test_preds));
 temp_test_preds=oostp(_,k); 
 }
+//Rcout << "Get to defining orig_temp_pred \n";
 NumericVector orig_temp_preds=get_original(min(y),max(y),-0.5,0.5,temp_preds) ;
 NumericVector BICi=-0.5*end_BIC;
 double max_BIC=max(BICi);
@@ -2859,7 +2876,8 @@ overallpreds(_,k) = temp_preds*weight;
 if(is_test_data==1){
 overall_test_preds(_,k) = temp_test_preds*weight;
 }
-}     
+}
+//Rcout << "Get to defining M1 \n";
 arma::mat M1(overallpreds.begin(), overallpreds.nrow(), overallpreds.ncol(), false);
 predicted_values=sum(M1,1);
 arma::mat M2(overall_test_preds.begin(), overall_test_preds.nrow(), overall_test_preds.ncol(), false);
@@ -2875,6 +2893,7 @@ orig_test_preds=get_original(min(y),max(y),-0.5,0.5,wrap(predicted_test_values))
 NumericVector minmax(2);
 minmax[0]=min(y);
 minmax[1]=max(y);
+//Rcout << "Get to defining ret \n";
 if(is_test_data==1){
 List ret(6);
 ret[0] = orig_preds;
