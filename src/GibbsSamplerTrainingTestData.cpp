@@ -99,6 +99,8 @@ double update_sigma(double a1,double b,NumericVector resids,int n){
   double shape=(a1+n/2);
   double rate =((ssr/2)+(1/b));
   RNGScope scope;
+  //double tau =shape/rate;
+  
   double tau =R::rgamma(shape,1/rate);
   double sigma = sqrt((1/tau));
   return sigma;
@@ -213,6 +215,8 @@ NumericVector get_new_mean(IntegerVector terminal_nodes,List new_mean_var){
   for(int k=0;k<terminal_nodes.size();k++){
     NumericVector sd=new_mean_var[1];
     NumericVector temp_mean=new_mean_var[0];
+    //double new_mean=temp_mean[k];
+    
     double new_mean= R::rnorm(temp_mean[k],sqrt(sd[k]));
     node_means.push_back(new_mean);
     
@@ -420,7 +424,7 @@ List term_nodes_trees(sum_tree.size());
 List term_obs_trees(sum_tree.size());
 NumericMatrix predictions(num_obs,sum_tree.size());
 
-for(int k =0;k<sum_tree.size();k++){          
+for(int k=0;k<sum_tree.size();k++){          
 NumericMatrix tree_table=sum_tree[k];
 List tree_info=get_tree_info_test_data(test_data, tree_table) ;
 NumericVector term_nodes=tree_info[0];
@@ -452,9 +456,18 @@ return(ret);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // [[Rcpp::depends(RcppArmadillo)]]
+//' @title Obtain draws from gibbs sampler
+//' @export
 // [[Rcpp::export]]
 
-List gibbs_sampler(List overall_sum_trees,List overall_sum_mat,NumericVector y,NumericVector BIC_weights,int num_iter,int burnin,int num_obs,int num_test_obs,double a,double sigma,double mu_mu,double nu,double lambda,List resids,NumericMatrix test_data){
+List gibbs_sampler(List overall_sum_trees,
+                   List overall_sum_mat,
+                   NumericVector y,
+                   NumericVector BIC_weights,
+                   int num_iter,int burnin,int num_obs,int num_test_obs,
+                   double a,double sigma,double mu_mu,double nu,double lambda,
+                   List resids,
+                   NumericMatrix test_data){
 if(burnin>=num_iter){
 throw std::range_error("Number of iterations has to be greater than the number of burn-in samples");
 }
@@ -466,7 +479,9 @@ List overall_term_test_obs_trees=test_tree_info[1];
 
 double a1=nu/2;
 double b=2/(nu*lambda);
-double sigma_init=sigma;
+double sigma2=sigma;
+
+double sigma_init=sigma2;
 List overall_term_nodes_trees=tree_info[0];
 List overall_term_obs_trees=tree_info[1];
 List overall_predictions=tree_info[2];
@@ -484,7 +499,7 @@ List sigma_chains(overall_sum_trees.size());
 for(int i=0;i<overall_sum_trees.size();i++){
   //for each set of trees loop over individual trees    
   NumericVector sigma_its(num_iter);
-  sigma=sigma_init;
+  sigma2=sigma_init;
   SEXP s = overall_sum_trees[i];
   NumericVector test_preds_sum_tree;
   NumericMatrix sum_predictions;
@@ -497,7 +512,9 @@ for(int i=0;i<overall_sum_trees.size();i++){
     List sum_term_nodes=overall_term_nodes_trees[i];
     List sum_term_obs=overall_term_obs_trees[i];
     List sum_term_test_obs=overall_term_test_obs_trees[i];
-    List sum_resids=resids[i];
+    List sum_resids0=resids[i];
+    List sum_resids=clone(sum_resids0);
+    
     NumericMatrix tree_predictions=overall_predictions[i];
     sum_predictions=clone(tree_predictions);
     NumericMatrix post_predictions(num_iter,num_obs);
@@ -521,26 +538,26 @@ for(int i=0;i<overall_sum_trees.size();i++){
         //current predictions are the residuals for sum of trees!
         
           //update the means and predictions for tree
-        List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma,mu_mu,term_nodes,term_obs);
+        List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma2,mu_mu,term_nodes,term_obs);
         NumericVector new_node_mean=get_new_mean(term_nodes,new_node_mean_var);
         NumericVector new_node_var=new_node_mean_var[1];
         //update predictions by setting predicted value for term_obs[termnode]=new mean value!
           
-          List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
+        List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
         
         //NOW UPDATE THE RESIDUALS FOR USE IN NEXT ITERATION
         //THE PLACING OF THIS SECTION OF CODE HERE IS IMPORTANT
         //MUST BE BEFORE sum_new_predictions(_,k) is updated so that the
         //previous round's predictions can be added (i.e. removed from the residual before the new predictions are taken away to create the new residual) 
-        for(int l=0;l<sum_tree.size();l++){
-          if(l!=k){
+        for(int q=0;q<sum_tree.size();q++){
+          if(q!=k){
             if(j==0){
-              NumericVector temp_resids1= sum_resids[l];
-              sum_resids[l]=temp_resids1+tree_predictions(_,k)-temp_preds;
+              NumericVector temp_resids1= sum_resids[q];
+              sum_resids[q]=temp_resids1+tree_predictions(_,k)-temp_preds;
             }else{
-              NumericVector temp_resids1= sum_resids[l];
-              sum_resids[l]=temp_resids1+sum_new_predictions(_,k)-temp_preds;
+            NumericVector temp_resids1= sum_resids[q];
+              sum_resids[q]=temp_resids1+sum_new_predictions(_,k)-temp_preds;
             }
           }
         }
@@ -555,10 +572,10 @@ for(int i=0;i<overall_sum_trees.size();i++){
       
       
       NumericVector pred_obs=calc_rowsums(sum_new_predictions);
-      NumericVector full_resids = y-pred_obs;
+      NumericVector full_resids = y_scaled-pred_obs;
       //get overall predictions for current iteration and current sum of trees
-      sigma= update_sigma(a1,b,full_resids,num_obs);
-      sigma_its[j]=sigma;
+      sigma2= update_sigma(a1,b,full_resids,num_obs);
+      sigma_its[j]=sigma2;
       
       post_predictions(j,_)=pred_obs;
       NumericVector original_y=get_original_gs(min(y),max(y),-0.5,0.5,pred_obs);    
@@ -571,7 +588,8 @@ for(int i=0;i<overall_sum_trees.size();i++){
       //prediction interval for training 
       
       for(int g=0;g<pred_obs.size();g++){
-        post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma);
+        //post_predictions_PI(j,g)=pred_obs[g];
+        post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma2);
       }
       
       NumericVector original_y_PI=get_original_gs(min(y),max(y),-0.5,0.5,post_predictions_PI(j,_));    
@@ -601,6 +619,7 @@ for(int i=0;i<overall_sum_trees.size();i++){
     NumericMatrix sum_predictions(num_obs,1);
     NumericMatrix sum_test_predictions(num_test_obs,1);
     
+    NumericVector predictions=resids[i];
     
     for(int j=0;j<num_iter;j++){
         NumericMatrix tree_table=overall_sum_trees1[i];
@@ -608,20 +627,19 @@ for(int i=0;i<overall_sum_trees.size();i++){
         IntegerVector term_nodes=overall_term_nodes_trees[i];
         List term_obs=overall_term_obs_trees[i];
         List term_test_obs=overall_term_test_obs_trees[i];
-        NumericVector predictions=resids[i];
         //find terminal node means and observations associated with them
         
         //current predictions are the residuals for sum of trees
         
         //update the means and predictions for tree
-        List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma,mu_mu,term_nodes,term_obs);
+        List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma2,mu_mu,term_nodes,term_obs);
         NumericVector new_node_mean=get_new_mean(term_nodes,new_node_mean_var);      
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
         sum_predictions(_,1)=temp_preds;
         //NOW UPDATE RESIDUALS
-        resids[i]=y-temp_preds;
+        predictions=y_scaled-temp_preds;
         //get updated predictions for the test data
         List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         NumericVector temp_test_preds=updated_test_preds[1];
@@ -639,9 +657,9 @@ for(int i=0;i<overall_sum_trees.size();i++){
       
       post_predictions(j,_)=pred_obs;
       post_test_predictions(j,_)=pred_test_obs;
-      NumericVector full_resids = y-pred_obs;
-      sigma= update_sigma(a1,b,full_resids,num_obs);
-      sigma_its[j]=sigma;
+      NumericVector full_resids = y_scaled-pred_obs;
+      sigma2= update_sigma(a1,b,full_resids,num_obs);
+      sigma_its[j]=sigma2;
       NumericVector original_y=get_original_gs(min(y),max(y),-0.5,0.5,pred_obs);   
       NumericVector original_test_y=get_original_gs(min(y),max(y),-0.5,0.5,pred_test_obs);   
       post_predictions_orig(j,_)=original_y;
@@ -649,7 +667,8 @@ for(int i=0;i<overall_sum_trees.size();i++){
       
       //prediction interval for training 
       for(int g=0;g<pred_obs.size();g++){
-        post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma);
+        //post_predictions_PI(j,g)=pred_obs[g];
+        post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma2);
       }
       
       NumericVector original_y_PI=get_original_gs(min(y),max(y),-0.5,0.5,post_predictions_PI(j,_));    
@@ -698,7 +717,8 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
   //  List overall_term_test_obs_trees=test_tree_info[1];
   double a1=nu/2;
   double b=2/(nu*lambda);
-  double sigma_init=sigma;
+  double sigma2=sigma;
+  double sigma_init=sigma2;
   List overall_term_nodes_trees=tree_info[0];
   List overall_term_obs_trees=tree_info[1];
   List overall_predictions=tree_info[2];
@@ -716,7 +736,7 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
   for(int i=0;i<overall_sum_trees.size();i++){
   //for each set of trees loop over individual trees    
   NumericVector sigma_its(num_iter);
-  sigma=sigma_init;
+  sigma2=sigma_init;
   SEXP s = overall_sum_trees[i];
   //NumericVector test_preds_sum_tree;
   NumericMatrix sum_predictions;
@@ -729,7 +749,8 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
   List sum_term_nodes=overall_term_nodes_trees[i];
   List sum_term_obs=overall_term_obs_trees[i];
   //List sum_term_test_obs=overall_term_test_obs_trees[i];
-  List sum_resids=resids[i];
+  List sum_resids0=resids[i];
+  List sum_resids=clone(sum_resids0);
   NumericMatrix tree_predictions=overall_predictions[i];
   sum_predictions=clone(tree_predictions);
   NumericMatrix post_predictions(num_iter,num_obs);
@@ -754,7 +775,7 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
   
   //update the means and predictions for tree
   
-  List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma,mu_mu,term_nodes,term_obs);
+  List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma2,mu_mu,term_nodes,term_obs);
   NumericVector new_node_mean=get_new_mean(term_nodes,new_node_mean_var);
   NumericVector new_node_var=new_node_mean_var[1];
   //update predictions by setting predicted value for term_obs[termnode]=new mean value!
@@ -784,15 +805,15 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
   //sum_new_test_predictions(_,k)=temp_test_preds;
   
   //get overall predictions for current iteration and current sum of trees
-  sigma= update_sigma(a1,b,predictions,num_obs);
-  sigma_its[j]=sigma;
+  sigma2= update_sigma(a1,b,predictions,num_obs);
+  sigma_its[j]=sigma2;
   }
   
   NumericVector pred_obs=calc_rowsums(sum_new_predictions);
-  NumericVector full_resids = y-pred_obs;
+  NumericVector full_resids = y_scaled-pred_obs;
   //get overall predictions for current iteration and current sum of trees
-  sigma= update_sigma(a1,b,full_resids,num_obs);
-  sigma_its[j]=sigma;  
+  sigma2= update_sigma(a1,b,full_resids,num_obs);
+  sigma_its[j]=sigma2;  
     
   post_predictions(j,_)=pred_obs;
   NumericVector original_y=get_original_gs(min(y),max(y),-0.5,0.5,pred_obs);    
@@ -805,7 +826,7 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
   //prediction interval for training 
   
   for(int g=0;g<pred_obs.size();g++){
-  post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma);
+  post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma2);
   }
   NumericVector original_y_PI=get_original_gs(min(y),max(y),-0.5,0.5,post_predictions_PI(j,_));    
   post_predictions_orig_PI(j,_)=original_y_PI;
@@ -832,6 +853,7 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
     //NumericMatrix post_test_predictions_orig(num_iter,num_obs);
     NumericMatrix sum_predictions(num_obs,1);
     //NumericMatrix sum_test_predictions(num_test_obs,1);
+    NumericVector predictions=resids[i];
     
     for(int j=0;j<num_iter;j++){
         NumericMatrix tree_table=overall_sum_trees1[i];
@@ -839,20 +861,19 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
         IntegerVector term_nodes=overall_term_nodes_trees[i];
         List term_obs=overall_term_obs_trees[i];
         //  List term_test_obs=overall_term_test_obs_trees[i];
-        NumericVector predictions=resids[i];
         //find terminal node means and observations associated with them
         
         //current predictions are the residuals for sum of trees
         
         //update the means and predictions for tree
-        List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma,mu_mu,term_nodes,term_obs);
+        List new_node_mean_var=update_Gibbs_mean_var(tree_table,predictions,a,sigma2,mu_mu,term_nodes,term_obs);
         NumericVector new_node_mean=get_new_mean(term_nodes,new_node_mean_var);      
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
         sum_predictions(_,1)=temp_preds;
         //NOW UPDATE RESIDUALS
-        resids[i]=y-temp_preds;
+        predictions=y_scaled-temp_preds;
         
         //get updated predictions for the test data
         //List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
@@ -871,9 +892,9 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
       post_predictions(j,_)=pred_obs;
       //post_test_predictions(j,_)=pred_test_obs;
       
-      NumericVector full_resids=y-pred_obs;
-      sigma= update_sigma(a1,b,full_resids,num_obs);
-      sigma_its[j]=sigma;
+      NumericVector full_resids=y_scaled-pred_obs;
+      sigma2= update_sigma(a1,b,full_resids,num_obs);
+      sigma_its[j]=sigma2;
       NumericVector original_y=get_original_gs(min(y),max(y),-0.5,0.5,pred_obs);   
       //NumericVector original_test_y=get_original_gs(min(y),max(y),-0.5,0.5,pred_test_obs);   
       post_predictions_orig(j,_)=original_y;
@@ -881,7 +902,7 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
       
       //prediction interval for training 
       for(int g=0;g<pred_obs.size();g++){
-        post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma);
+        post_predictions_PI(j,g)=R::rnorm(pred_obs[g],sigma2);
       }
       
       NumericVector original_y_PI=get_original_gs(min(y),max(y),-0.5,0.5,post_predictions_PI(j,_));    

@@ -47,31 +47,34 @@ pred_intervals<-function(object,num_iter,burnin,l_quant,u_quant,newdata=NULL){
 #    sigma_chains<-gs_chains[[3]]
 #  } 
 
-  sum_of_tree_BIC<-unlist(object$bic)
+  sum_of_tree_BIC<- object$bic
   weights<-exp(sum_of_tree_BIC-(max(sum_of_tree_BIC)+log(sum(exp(sum_of_tree_BIC-max(sum_of_tree_BIC))))))
-  final_length=num_iter-burnin
-  num_its_to_sample<-round(weights*final_length)
-  final_sigma_chain<-numeric(0)
+  #final_length<-num_iter-burnin
+  num_its_to_sample<-round(weights*(num_iter-burnin))
+  #final_sigma_chain<-numeric(0)
   
   final_y_chain<-matrix(nrow=0,ncol=ncol(y_posterior_sum_trees[[1]]))
   final_yorig_chain<-matrix(nrow=0,ncol=ncol(y_orig_post_sum_trees[[1]]))
   
   for(i in 1:length(sigma_chains)){
     sample_its<-sample(burnin:num_iter,num_its_to_sample[i])
-    final_sigma_chain<-c(final_sigma_chain,sigma_chains[[i]][sample_its])
+    #final_sigma_chain<-c(final_sigma_chain,sigma_chains[[i]][sample_its])
     #now do the same for predicted response updates
     post_y_i<-y_posterior_sum_trees[[i]]
     post_yorig_i<-y_orig_post_sum_trees[[i]]
     final_y_chain<-rbind(final_y_chain,post_y_i[sample_its,])
     final_yorig_chain<-rbind(final_yorig_chain,post_yorig_i[sample_its,])
-    PI<-apply(final_y_chain,2,function(x)quantile(x,probs=c(l_quant,0.5,u_quant)))
+    
   }
+  PI<-apply(final_yorig_chain,2,function(x)quantile(x,probs=c(l_quant,0.5,u_quant)))
   
   
   ret<-list()
   length(ret)<-1
   ret[[1]]<-PI
-  
+  #ret[[2]] <- final_y_chain
+  #ret[[3]] <- post_y_i
+    
   class(ret)<-"pred_intervals.bartBMA"  
   ret
 }

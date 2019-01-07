@@ -309,6 +309,8 @@ get_tree_info_testdata_overall <- function(overall_sum_trees, num_obs, test_data
     .Call(`_bartBMAnew_get_tree_info_testdata_overall`, overall_sum_trees, num_obs, test_data)
 }
 
+#' @title Obtain draws from gibbs sampler
+#' @export
 gibbs_sampler <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data) {
     .Call(`_bartBMAnew_gibbs_sampler`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data)
 }
