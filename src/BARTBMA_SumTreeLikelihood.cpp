@@ -1091,7 +1091,7 @@ double best_sp;
 double tree_prior=0;
 List changetree;
 double BIC;
-int p;
+//int p;
 int p_other=0;
 List eval_model;
 NumericVector int_nodes;
@@ -1164,7 +1164,7 @@ for(int l=0;l<terminal_nodes.size();l++){
         NumericMatrix sum_trees2=sum_trees[parent2[i]];
         NumericMatrix sum_trees_mat2=sum_trees_mat[parent2[i]];
         other_int_nodes = find_term_nodes(sum_trees2);
-        p_other=other_int_nodes.size();
+        //p_other=other_int_nodes.size();
         List st(2);
         List st_mat(2);
         st[0]=sum_trees2;
@@ -1176,15 +1176,17 @@ for(int l=0;l<terminal_nodes.size();l++){
         for(int t=0;t<st.size();t++){
           NumericMatrix tree=st[t];
           NumericMatrix mat=st_mat[t];
+          other_int_nodes = find_term_nodes(tree);
+          p_other+=other_int_nodes.size();
           tree_prior+=get_tree_prior(tree,mat,alpha,beta);
         }
       }  
     }
     //at the moment tree prior is only for current tree need to get it for entire sum of tree list.
     
-    int_nodes=find_term_nodes(proposal_tree[0]);
-    p=int_nodes.size()+p_other; //COULD ADD 1 for the variance parameter, and more numbers for other parameters. (This might influence probability-weights, but not the ranking of BICs)
-    BIC=-2*(lik+log(tree_prior))+p*log(data.n_rows);  
+    //int_nodes=find_term_nodes(proposal_tree[0]);
+    //p=int_nodes.size()+p_other; //COULD ADD 1 for the variance parameter, and more numbers for other parameters. (This might influence probability-weights, but not the ranking of BICs)
+    BIC=-2*(lik+log(tree_prior))+p_other*log(data.n_rows);  
     if(BIC<lowest_BIC){
       lowest_BIC=BIC;
       best_sv=split_var;
