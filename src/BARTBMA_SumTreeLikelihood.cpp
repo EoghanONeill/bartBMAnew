@@ -1117,6 +1117,7 @@ for(int l=0;l<terminal_nodes.size();l++){
     //continue;
   }
   for(int k=0;k<w;k++){
+    p_other=0;
     split_var=cp_mat(k,0)+1;
     arma::colvec curr_cols=data.col(split_var-1);
     get_min=get_grow_obs(data,wrap(grow_obs),split_var);
@@ -1738,17 +1739,17 @@ IntegerVector overall_parent2;
 List overall_mat(overall_size);
 std::vector<int> overall_parent(overall_size);
 std::vector<double> overall_lik(overall_size);
-int overall_count=0;  
+//int overall_count=0;  
 
-//////   //COMMENTED OUT ATTEMPT TO FIX NO ZERO SPLIT TREES BUG
-//////overall_trees[0]= tree_table[0];
-//////overall_mat[0]= tree_mat[0];
-//////overall_parent[0]=-1;
-//////double lik_temp=likelihood_function(resids,tree_table[0],tree_mat[0],a,mu,nu,lambda);
-//////double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
-//////double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
-//////overall_lik[0]= lowest_BIC_temp;
-//////int overall_count=1;  
+   //COMMENTED OUT ATTEMPT TO FIX NO ZERO SPLIT TREES BUG
+overall_trees[0]= tree_table[0];
+overall_mat[0]= tree_mat[0];
+overall_parent[0]=-1;
+double lik_temp=likelihood_function(resids,tree_table[0],tree_mat[0],a,mu,nu,lambda);
+double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
+double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
+overall_lik[0]= lowest_BIC_temp;
+int overall_count=1;  
 
 NumericVector test_preds;
 
@@ -1989,145 +1990,145 @@ NumericVector test_preds;
 
 //////   //COMMENTED OUT ATTEMPT TO FIX NO ZERO SPLIT TREES BUG
 
-//////for(int q=0; q<prev_sum_trees.size();q++){
-//////SEXP s_temp = prev_sum_trees[parent[q]];
-//////if(is<List>(s_temp)){
-//////  //Rcout << "s is a list. \n";
-//////List sum_trees2_temp=prev_sum_trees[parent[q]];
-//////List sum_trees_mat2_temp=prev_sum_trees_mat[parent[q]];
-//////sum_trees2_temp.push_back(tree_table[0]);
-//////sum_trees_mat2_temp.push_back(tree_mat[0]);
-//////double lik_temp=sumtree_likelihood_function(y_scaled,sum_trees2_temp,sum_trees_mat2_temp,y_scaled.size(),a,nu,lambda);  
-//////double tree_prior_temp=0;
-//////int p_other=0;
-//////NumericVector other_int_nodes;
-////////Rcout << "Get to loop over t. \n";
+for(int q=0; q<prev_sum_trees.size();q++){
+SEXP s_temp = prev_sum_trees[parent[q]];
+if(is<List>(s_temp)){
+  //Rcout << "s is a list. \n";
+List sum_trees2_temp=prev_sum_trees[parent[q]];
+List sum_trees_mat2_temp=prev_sum_trees_mat[parent[q]];
+sum_trees2_temp.push_back(tree_table[0]);
+sum_trees_mat2_temp.push_back(tree_mat[0]);
+double lik_temp=sumtree_likelihood_function(y_scaled,sum_trees2_temp,sum_trees_mat2_temp,y_scaled.size(),a,nu,lambda);  
+double tree_prior_temp=0;
+int p_other=0;
+NumericVector other_int_nodes;
+//Rcout << "Get to loop over t. \n";
 
-//////for(int t=0;t<sum_trees2_temp.size();t++){
-//////  NumericMatrix tree=sum_trees2_temp[t];
-//////  NumericMatrix mat=sum_trees_mat2_temp[t];
-//////  other_int_nodes = find_term_nodes(tree);
-//////  p_other+=other_int_nodes.size();
-//////  tree_prior_temp+=get_tree_prior(tree,mat,alpha,beta);
-//////}
-////////Rcout << "Finish Loop. \n";
+for(int t=0;t<sum_trees2_temp.size();t++){
+  NumericMatrix tree=sum_trees2_temp[t];
+  NumericMatrix mat=sum_trees_mat2_temp[t];
+  other_int_nodes = find_term_nodes(tree);
+  p_other+=other_int_nodes.size();
+  tree_prior_temp+=get_tree_prior(tree,mat,alpha,beta);
+}
+//Rcout << "Finish Loop. \n";
 
-//////NumericVector int_nodes_temp=find_term_nodes(tree_table[0]);
-//////int p_temp=int_nodes_temp.size();
-//////double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_temp+p_other)*log(D1.n_rows);  
+NumericVector int_nodes_temp=find_term_nodes(tree_table[0]);
+int p_temp=int_nodes_temp.size();
+double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_temp+p_other)*log(D1.n_rows);  
 
-////////Rcout << "Get to fill in overall_. \n";
+//Rcout << "Get to fill in overall_. \n";
 
-//////overall_trees[overall_count]= tree_table[0];
-//////overall_mat[overall_count]= tree_mat[0];
-//////overall_parent[overall_count]=parent[q];
-////////Rcout << "parent[q] = " << parent[q] <<  ".\n";
-////////Rcout << "When q=" << q << " parent[q]=" << parent[q] << ". overall_count =" << overall_count << ".\n";
+overall_trees[overall_count]= tree_table[0];
+overall_mat[overall_count]= tree_mat[0];
+overall_parent[overall_count]=parent[q];
+//Rcout << "parent[q] = " << parent[q] <<  ".\n";
+//Rcout << "When q=" << q << " parent[q]=" << parent[q] << ". overall_count =" << overall_count << ".\n";
 
-////////double lik_temp=likelihood_function(resids[0],tree_table[0],tree_mat[0],a,mu,nu,lambda);
-////////double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
-////////double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
-//////overall_lik[overall_count]= BIC;
-////////Rcout << "Get to end of adding no split trees. \n";
+//double lik_temp=likelihood_function(resids[0],tree_table[0],tree_mat[0],a,mu,nu,lambda);
+//double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
+//double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
+overall_lik[overall_count]= BIC;
+//Rcout << "Get to end of adding no split trees. \n";
 
-//////overall_count++;
-//////}else{
-//////  //Rcout << "s is not a list. \n";
-//////  NumericMatrix sum_trees2_temp=prev_sum_trees[parent[q]];
-//////  NumericMatrix sum_trees_mat2=prev_sum_trees_mat[parent[q]];
-//////  List st(2);
-//////  List st_mat(2);
-//////  st[0]=sum_trees2_temp;
-//////  st[1]=tree_table[0];
-//////  st_mat[0]=sum_trees_mat2;
-//////  st_mat[1]=tree_mat[0];
-//////  // return(st);
-//////  double lik_temp=sumtree_likelihood_function(y_scaled,st,st_mat,y_scaled.size(),a,nu,lambda);  
-//////  double tree_prior_temp=0;
-//////  int p_other=0;
-//////  NumericVector other_int_nodes;
-//////  for(int t=0;t<st.size();t++){
-//////    NumericMatrix tree=st[t];
-//////    NumericMatrix mat=st_mat[t];
-//////    other_int_nodes = find_term_nodes(tree);
-//////    p_other+=other_int_nodes.size();
-//////    tree_prior_temp+=get_tree_prior(tree,mat,alpha,beta);
-//////  }
-//////  NumericVector int_nodes_temp=find_term_nodes(tree_table[0]);
-//////  int p_temp=int_nodes_temp.size();
-//////  double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_temp+p_other)*log(D1.n_rows);  
-////// 
-////// 
-//////  overall_trees[overall_count]= tree_table[0];
-//////  overall_mat[overall_count]= tree_mat[0];
-//////  overall_parent[overall_count]=parent[q];
-//////  //Rcout << "When q=" << q << " parent[q]=" << parent[q] << ". overall_count =" << overall_count << ".\n";
-//////  //double lik_temp=likelihood_function(resids[0],tree_table[0],tree_mat[0],a,mu,nu,lambda);
-//////  //double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
-//////  //double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
-//////  overall_lik[overall_count]= BIC;
-//////  overall_count++;
-//////  //Rcout << "Get to end of adding no split trees. \n";
-////// 
-//////}
-//////if(overall_count==(overall_size-1)){
-//////  overall_size=overall_size*2;
-//////  overall_trees=resize_bigger(overall_trees,overall_size);
-//////  overall_lik.resize(overall_size);
-//////  overall_mat=resize_bigger(overall_mat,overall_size);
-//////  overall_parent.resize(overall_size);
-//////}
-//////}
-//////     //int overall_count=0; 
-//////
-//////overall_trees=resize(overall_trees,overall_count);
-//////overall_lik.resize(overall_count);
-//////overall_mat=resize(overall_mat,overall_count);
-//////overall_parent.resize(overall_count);
-//////eval_model=evaluate_model_occams_window(as<NumericVector>(wrap(overall_lik)),lowest_BIC,log(c),overall_trees,overall_mat,as<IntegerVector>(wrap(overall_parent)));
-//////overall_lik2=eval_model[0];
-//////overall_trees=eval_model[1];
-//////overall_mat=eval_model[2];
-//////overall_count=overall_trees.size();
-//////overall_parent2=eval_model[3];
-//////  //add in check to see if OW accepted more than the top maxOW models...
-//////if(overall_lik2.size()>maxOWsize){
-//////  //find the maxOWsize best models and continue with those!
-//////  IntegerVector owindices=order_(overall_lik2);
-//////  owindices=owindices-1;
-//////  //get the top maxOWsize indices to keep in OW
-//////  NumericVector temp_olik(maxOWsize);
-//////  List temp_otrees(maxOWsize);
-//////  List temp_omat(maxOWsize);
-////// IntegerVector temp_oparent(maxOWsize);
-////// 
-//////  //now only select those elements
-//////  for(int t=0;t<maxOWsize;t++){  
-//////    temp_olik[t]=overall_lik2[owindices[t]];
-//////    temp_otrees[t]=overall_trees[owindices[t]];
-//////    temp_omat[t]= overall_mat[owindices[t]];
-//////    temp_oparent[t]=overall_parent2[owindices[t]];
-//////  }
-//////  
-//////  overall_lik2=temp_olik;
-//////  overall_trees=temp_otrees;
-//////  overall_mat=temp_omat;
-//////  overall_count=overall_trees.size();
-//////  overall_parent2=temp_oparent;
-//////}
-//////
-//////if(overall_trees.size()<overall_size-1){
-//////  overall_trees=resize_bigger(overall_trees,overall_size);
-//////  overall_mat=resize_bigger(overall_mat,overall_size);
-//////  overall_lik.resize(overall_size);
-//////  overall_parent.resize(overall_size);
-//////}else{
-//////  overall_size=2*overall_size;
-//////  overall_trees=resize_bigger(overall_trees,overall_size);
-//////  overall_mat=resize_bigger(overall_mat,overall_size); 
-//////  overall_lik.resize(overall_size);
-//////  overall_parent.resize(overall_size);
-//////}
+overall_count++;
+}else{
+  //Rcout << "s is not a list. \n";
+  NumericMatrix sum_trees2_temp=prev_sum_trees[parent[q]];
+  NumericMatrix sum_trees_mat2=prev_sum_trees_mat[parent[q]];
+  List st(2);
+  List st_mat(2);
+  st[0]=sum_trees2_temp;
+  st[1]=tree_table[0];
+  st_mat[0]=sum_trees_mat2;
+  st_mat[1]=tree_mat[0];
+  // return(st);
+  double lik_temp=sumtree_likelihood_function(y_scaled,st,st_mat,y_scaled.size(),a,nu,lambda);  
+  double tree_prior_temp=0;
+  int p_other=0;
+  NumericVector other_int_nodes;
+  for(int t=0;t<st.size();t++){
+    NumericMatrix tree=st[t];
+    NumericMatrix mat=st_mat[t];
+    other_int_nodes = find_term_nodes(tree);
+    p_other+=other_int_nodes.size();
+    tree_prior_temp+=get_tree_prior(tree,mat,alpha,beta);
+  }
+  NumericVector int_nodes_temp=find_term_nodes(tree_table[0]);
+  int p_temp=int_nodes_temp.size();
+  double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_temp+p_other)*log(D1.n_rows);  
+ 
+ 
+  overall_trees[overall_count]= tree_table[0];
+  overall_mat[overall_count]= tree_mat[0];
+  overall_parent[overall_count]=parent[q];
+  //Rcout << "When q=" << q << " parent[q]=" << parent[q] << ". overall_count =" << overall_count << ".\n";
+  //double lik_temp=likelihood_function(resids[0],tree_table[0],tree_mat[0],a,mu,nu,lambda);
+  //double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
+  //double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
+  overall_lik[overall_count]= BIC;
+  overall_count++;
+  //Rcout << "Get to end of adding no split trees. \n";
+ 
+}
+if(overall_count==(overall_size-1)){
+  overall_size=overall_size*2;
+  overall_trees=resize_bigger(overall_trees,overall_size);
+  overall_lik.resize(overall_size);
+  overall_mat=resize_bigger(overall_mat,overall_size);
+  overall_parent.resize(overall_size);
+}
+}
+     //int overall_count=0; 
+
+overall_trees=resize(overall_trees,overall_count);
+overall_lik.resize(overall_count);
+overall_mat=resize(overall_mat,overall_count);
+overall_parent.resize(overall_count);
+eval_model=evaluate_model_occams_window(as<NumericVector>(wrap(overall_lik)),lowest_BIC,log(c),overall_trees,overall_mat,as<IntegerVector>(wrap(overall_parent)));
+overall_lik2=eval_model[0];
+overall_trees=eval_model[1];
+overall_mat=eval_model[2];
+overall_count=overall_trees.size();
+overall_parent2=eval_model[3];
+  //add in check to see if OW accepted more than the top maxOW models...
+if(overall_lik2.size()>maxOWsize){
+  //find the maxOWsize best models and continue with those!
+  IntegerVector owindices=order_(overall_lik2);
+  owindices=owindices-1;
+  //get the top maxOWsize indices to keep in OW
+  NumericVector temp_olik(maxOWsize);
+  List temp_otrees(maxOWsize);
+  List temp_omat(maxOWsize);
+ IntegerVector temp_oparent(maxOWsize);
+ 
+  //now only select those elements
+  for(int t=0;t<maxOWsize;t++){  
+    temp_olik[t]=overall_lik2[owindices[t]];
+    temp_otrees[t]=overall_trees[owindices[t]];
+    temp_omat[t]= overall_mat[owindices[t]];
+    temp_oparent[t]=overall_parent2[owindices[t]];
+  }
+  
+  overall_lik2=temp_olik;
+  overall_trees=temp_otrees;
+  overall_mat=temp_omat;
+  overall_count=overall_trees.size();
+  overall_parent2=temp_oparent;
+}
+
+if(overall_trees.size()<overall_size-1){
+  overall_trees=resize_bigger(overall_trees,overall_size);
+  overall_mat=resize_bigger(overall_mat,overall_size);
+  overall_lik.resize(overall_size);
+  overall_parent.resize(overall_size);
+}else{
+  overall_size=2*overall_size;
+  overall_trees=resize_bigger(overall_trees,overall_size);
+  overall_mat=resize_bigger(overall_mat,overall_size); 
+  overall_lik.resize(overall_size);
+  overall_parent.resize(overall_size);
+}
 
 
 
@@ -2522,6 +2523,9 @@ IntegerVector prev_par;
 arma::colvec predicted_values;
 
 for(int j=0;j<num_rounds;j++){
+  if(j>0){
+    lowest_BIC=10000;
+  }
 int overall_size=300;
 List overall_sum_trees(overall_size);
 List overall_sum_trees_mat(overall_size);
