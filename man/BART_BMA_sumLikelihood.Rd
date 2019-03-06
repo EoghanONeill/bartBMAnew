@@ -6,7 +6,7 @@
 \usage{
 BART_BMA_sumLikelihood(data, y, start_mean, start_sd, a, mu, nu, lambda, c,
   sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta,
-  split_rule_node, gridpoint, maxOWsize, num_splits, gridsize)
+  split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split)
 }
 \description{
 Obtain BARTBMA predictions, trees, BICs etc. to be called by R functions

@@ -1727,7 +1727,7 @@ return(ret);
 // [[Rcpp::export]]
 
 List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
-int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize
+int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split
 ){
 List eval_model;
 NumericVector lik_list;
@@ -1739,9 +1739,10 @@ IntegerVector overall_parent2;
 List overall_mat(overall_size);
 std::vector<int> overall_parent(overall_size);
 std::vector<double> overall_lik(overall_size);
-//int overall_count=0;  
+int overall_count=0;  
 
-   //COMMENTED OUT ATTEMPT TO FIX NO ZERO SPLIT TREES BUG
+if(zero_split==1){
+    //COMMENTED OUT ATTEMPT TO FIX NO ZERO SPLIT TREES BUG
 overall_trees[0]= tree_table[0];
 overall_mat[0]= tree_mat[0];
 overall_parent[0]=-1;
@@ -1749,7 +1750,8 @@ double lik_temp=likelihood_function(resids,tree_table[0],tree_mat[0],a,mu,nu,lam
 double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
 double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
 overall_lik[0]= lowest_BIC_temp;
-int overall_count=1;  
+overall_count=1;  
+}
 
 NumericVector test_preds;
 
@@ -1970,7 +1972,7 @@ return(ret);
 // [[Rcpp::export]]
 
 List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
-int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled,int num_splits,int gridsize
+int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled,int num_splits,int gridsize,bool zero_split
 ){
   //Rcout << "Get to start of get_best_trees_sum. \n";
   
@@ -1989,7 +1991,7 @@ NumericVector test_preds;
 
 
 //////   //COMMENTED OUT ATTEMPT TO FIX NO ZERO SPLIT TREES BUG
-
+if(zero_split==1){
 for(int q=0; q<prev_sum_trees.size();q++){
 SEXP s_temp = prev_sum_trees[parent[q]];
 if(is<List>(s_temp)){
@@ -2013,9 +2015,7 @@ for(int t=0;t<sum_trees2_temp.size();t++){
 }
 //Rcout << "Finish Loop. \n";
 
-NumericVector int_nodes_temp=find_term_nodes(tree_table[0]);
-int p_temp=int_nodes_temp.size();
-double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_temp+p_other)*log(D1.n_rows);  
+double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_other)*log(D1.n_rows);  
 
 //Rcout << "Get to fill in overall_. \n";
 
@@ -2054,9 +2054,8 @@ overall_count++;
     p_other+=other_int_nodes.size();
     tree_prior_temp+=get_tree_prior(tree,mat,alpha,beta);
   }
-  NumericVector int_nodes_temp=find_term_nodes(tree_table[0]);
-  int p_temp=int_nodes_temp.size();
-  double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_temp+p_other)*log(D1.n_rows);  
+
+  double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_other)*log(D1.n_rows);  
  
  
   overall_trees[overall_count]= tree_table[0];
@@ -2129,7 +2128,7 @@ if(overall_trees.size()<overall_size-1){
   overall_lik.resize(overall_size);
   overall_parent.resize(overall_size);
 }
-
+}
 
 
 for(int j=0;j<num_splits;j++){
@@ -2451,7 +2450,7 @@ return(original_y);
 //' @export
 // [[Rcpp::export]]
 List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,int c,
-double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize){
+double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split){
 bool is_test_data=0;
 if(test_data.nrow()>0){
 is_test_data=1;
@@ -2573,11 +2572,11 @@ throw std::range_error("No trees can be grown for the number of iterations desir
 } 
 //get current set of trees.
 if(j==0){
-CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize);
+CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split);
 
 }else{
 //if j >0 then sum of trees become a list so need to read in list and get likelihood for each split point and terminal node
-CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,num_splits,gridsize);
+CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,first_round,parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,num_splits,gridsize,zero_split);
 }
 //Rcout << "Get past get_best_trees in outer loop number " << j << " . \n";
 

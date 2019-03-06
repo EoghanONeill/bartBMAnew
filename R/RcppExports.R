@@ -223,12 +223,12 @@ make_pelt_cpmat <- function(data, resp, pen, num_cp) {
     .Call(`_bartBMAnew_make_pelt_cpmat`, data, resp, pen, num_cp)
 }
 
-get_best_trees <- function(D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize) {
-    .Call(`_bartBMAnew_get_best_trees`, D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize)
+get_best_trees <- function(D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split) {
+    .Call(`_bartBMAnew_get_best_trees`, D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split)
 }
 
-get_best_trees_sum <- function(D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, prev_sum_trees, prev_sum_trees_mat, y_scaled, num_splits, gridsize) {
-    .Call(`_bartBMAnew_get_best_trees_sum`, D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, prev_sum_trees, prev_sum_trees_mat, y_scaled, num_splits, gridsize)
+get_best_trees_sum <- function(D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, prev_sum_trees, prev_sum_trees_mat, y_scaled, num_splits, gridsize, zero_split) {
+    .Call(`_bartBMAnew_get_best_trees_sum`, D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, first_round, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, prev_sum_trees, prev_sum_trees_mat, y_scaled, num_splits, gridsize, zero_split)
 }
 
 scale_response <- function(a, b, c, d, y) {
@@ -241,8 +241,8 @@ get_original <- function(low, high, sp_low, sp_high, sum_preds) {
 
 #' @title Obtain BARTBMA predictions, trees, BICs etc. to be called by R functions
 #' @export
-BART_BMA_sumLikelihood <- function(data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize) {
-    .Call(`_bartBMAnew_BART_BMA_sumLikelihood`, data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize)
+BART_BMA_sumLikelihood <- function(data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split) {
+    .Call(`_bartBMAnew_BART_BMA_sumLikelihood`, data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split)
 }
 
 find_term_nodes_gs <- function(tree_table) {
