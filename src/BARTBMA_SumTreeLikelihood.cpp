@@ -2450,7 +2450,7 @@ return(original_y);
 //' @export
 // [[Rcpp::export]]
 List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,int c,
-double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split){
+double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split,bool only_max_num_trees){
 bool is_test_data=0;
 if(test_data.nrow()>0){
 is_test_data=1;
@@ -2523,7 +2523,9 @@ arma::colvec predicted_values;
 
 for(int j=0;j<num_rounds;j++){
   if(j>0){
-    lowest_BIC=10000;
+    if(only_max_num_trees==1){
+      lowest_BIC=100000;
+    }
   }
 int overall_size=300;
 List overall_sum_trees(overall_size);
@@ -2734,63 +2736,68 @@ overall_sum_trees_mat=resize_bigger(overall_sum_trees_mat,overall_size);
 }
 }  
 }
+
+if(only_max_num_trees==0){
 //Rcout << "Get to checking for models from previous rounds in outer loop number " << j << " . \n";
 //check if there were any trees from the previous round that didn't have daughter trees grown.
 //create vector to count number of possible parents for previous round
-//  if(j>0){
-//  IntegerVector prev_par_no_child=match(prev_par,curr_round_parent);
-//  if(any(is_na(prev_par_no_child))){
-//  IntegerVector t4=ifelse(is_na(prev_par_no_child),1,0);
-//  for(int h=0;h<prev_par_no_child.size();h++){
-//  if(t4[h]==1){ 
-//  if(prev_round_BIC2[h]-lowest_BIC<=log(c)){
-//  SEXP s = prev_sum_trees[h];
-//  if(is<List>(s)){
-//  List tree_no_child=prev_sum_trees[h];
-//  List resids_no_child=prev_sum_tree_resids[h];
-//  List treemat_no_child=prev_sum_trees_mat[h];
-//  overall_sum_trees[overall_count]=tree_no_child;
-//  overall_sum_tree_resids[overall_count]=resids_no_child;
-//  overall_sum_trees_mat[overall_count]=treemat_no_child;
-//  overall_count++;
-//  
-//  if(overall_count==(overall_size-1)){
-//  overall_size=overall_size*2;
-//  overall_sum_trees=resize_bigger(overall_sum_trees,overall_size);
-//  overall_sum_tree_resids=resize_bigger(overall_sum_tree_resids,overall_size);
-//  overall_sum_trees_mat=resize_bigger(overall_sum_trees_mat,overall_size);
-//  }
-//  double BIC_to_add=prev_round_BIC2[h];
-//  overall_sum_BIC.push_back(BIC_to_add);
-//  overall_sum_preds.insert_cols(overall_sum_preds.n_cols,prev_round_preds2.col(h)); 
-//  if(is_test_data==1) overall_sum_test_preds.insert_cols(overall_sum_test_preds.n_cols,prev_round_test_preds2.col(h));
-//  }else{
-//  NumericMatrix tree_no_child=prev_sum_trees[h];
-//  NumericVector resids_no_child= prev_sum_tree_resids[h];
-//  NumericMatrix treemat_no_child=prev_sum_trees_mat[h];
-//  overall_sum_trees[overall_count]=tree_no_child;
-//  overall_sum_tree_resids[overall_count]=resids_no_child;
-//  overall_sum_trees_mat[overall_count]=treemat_no_child;
-//  overall_count++;
-//  
-//  if(overall_count==(overall_size-1)){
-//  overall_size=overall_size*2;
-//  overall_sum_trees=resize_bigger(overall_sum_trees,overall_size);
-//  overall_sum_tree_resids=resize_bigger(overall_sum_tree_resids,overall_size);
-//  overall_sum_trees_mat=resize_bigger(overall_sum_trees_mat,overall_size);
-//  }
-//  
-//  double BIC_to_add=prev_round_BIC2[h];
-//  overall_sum_BIC.push_back(BIC_to_add);
-//  
-//  overall_sum_preds.insert_cols(overall_sum_preds.n_cols,prev_round_preds2.col(h));                       
-//  if(is_test_data==1) overall_sum_test_preds.insert_cols(overall_sum_test_preds.n_cols,prev_round_test_preds2.col(h));
-//  }
-//  }
-//  }              
-//  }
-//  }          
-//  }
+ if(j>0){
+ IntegerVector prev_par_no_child=match(prev_par,curr_round_parent);
+ if(any(is_na(prev_par_no_child))){
+ IntegerVector t4=ifelse(is_na(prev_par_no_child),1,0);
+ for(int h=0;h<prev_par_no_child.size();h++){
+ if(t4[h]==1){
+ if(prev_round_BIC2[h]-lowest_BIC<=log(c)){
+ SEXP s = prev_sum_trees[h];
+ if(is<List>(s)){
+ List tree_no_child=prev_sum_trees[h];
+ List resids_no_child=prev_sum_tree_resids[h];
+ List treemat_no_child=prev_sum_trees_mat[h];
+ overall_sum_trees[overall_count]=tree_no_child;
+ overall_sum_tree_resids[overall_count]=resids_no_child;
+ overall_sum_trees_mat[overall_count]=treemat_no_child;
+ overall_count++;
+
+ if(overall_count==(overall_size-1)){
+ overall_size=overall_size*2;
+ overall_sum_trees=resize_bigger(overall_sum_trees,overall_size);
+ overall_sum_tree_resids=resize_bigger(overall_sum_tree_resids,overall_size);
+ overall_sum_trees_mat=resize_bigger(overall_sum_trees_mat,overall_size);
+ }
+ double BIC_to_add=prev_round_BIC2[h];
+ overall_sum_BIC.push_back(BIC_to_add);
+ overall_sum_preds.insert_cols(overall_sum_preds.n_cols,prev_round_preds2.col(h));
+ if(is_test_data==1) overall_sum_test_preds.insert_cols(overall_sum_test_preds.n_cols,prev_round_test_preds2.col(h));
+ }else{
+ NumericMatrix tree_no_child=prev_sum_trees[h];
+ NumericVector resids_no_child= prev_sum_tree_resids[h];
+ NumericMatrix treemat_no_child=prev_sum_trees_mat[h];
+ overall_sum_trees[overall_count]=tree_no_child;
+ overall_sum_tree_resids[overall_count]=resids_no_child;
+ overall_sum_trees_mat[overall_count]=treemat_no_child;
+ overall_count++;
+
+ if(overall_count==(overall_size-1)){
+ overall_size=overall_size*2;
+ overall_sum_trees=resize_bigger(overall_sum_trees,overall_size);
+ overall_sum_tree_resids=resize_bigger(overall_sum_tree_resids,overall_size);
+ overall_sum_trees_mat=resize_bigger(overall_sum_trees_mat,overall_size);
+ }
+
+ double BIC_to_add=prev_round_BIC2[h];
+ overall_sum_BIC.push_back(BIC_to_add);
+
+ overall_sum_preds.insert_cols(overall_sum_preds.n_cols,prev_round_preds2.col(h));
+ if(is_test_data==1) overall_sum_test_preds.insert_cols(overall_sum_test_preds.n_cols,prev_round_test_preds2.col(h));
+ }
+ }
+ }
+ }
+ }
+ }
+
+}
+
 prev_round_preds=temp_preds;
 if(is_test_data==1) prev_round_test_preds=temp_test_preds;
 prev_round_BIC=temp_BIC;
