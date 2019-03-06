@@ -11,7 +11,8 @@ bartBMA(x, ...)
   sigquant = 0.9, c = 1000, pen = 12, num_cp = 20,
   x.test = matrix(0, 0, 0), num_rounds = 5, alpha = 0.95, beta = 1,
   split_rule_node = 0, gridpoint = 0, maxOWsize = 100,
-  num_splits = 5, gridsize = 10, zero_split = 1)
+  num_splits = 5, gridsize = 10, zero_split = 1,
+  only_max_num_trees = 1)
 }
 \arguments{
 \item{x.train}{Training data covariate matrix}
@@ -49,6 +50,8 @@ bartBMA(x, ...)
 \item{gridsize}{This integer determines the size of the grid across which to search if gridpoint=1 when finding changepoints for constructing trees.}
 
 \item{zero_split}{Binary variable. If equals 1, then zero split trees can be included in a sum-of-trees model. If equals zero, then only trees with at least one split can be included in a sum-of-trees model.}
+
+\item{only_max_num_trees}{Binary variable. If equals 1, then only sum-of-trees models containing the maximum number of trees, num_rounds, are selected. If equals 0, then sum-of-trees models containing less than num_rounds trees can be selected. The default is only_max_num_trees=1.}
 }
 \value{
 The following objects are returned by bartbma:

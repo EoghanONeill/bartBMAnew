@@ -241,8 +241,8 @@ get_original <- function(low, high, sp_low, sp_high, sum_preds) {
 
 #' @title Obtain BARTBMA predictions, trees, BICs etc. to be called by R functions
 #' @export
-BART_BMA_sumLikelihood <- function(data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split) {
-    .Call(`_bartBMAnew_BART_BMA_sumLikelihood`, data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split)
+BART_BMA_sumLikelihood <- function(data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split, only_max_num_trees) {
+    .Call(`_bartBMAnew_BART_BMA_sumLikelihood`, data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split, only_max_num_trees)
 }
 
 find_term_nodes_gs <- function(tree_table) {

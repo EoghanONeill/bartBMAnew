@@ -871,8 +871,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // BART_BMA_sumLikelihood
-List BART_BMA_sumLikelihood(NumericMatrix data, NumericVector y, double start_mean, double start_sd, double a, double mu, double nu, double lambda, int c, double sigma_mu, double pen, int num_cp, NumericMatrix test_data, int num_rounds, double alpha, double beta, bool split_rule_node, bool gridpoint, int maxOWsize, int num_splits, int gridsize, bool zero_split);
-RcppExport SEXP _bartBMAnew_BART_BMA_sumLikelihood(SEXP dataSEXP, SEXP ySEXP, SEXP start_meanSEXP, SEXP start_sdSEXP, SEXP aSEXP, SEXP muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP cSEXP, SEXP sigma_muSEXP, SEXP penSEXP, SEXP num_cpSEXP, SEXP test_dataSEXP, SEXP num_roundsSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP split_rule_nodeSEXP, SEXP gridpointSEXP, SEXP maxOWsizeSEXP, SEXP num_splitsSEXP, SEXP gridsizeSEXP, SEXP zero_splitSEXP) {
+List BART_BMA_sumLikelihood(NumericMatrix data, NumericVector y, double start_mean, double start_sd, double a, double mu, double nu, double lambda, int c, double sigma_mu, double pen, int num_cp, NumericMatrix test_data, int num_rounds, double alpha, double beta, bool split_rule_node, bool gridpoint, int maxOWsize, int num_splits, int gridsize, bool zero_split, bool only_max_num_trees);
+RcppExport SEXP _bartBMAnew_BART_BMA_sumLikelihood(SEXP dataSEXP, SEXP ySEXP, SEXP start_meanSEXP, SEXP start_sdSEXP, SEXP aSEXP, SEXP muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP cSEXP, SEXP sigma_muSEXP, SEXP penSEXP, SEXP num_cpSEXP, SEXP test_dataSEXP, SEXP num_roundsSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP split_rule_nodeSEXP, SEXP gridpointSEXP, SEXP maxOWsizeSEXP, SEXP num_splitsSEXP, SEXP gridsizeSEXP, SEXP zero_splitSEXP, SEXP only_max_num_treesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -898,7 +898,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type num_splits(num_splitsSEXP);
     Rcpp::traits::input_parameter< int >::type gridsize(gridsizeSEXP);
     Rcpp::traits::input_parameter< bool >::type zero_split(zero_splitSEXP);
-    rcpp_result_gen = Rcpp::wrap(BART_BMA_sumLikelihood(data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split));
+    Rcpp::traits::input_parameter< bool >::type only_max_num_trees(only_max_num_treesSEXP);
+    rcpp_result_gen = Rcpp::wrap(BART_BMA_sumLikelihood(data, y, start_mean, start_sd, a, mu, nu, lambda, c, sigma_mu, pen, num_cp, test_data, num_rounds, alpha, beta, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split, only_max_num_trees));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1219,7 +1220,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bartBMAnew_get_best_trees_sum", (DL_FUNC) &_bartBMAnew_get_best_trees_sum, 30},
     {"_bartBMAnew_scale_response", (DL_FUNC) &_bartBMAnew_scale_response, 5},
     {"_bartBMAnew_get_original", (DL_FUNC) &_bartBMAnew_get_original, 5},
-    {"_bartBMAnew_BART_BMA_sumLikelihood", (DL_FUNC) &_bartBMAnew_BART_BMA_sumLikelihood, 22},
+    {"_bartBMAnew_BART_BMA_sumLikelihood", (DL_FUNC) &_bartBMAnew_BART_BMA_sumLikelihood, 23},
     {"_bartBMAnew_find_term_nodes_gs", (DL_FUNC) &_bartBMAnew_find_term_nodes_gs, 1},
     {"_bartBMAnew_find_term_obs_gs", (DL_FUNC) &_bartBMAnew_find_term_obs_gs, 2},
     {"_bartBMAnew_calc_rowsums", (DL_FUNC) &_bartBMAnew_calc_rowsums, 1},
