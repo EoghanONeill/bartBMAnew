@@ -2009,7 +2009,7 @@ List sum_trees_mat2_temp=prev_sum_trees_mat[parent[q]];
 sum_trees2_temp.push_back(tree_table[0]);
 sum_trees_mat2_temp.push_back(tree_mat[0]);
 double lik_temp=sumtree_likelihood_function(y_scaled,sum_trees2_temp,sum_trees_mat2_temp,y_scaled.size(),a,nu,lambda);  
-double tree_prior_temp=0;
+double tree_prior_temp=1;
 int p_other=0;
 NumericVector other_int_nodes;
 //  Rcout << "Get to loop over t. \n";
@@ -2019,7 +2019,7 @@ for(int t=0;t<sum_trees2_temp.size();t++){
   NumericMatrix mat=sum_trees_mat2_temp[t];
   other_int_nodes = find_term_nodes(tree);
   p_other+=other_int_nodes.size();
-  tree_prior_temp+=get_tree_prior(tree,mat,alpha,beta);
+  tree_prior_temp*=get_tree_prior(tree,mat,alpha,beta);
 }
 //  Rcout << "Finish Loop. \n";
 
@@ -2052,7 +2052,7 @@ overall_count++;
   st_mat[1]=tree_mat[0];
   // return(st);
   double lik_temp=sumtree_likelihood_function(y_scaled,st,st_mat,y_scaled.size(),a,nu,lambda);  
-  double tree_prior_temp=0;
+  double tree_prior_temp=1;
   int p_other=0;
   NumericVector other_int_nodes;
   for(int t=0;t<st.size();t++){
@@ -2060,7 +2060,7 @@ overall_count++;
     NumericMatrix mat=st_mat[t];
     other_int_nodes = find_term_nodes(tree);
     p_other+=other_int_nodes.size();
-    tree_prior_temp+=get_tree_prior(tree,mat,alpha,beta);
+    tree_prior_temp*=get_tree_prior(tree,mat,alpha,beta);
   }
 
   double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_other)*log(D1.n_rows);  
