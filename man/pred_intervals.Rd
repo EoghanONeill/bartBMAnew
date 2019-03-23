@@ -18,7 +18,7 @@ pred_intervals(object, num_iter, burnin, l_quant, u_quant,
 
 \item{u_quant}{Upper quartile of the prediction interval.}
 
-\item{newdata}{Test data for which predictions are to be prodiced. Default = NULL. If NULL, then produces prediction intervals for training data if no test data was used in producing the bartBMA object, or produces prediction intervals for the original test data if test data was used in producing the bartBMA object.}
+\item{newdata}{Test data for which predictions are to be produced. Default = NULL. If NULL, then produces prediction intervals for training data if no test data was used in producing the bartBMA object, or produces prediction intervals for the original test data if test data was used in producing the bartBMA object.}
 }
 \value{
 The output is a list of length one. The one element in this list is a vector of prediction intervals???

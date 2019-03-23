@@ -4,7 +4,7 @@
 #' @param object bartBMA object obtained from function bartBMA
 #' @param num_iter Total number of iterations of the Gibbs sampler (including burn-in).
 #' @param burnin Number of burn-on iterations of the Gibbs sampler.
-#' @param newdata Test data for which predictions are to be prodiced. Default = NULL. If NULL, then produces prediction intervals for training data if no test data was used in producing the bartBMA object, or produces prediction intervals for the original test data if test data was used in producing the bartBMA object.
+#' @param newdata Test data for which predictions are to be produced. Default = NULL. If NULL, then produces prediction intervals for training data if no test data was used in producing the bartBMA object, or produces prediction intervals for the original test data if test data was used in producing the bartBMA object.
 #' @export 
 #' @return The output is a list of length one. The one element in this list is a vector of prediction intervals???
 
