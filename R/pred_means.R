@@ -25,23 +25,23 @@ pred_means_bbma<-function(object,num_iter,burnin,newdata=NULL){
                              nrow(newdata), object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals,newdata)
   }
   
-  y_posterior_sum_trees<-gs_chains[[4]]
-  y_orig_post_sum_trees<-gs_chains[[5]]
-  sigma_chains<-gs_chains[[3]]
-  #  if(is.null(newdata) && length(object)==16){
-  #    y_posterior_sum_trees<-gs_chains[[4]]
-  #    y_orig_post_sum_trees<-gs_chains[[5]]
-  #    sigma_chains<-gs_chains[[3]]
-  #  }else if(is.null(newdata) && length(object)==14){
-  #    y_posterior_sum_trees<-gs_chains[[4]]
-  #    y_orig_post_sum_trees<-gs_chains[[5]]
-  #    sigma_chains<-gs_chains[[3]]
-  #
-  #  }else{
-  #    y_posterior_sum_trees<-gs_chains[[4]]
-  #    y_orig_post_sum_trees<-gs_chains[[5]]
-  #    sigma_chains<-gs_chains[[3]]
-  #  } 
+  #y_posterior_sum_trees<-gs_chains[[4]]
+  #y_orig_post_sum_trees<-gs_chains[[5]]
+  #sigma_chains<-gs_chains[[3]]
+    if(is.null(newdata) && length(object)==16){
+      y_posterior_sum_trees<-gs_chains[[4]]
+      y_orig_post_sum_trees<-gs_chains[[5]]
+      sigma_chains<-gs_chains[[3]]
+    }else if(is.null(newdata) && length(object)==14){
+      y_posterior_sum_trees<-gs_chains[[1]]
+      y_orig_post_sum_trees<-gs_chains[[2]]
+      sigma_chains<-gs_chains[[3]]
+  
+    }else{
+      y_posterior_sum_trees<-gs_chains[[4]]
+      y_orig_post_sum_trees<-gs_chains[[5]]
+      sigma_chains<-gs_chains[[3]]
+    } 
   
   sum_of_tree_BIC<- object$bic
   weights<-exp(sum_of_tree_BIC-(max(sum_of_tree_BIC)+log(sum(exp(sum_of_tree_BIC-max(sum_of_tree_BIC))))))
@@ -64,7 +64,6 @@ pred_means_bbma<-function(object,num_iter,burnin,newdata=NULL){
   }
   meanpreds<-apply(final_yorig_chain,2,mean)
   
-  
   ret<-meanpreds
   #length(ret)<-1
   #ret[[1]]<-meanpreds
@@ -73,4 +72,5 @@ pred_means_bbma<-function(object,num_iter,burnin,newdata=NULL){
   
   class(ret)<-"pred_means_bbma.bartBMA"  
   ret
+  
 }

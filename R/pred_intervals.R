@@ -33,8 +33,8 @@ pred_intervals<-function(object,num_iter,burnin,l_quant,u_quant,newdata=NULL){
 #  y_orig_post_sum_trees<-gs_chains[[5]]
 #  sigma_chains<-gs_chains[[3]]
   if(is.null(newdata) && length(object)==16){
-    y_posterior_sum_trees<-gs_chains[[6]]
-    y_orig_post_sum_trees<-gs_chains[[7]]
+    y_posterior_sum_trees<-gs_chains[[8]]
+    y_orig_post_sum_trees<-gs_chains[[9]]
     sigma_chains<-gs_chains[[3]]
   }else if(is.null(newdata) && length(object)==14){
     y_posterior_sum_trees<-gs_chains[[4]]
