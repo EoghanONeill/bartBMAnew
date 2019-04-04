@@ -6,10 +6,10 @@
 \title{Prediction intervals for bart-bma output}
 \usage{
 pred_intervals(object, num_iter, burnin, l_quant, u_quant,
-  newdata = NULL)
+  newdata = NULL, update_resids = 1)
 
 pred_intervals(object, num_iter, burnin, l_quant, u_quant,
-  newdata = NULL)
+  newdata = NULL, update_resids = 1)
 }
 \arguments{
 \item{object}{bartBMA object obtained from function bartBMA}
@@ -23,6 +23,8 @@ pred_intervals(object, num_iter, burnin, l_quant, u_quant,
 \item{u_quant}{Upper quartile of the prediction interval.}
 
 \item{newdata}{Test data for which predictions are to be produced. Default = NULL. If NULL, then produces prediction intervals for training data if no test data was used in producing the bartBMA object, or produces prediction intervals for the original test data if test data was used in producing the bartBMA object.}
+
+\item{update_resids}{Option for whether to update the partial residuals in the gibbs sampler. If equal to 1, updates partial residuals, if equal to zero, does not update partial residuals. The defaullt setting is to update the partial residua;s.}
 
 \item{object}{bartBMA object obtained from function bartBMA}
 

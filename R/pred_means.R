@@ -5,24 +5,42 @@
 #' @param num_iter Total number of iterations of the Gibbs sampler (including burn-in).
 #' @param burnin Number of burn-on iterations of the Gibbs sampler.
 #' @param newdata Test data for which predictions are to be produced. Default = NULL. If NULL, then produces prediction intervals for training data if no test data was used in producing the bartBMA object, or produces prediction intervals for the original test data if test data was used in producing the bartBMA object.
+#' @param update_resids Option for whether to update the partial residuals in the gibbs sampler. If equal to 1, updates partial residuals, if equal to zero, does not update partial residuals. The defaullt setting is to update the partial residua;s.
 #' @export 
 #' @return The output is a list of length one. The one element in this list is a vector of prediction intervals???
 
-pred_means_bbma<-function(object,num_iter,burnin,newdata=NULL){
+pred_means_bbma<-function(object,num_iter,burnin,newdata=NULL,update_resids=1){
   #object will be bartBMA object.
-  if(is.null(newdata) && length(object)==16){
-    #if test data specified separately
-    gs_chains<-gibbs_sampler(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
-                             nrow(object$test_data),object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals,object$test_data)
-  }else if(is.null(newdata) && length(object)==14){
-    #else return Pred Ints for training data
-    gs_chains<-gibbs_sampler2(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
-                              object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals)
-    
+  if(update_resids==0){
+    if(is.null(newdata) && length(object)==16){
+      #if test data specified separately
+      gs_chains<-gibbs_sampler_no_update(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
+                               nrow(object$test_data),object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals,object$test_data)
+    }else if(is.null(newdata) && length(object)==14){
+      #else return Pred Ints for training data
+      gs_chains<-gibbs_sampler_no_update2(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
+                                object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals)
+      
+    }else{
+      #if test data included in call to object
+      gs_chains<-gibbs_sampler_no_update(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
+                               nrow(newdata), object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals,newdata)
+    }
   }else{
-    #if test data included in call to object
-    gs_chains<-gibbs_sampler(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
-                             nrow(newdata), object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals,newdata)
+    if(is.null(newdata) && length(object)==16){
+      #if test data specified separately
+      gs_chains<-gibbs_sampler(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
+                               nrow(object$test_data),object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals,object$test_data)
+    }else if(is.null(newdata) && length(object)==14){
+      #else return Pred Ints for training data
+      gs_chains<-gibbs_sampler2(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
+                                object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals)
+      
+    }else{
+      #if test data included in call to object
+      gs_chains<-gibbs_sampler(object$sumoftrees,object$obs_to_termNodesMatrix,object$response,object$bic,num_iter, burnin,object$nrowTrain,
+                               nrow(newdata), object$a,object$sigma,0,object$nu,object$lambda,object$sum_residuals,newdata)
+    }
   }
   
   #y_posterior_sum_trees<-gs_chains[[4]]

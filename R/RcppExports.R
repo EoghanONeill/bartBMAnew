@@ -319,3 +319,13 @@ gibbs_sampler2 <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, n
     .Call(`_bartBMAnew_gibbs_sampler2`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids)
 }
 
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_no_update <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data)
+}
+
+gibbs_sampler_no_update2 <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update2`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids)
+}
+
