@@ -304,6 +304,13 @@ List get_tree_info_test_data(NumericMatrix test_data,NumericMatrix tree_data) {
   
   NumericVector predictions(test_data.nrow());
   List term_obs(terminal_nodes.size());
+  if(terminal_nodes.size()==1){
+    double nodemean=tree_data(terminal_nodes[0]-1,5);				// let nodemean equal tree_data row terminal_nodes[i]^th row , 6th column. The minus 1 is because terminal nodes consists of indices starting at 1, but need indices to start at 0.
+    predictions=rep(nodemean,test_data.nrow());
+    IntegerVector temp_obsvec = seq_len(test_data.nrow())-1;
+    term_obs[0]= temp_obsvec;
+  }
+  else{
   for(int i=0;i<terminal_nodes.size();i++){
   arma::mat subdata=testd;
   int curr_term=terminal_nodes[i];
@@ -394,6 +401,7 @@ List get_tree_info_test_data(NumericMatrix test_data,NumericMatrix tree_data) {
   predictions[predind]= nodemean;
   term_obs[i]=predind;
   } 
+  }
   List ret(3);
   ret[0] = terminal_nodes;
   ret[1] = term_obs;

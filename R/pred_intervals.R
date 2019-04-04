@@ -47,7 +47,7 @@ pred_intervals<-function(object,num_iter,burnin,l_quant,u_quant,newdata=NULL){
     sigma_chains<-gs_chains[[3]]
   } 
 
-  sum_of_tree_BIC<- object$bic
+  sum_of_tree_BIC<- -0.5*object$bic
   weights<-exp(sum_of_tree_BIC-(max(sum_of_tree_BIC)+log(sum(exp(sum_of_tree_BIC-max(sum_of_tree_BIC))))))
   #final_length<-num_iter-burnin
   num_its_to_sample<-round(weights*(num_iter-burnin))
