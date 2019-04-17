@@ -660,13 +660,13 @@ for(int i=0;i<overall_sum_trees.size();i++){
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         //get updated predictions for the test data
         List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        sum_test_predictions(_,0)=temp_test_preds;
         
         //get overall predictions for current iteration and current sum of trees
 
@@ -905,14 +905,14 @@ List gibbs_sampler2(List overall_sum_trees,List overall_sum_mat,NumericVector y,
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         
         //get updated predictions for the test data
         //List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         //NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        //sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        //sum_test_predictions(_,0)=temp_test_preds;
 
         //get overall predictions for current iteration and current sum of trees
 
@@ -1166,13 +1166,13 @@ List gibbs_sampler_no_update(List overall_sum_trees,
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         //get updated predictions for the test data
         List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        sum_test_predictions(_,0)=temp_test_preds;
         
         //get overall predictions for current iteration and current sum of trees
         
@@ -1411,14 +1411,14 @@ List gibbs_sampler_no_update2(List overall_sum_trees,List overall_sum_mat,Numeri
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         
         //get updated predictions for the test data
         //List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         //NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        //sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        //sum_test_predictions(_,0)=temp_test_preds;
         
         //get overall predictions for current iteration and current sum of trees
         
@@ -1729,21 +1729,21 @@ List gibbs_sampler_ITE(List overall_sum_trees,
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         //get updated predictions for the test data
         //List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         //NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        //sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        //sum_test_predictions(_,0)=temp_test_preds;
         
         List updated_test_preds_all_T=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs_all_T);         
         NumericVector temp_test_preds_all_T=updated_test_preds_all_T[1];
-        sum_test_predictions_all_T(_,1)=temp_test_preds_all_T;
+        sum_test_predictions_all_T(_,0)=temp_test_preds_all_T;
         
         List updated_test_preds_all_C=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs_all_C);         
         NumericVector temp_test_preds_all_C=updated_test_preds_all_C[1];
-        sum_test_predictions_all_C(_,1)=temp_test_preds_all_C;
+        sum_test_predictions_all_C(_,0)=temp_test_preds_all_C;
         
         //get overall predictions for current iteration and current sum of trees
         
@@ -2063,21 +2063,21 @@ List gibbs_sampler_ITE2(List overall_sum_trees,
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         List updated_preds_all_T=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs_all_T);         
         NumericVector temp_preds_all_T=updated_preds_all_T[1];
-        sum_predictions_all_T(_,1)=temp_preds_all_T;
+        sum_predictions_all_T(_,0)=temp_preds_all_T;
         
         List updated_preds_all_C=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs_all_C);         
         NumericVector temp_preds_all_C=updated_preds_all_C[1];
-        sum_predictions_all_C(_,1)=temp_preds_all_C;
+        sum_predictions_all_C(_,0)=temp_preds_all_C;
         
         //get updated predictions for the test data
         //List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         //NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        //sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        //sum_test_predictions(_,0)=temp_test_preds;
         
         //get overall predictions for current iteration and current sum of trees
         
@@ -2418,21 +2418,21 @@ List gibbs_sampler_ITE_no_update(List overall_sum_trees,
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         //get updated predictions for the test data
         //List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         //NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        //sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        //sum_test_predictions(_,0)=temp_test_preds;
         
         List updated_test_preds_all_T=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs_all_T);         
         NumericVector temp_test_preds_all_T=updated_test_preds_all_T[1];
-        sum_test_predictions_all_T(_,1)=temp_test_preds_all_T;
+        sum_test_predictions_all_T(_,0)=temp_test_preds_all_T;
         
         List updated_test_preds_all_C=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs_all_C);         
         NumericVector temp_test_preds_all_C=updated_test_preds_all_C[1];
-        sum_test_predictions_all_C(_,1)=temp_test_preds_all_C;
+        sum_test_predictions_all_C(_,0)=temp_test_preds_all_C;
         
         //get overall predictions for current iteration and current sum of trees
         
@@ -2752,21 +2752,21 @@ List gibbs_sampler_ITE_no_update2(List overall_sum_trees,
         NumericVector new_node_var=new_node_mean_var[1];
         List updated_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs);         
         NumericVector temp_preds=updated_preds[1];
-        sum_predictions(_,1)=temp_preds;
+        sum_predictions(_,0)=temp_preds;
         
         List updated_preds_all_T=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs_all_T);         
         NumericVector temp_preds_all_T=updated_preds_all_T[1];
-        sum_predictions_all_T(_,1)=temp_preds_all_T;
+        sum_predictions_all_T(_,0)=temp_preds_all_T;
         
         List updated_preds_all_C=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_obs,term_nodes,term_obs_all_C);         
         NumericVector temp_preds_all_C=updated_preds_all_C[1];
-        sum_predictions_all_C(_,1)=temp_preds_all_C;
+        sum_predictions_all_C(_,0)=temp_preds_all_C;
         
         //get updated predictions for the test data
         //List updated_test_preds=update_predictions_gs(tree_table,new_node_mean,new_node_var,num_test_obs,term_nodes,term_test_obs);         
         //NumericVector temp_test_preds=updated_test_preds[1];
-        //sum_predictions(_,1)=temp_preds;
-        //sum_test_predictions(_,1)=temp_test_preds;
+        //sum_predictions(_,0)=temp_preds;
+        //sum_test_predictions(_,0)=temp_test_preds;
         
         //get overall predictions for current iteration and current sum of trees
         

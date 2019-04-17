@@ -183,6 +183,10 @@ GS_ITEs_PIs_bartBMA<-function(num_iter,burnin,l_quant,u_quant,newdata=NULL,updat
   ret$PATE_PI <- PATE_PI
   ret$PATT_PI <- PATT_PI
   ret$PATNT_PI <- PATNT_PI
+  ret$fitted.values <- trained_bart_BMA$fitted.values
+  
+  ret$PIPs <- varIncProb(trained_bart_BMA)
+  
   
   class(ret)<-"ITE_intervals.bartBMA"  
   ret
