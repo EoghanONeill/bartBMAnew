@@ -70,6 +70,8 @@ The following objects are returned by bartbma:
 \item{a}{input parameter}
 \item{nu}{input parameter}
 \item{lambda}{parameter determined by the inputs sigma, sigquant, and nu}
+\item{fitted.probs}{In-sample fitted probabilities}
+\item{fitted.classes}{In-sample fitted classes}
 }
 \description{
 This is an implementation of Bayesian Additive Regression Trees (Chipman et al. 2018) using Bayesian Model Averaging (Hernandez et al. 2018).
