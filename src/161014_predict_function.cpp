@@ -71,7 +71,11 @@ NumericVector bartBMA_get_testdata_term_obs_pred(NumericMatrix test_data,Numeric
   //now for each internal node find the observations that belong to the terminal nodes
   
   NumericVector predictions(test_data.nrow());
-  
+  if(terminal_nodes.size()==1){
+    double nodemean=tree_data(terminal_nodes[0]-1,5);				// let nodemean equal tree_data row terminal_nodes[i]^th row , 6th column. The minus 1 is because terminal nodes consists of indices starting at 1, but need indices to start at 0.
+    predictions=rep(nodemean,test_data.nrow());
+  }
+  else{
   for(int i=0;i<terminal_nodes.size();i++){
     arma::mat subdata=testd;
     int curr_term=terminal_nodes[i];
@@ -159,6 +163,7 @@ NumericVector bartBMA_get_testdata_term_obs_pred(NumericMatrix test_data,Numeric
     predictions[predind]= nodemean;
     
   } 
+  }
   return(predictions);
 }
 
@@ -190,12 +195,11 @@ List get_BART_BMA_test_predictions(NumericMatrix test_data,NumericVector BIC,Lis
         NumericMatrix tree_data=tree_set[j];
         NumericVector term_nodes= find_term_nodes_pred(tree_data);
         NumericVector term_node_means;
-        
         for(int k=0;k<term_nodes.size();k++){
           term_nodes[k]=term_nodes[k]-1;
           term_node_means.push_back(tree_data(term_nodes[k],5));
         }
-        
+
         NumericVector test_preds_tree;
         
         if(j==0){          
@@ -205,31 +209,41 @@ List get_BART_BMA_test_predictions(NumericMatrix test_data,NumericVector BIC,Lis
           test_preds_tree=bartBMA_get_testdata_term_obs_pred(test_data,tree_data,term_node_means);
           test_preds_sum_tree=test_preds_sum_tree+test_preds_tree;
         }
+
       }
     }else{
+
       //else there is only one tree in the list element not a sum of trees
       NumericMatrix tree_data=sum_trees[i];
       NumericVector term_nodes= find_term_nodes_pred(tree_data);
       NumericVector term_node_means;
+
       for(int k=0;k<term_nodes.size();k++){
         term_nodes[k]=term_nodes[k]-1;
         term_node_means.push_back(tree_data(term_nodes[k],5));
       }
+
       test_preds_sum_tree=bartBMA_get_testdata_term_obs_pred(test_data,tree_data,term_node_means);
-      
+
     }
     //now have the summed preds for the sum_of_trees add it to column of summed preds
     sum_tree_preds(_,i)= test_preds_sum_tree; 
   }
-  
+
   //now have predictions for each sum_of_trees. Next need to weight each tree prediction by posterior probability and add up.
   NumericMatrix overall_test_preds(sum_tree_preds.nrow(),sum_tree_preds.ncol());  
   for(int k=0;k<BIC.size();k++){  
     NumericVector temp_test_preds=sum_tree_preds(_,k);
     // NumericVector orig_temp_preds=get_original_pred(min(y),max(y),-0.5,0.5,temp_preds) ;
-    double weight=BIC[k]/sum(BIC);
+    //double weight=-0.5*BIC[k]/sum(-0.5*BIC);
+    
+    NumericVector BICi=-0.5*BIC;
+    double max_BIC=max(BICi);
+    double weight=exp(BICi[k]-(max_BIC+log(sum(exp(BICi-max_BIC)))));
+
     overall_test_preds(_,k) = temp_test_preds*weight;
-  }     
+  }  
+
   //sum over all the weighted predictions;
   arma::mat M2(overall_test_preds.begin(), overall_test_preds.nrow(), overall_test_preds.ncol(), false);
   arma::colvec test_predictions=sum(M2,1);  

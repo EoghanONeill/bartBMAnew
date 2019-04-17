@@ -329,3 +329,23 @@ gibbs_sampler_no_update2 <- function(overall_sum_trees, overall_sum_mat, y, BIC_
     .Call(`_bartBMAnew_gibbs_sampler_no_update2`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids)
 }
 
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_ITE <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data)
+}
+
+gibbs_sampler_ITE2 <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE2`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_ITE_no_update <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE_no_update`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data)
+}
+
+gibbs_sampler_ITE_no_update2 <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE_no_update2`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data)
+}
+
