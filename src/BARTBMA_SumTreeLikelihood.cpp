@@ -562,13 +562,21 @@ IntegerVector orderforOW(NumericVector x) {	// gives vector of position of small
 double get_tree_prior(NumericMatrix tree_table,NumericMatrix tree_matrix,double alpha,double beta){
   double propsplit=1;
   IntegerVector d;
+  IntegerVector d2;
   int col=tree_matrix.ncol();
-  std::vector<int> int_nodes_index(100*col);
+  std::vector<int> int_nodes_index(100*col); // Why  100* ? 
+  std::vector<int> term_nodes_index(100*col); //
+  
   int index_count=0;  
+  int index_count2=0;
   arma::uvec internal_nodes_prop=find_internal_nodes(tree_table);
+  NumericVector terminal_nodes_prop_wrapped=find_term_nodes(tree_table);
+  arma::uvec terminal_nodes_prop=as<arma::uvec>(terminal_nodes_prop_wrapped);
   arma::mat tree_matrix2(tree_matrix.begin(),tree_matrix.nrow(),tree_matrix.ncol(),false);
   int count=internal_nodes_prop.size();
-  if(count==0) propsplit=1-alpha;
+  int count_term_nodes=terminal_nodes_prop.size();
+  
+    if(count==0) propsplit=1-alpha;
   
   for(int k=0;k<count;k++){ 
     for(int j=0;j<tree_matrix.ncol();j++){
@@ -590,6 +598,29 @@ double get_tree_prior(NumericMatrix tree_table,NumericMatrix tree_matrix,double 
     int_nodes_index=temp;
     index_count=0;
   } 
+  
+  if(count!=0){  
+  for(int k=0;k<count_term_nodes;k++){ 
+    for(int j=0;j<tree_matrix.ncol();j++){
+      arma::vec armacol=tree_matrix2.col(j);
+      arma::uvec found=find(armacol==terminal_nodes_prop[k]);      
+      if(found.size()>0){        
+        term_nodes_index[index_count2]=j;
+        index_count2++;
+        break;
+      }        
+    }
+    term_nodes_index.resize(index_count2);
+    if(term_nodes_index.size()!=0){      
+      d2=unique(as<IntegerVector>(wrap(term_nodes_index)));
+      double d1=d2[0];
+      propsplit*=1-alpha*pow((d1+1),-beta) ;  
+    }
+    std::vector<int> temp2(col);
+    term_nodes_index=temp2;
+    index_count2=0;
+  }
+  }
   
   return(propsplit);
 }
