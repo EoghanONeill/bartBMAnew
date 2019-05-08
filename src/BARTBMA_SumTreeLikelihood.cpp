@@ -657,7 +657,7 @@ NumericMatrix start_matrix(int n){
 //######################################################################################################################//
   
   // [[Rcpp::export]]
-List evaluate_model_occams_window(NumericVector tree_lik,double lowest_BIC,int c,List tree_list,List tree_mat_list,IntegerVector tree_parent){
+List evaluate_model_occams_window(NumericVector tree_lik,double lowest_BIC,double c,List tree_list,List tree_mat_list,IntegerVector tree_parent){
   IntegerVector sorted_lik_index=order_(tree_lik);
   std::vector<double> to_be_removed(tree_lik.size());
   int s=0;
@@ -919,7 +919,7 @@ return(rel2);
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,double a,double mu,double nu,double lambda,int c,double lowest_BIC,int parent,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize,int first_round){
+List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,double a,double mu,double nu,double lambda,double c,double lowest_BIC,int parent,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize,int first_round){
 //this function will search through all predictive split points and return those within Occam's Window.
 int split_var;
 NumericMatrix treetable_c=treetable;
@@ -1103,7 +1103,7 @@ if(count>0){
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,double a,double mu,double nu,double lambda,int c,double lowest_BIC,int parent,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize,int first_round,List sum_trees,List sum_trees_mat,NumericVector y_scaled,IntegerVector parent2,int i){
+List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,double a,double mu,double nu,double lambda,double c,double lowest_BIC,int parent,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize,int first_round,List sum_trees,List sum_trees_mat,NumericVector y_scaled,IntegerVector parent2,int i){
 //this function will search through all predictive split points and return those within Occam's Window.
 int split_var;
 NumericMatrix treetable_c=treetable;
@@ -1761,7 +1761,7 @@ return(ret);
 
 // [[Rcpp::export]]
 
-List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
+List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,double c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
 int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split
 ){
 List eval_model;
@@ -2013,7 +2013,7 @@ return(ret);
 //######################################################################################################################//
 // [[Rcpp::export]]
 
-List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,int c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
+List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,double c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,
 int first_round,IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled,int num_splits,int gridsize,bool zero_split
 ){
 //Rcout << "Get to start of get_best_trees_sum. \n";
@@ -2512,7 +2512,7 @@ return(original_y);
 //' @title Obtain BARTBMA predictions, trees, BICs etc. to be called by R functions
 //' @export
 // [[Rcpp::export]]
-List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,int c,
+List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,double c,
 double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split,bool only_max_num_trees){
 bool is_test_data=0;
 if(test_data.nrow()>0){
