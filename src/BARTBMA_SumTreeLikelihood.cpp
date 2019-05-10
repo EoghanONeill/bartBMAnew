@@ -223,14 +223,14 @@ double likelihood_function(NumericVector y_temp,NumericMatrix treetable_temp,Num
     term2+=(sum_yksq+a*pow(mu,2)-b2+nu*lambda);
   }
   tree_log_lik=(b/2)*log(a)-0.5*term1-((y_temp.size()+nu)/2)*log(term2);
-  for(int i=0;i<b;i++){
-    if(n[i]<=5){
-      tree_log_lik=tree_log_lik-(100000);
-    }
-    else{
-      tree_log_lik=tree_log_lik;
-    }
-  }
+  // for(int i=0;i<b;i++){
+  //   if(n[i]<=5){
+  //     tree_log_lik=tree_log_lik-(100000);
+  //   }
+  //   else{
+  //     tree_log_lik=tree_log_lik;
+  //   }
+  // }
   return(tree_log_lik);
 }  //######################################################################################################################//
 
@@ -921,7 +921,7 @@ double sumtree_likelihood_function(NumericVector y_temp,List sum_treetable ,List
 
 List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,
                     double a,double mu,double nu,double lambda,double c,double lowest_BIC,int parent
-                      ,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize//,int first_round
+                      ,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize, unsigned int min_num_obs_for_split, unsigned int min_num_obs_after_split//,int first_round
                       ){
   //this function will search through all predictive split points and return those within Occam's Window.
   int split_var;
@@ -964,7 +964,7 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
     data_curr_node=data.rows(grow_obs);
     d=d1[0];
     int w=cp_mat.nrow();
-    if(data_curr_node.n_rows<=2){
+    if(data_curr_node.n_rows<=min_num_obs_for_split){
       throw std::range_error("not enough obs in node to grow any further");
       //continue;
     }
@@ -983,7 +983,7 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
       arma::vec ld_prop=curr_cols2.elem(arma::find(curr_cols2 <= split_point));
       arma::vec rd_prop=curr_cols2.elem(arma::find(curr_cols2> split_point));
       
-      if(ld_prop.size()<=2 || rd_prop.size()<=2){
+      if(ld_prop.size()<=min_num_obs_after_split || rd_prop.size()<=min_num_obs_after_split){
         continue;
       }
       proposal_tree=grow_tree(data,resids,treemat_c,terminal_nodes[l],treetable_c,split_var,split_point,terminal_nodes,wrap(grow_obs),d,get_min,data_curr_node);
@@ -1113,7 +1113,8 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
 List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,
                         double a,double mu,double nu,double lambda,double c,double lowest_BIC,
                         int parent,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize,//int first_round,
-                        List sum_trees,List sum_trees_mat,NumericVector y_scaled,IntegerVector parent2,int i){
+                        List sum_trees,List sum_trees_mat,NumericVector y_scaled,IntegerVector parent2,int i,
+                        unsigned int min_num_obs_for_split,unsigned int min_num_obs_after_split){
   //this function will search through all predictive split points and return those within Occam's Window.
   int split_var;
   NumericMatrix treetable_c=treetable;
@@ -1157,7 +1158,7 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
     data_curr_node=data.rows(grow_obs);
     d=d1[0];
     int w=cp_mat.nrow();
-    if(data_curr_node.n_rows<=2){
+    if(data_curr_node.n_rows<=min_num_obs_for_split){
       throw std::range_error("not enough obs in node to grow any further");
       //continue;
     }
@@ -1178,7 +1179,7 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
       arma::vec ld_prop=curr_cols2.elem(arma::find(curr_cols2 <= split_point));
       arma::vec rd_prop=curr_cols2.elem(arma::find(curr_cols2> split_point));
       
-      if(ld_prop.size()<=2 || rd_prop.size()<=2){
+      if(ld_prop.size()<=min_num_obs_after_split || rd_prop.size()<=min_num_obs_after_split){
         continue;
       }
       proposal_tree=grow_tree(data,resids,treemat_c,terminal_nodes[l],treetable_c,split_var,split_point,terminal_nodes,wrap(grow_obs),d,get_min,data_curr_node);
@@ -1780,7 +1781,8 @@ List make_pelt_cpmat(NumericMatrix data,NumericVector resp,double pen,int num_cp
 
 List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,double c,
                     double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,//int first_round,
-                    IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split
+                    IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split,
+                    unsigned int min_num_obs_for_split, unsigned int min_num_obs_after_split
 ){
   List eval_model;
   NumericVector lik_list;
@@ -1821,7 +1823,8 @@ List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double
       //NumericMatrix temp_list=cp_mat_list[0];
       //Rcout << "Line 1772. j = " << j << " i = "<<  i << ".\n";
       best_subset=get_best_split(resids(_,0),D1,tree_table[i],tree_mat[i],a,mu,nu,lambda,log(c),
-                                 lowest_BIC,parent[0],cp_mat_list[0],alpha,beta,maxOWsize//,first_round
+                                 lowest_BIC,parent[0],cp_mat_list[0],alpha,beta,maxOWsize,
+                                 min_num_obs_for_split,min_num_obs_after_split//,first_round
                                    ); 
       //Rcout << "Line 1774. j = " << j << " i = "<<  i << ".\n";
       if(best_subset.size()==1){
@@ -2035,7 +2038,8 @@ List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double
 
 List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,
                         double c,double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,//int first_round,
-                        IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled,int num_splits,int gridsize,bool zero_split
+                        IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,List prev_sum_trees,List prev_sum_trees_mat,NumericVector y_scaled,int num_splits,int gridsize,bool zero_split,
+                        unsigned int min_num_obs_for_split, unsigned int min_num_obs_after_split
 ){
   //Rcout << "Get to start of get_best_trees_sum. \n";
   
@@ -2228,7 +2232,8 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
       //   parent=-1;
       //   //NumericMatrix temp_list=cp_mat_list[0];
       //   best_subset=get_best_split(resids(_,0),D1,tree_table[i],tree_mat[i],a,mu,nu,lambda,log(c),
-      //                              lowest_BIC,parent[0],cp_mat_list[0],alpha,beta,maxOWsize//,first_round
+      //                              lowest_BIC,parent[0],cp_mat_list[0],alpha,beta,maxOWsize,
+      //                              min_num_obs_for_split,min_num_obs_after_split//,first_round
       //                                ); 
       //   
       // }else{
@@ -2239,7 +2244,8 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
           //need to append current tree_table[i] to its parent sum_of_trees   
           best_subset=get_best_split_sum(resids(_,parent[i]),D1,tree_table[i],tree_mat[i],a,mu,nu,lambda,log(c),lowest_BIC,parent[i],cp_mat_list[parent[i]],
                                          alpha,beta,maxOWsize,//first_round,
-                                         prev_sum_trees,prev_sum_trees_mat,y_scaled,parent,i);    
+                                         prev_sum_trees,prev_sum_trees_mat,y_scaled,parent,i,
+                                         min_num_obs_for_split,min_num_obs_after_split);    
           // return(best_subset);
         }else if(err_list[i]==1){
           //Rcout << "CONTINUE. error list.  \n";
@@ -2538,7 +2544,8 @@ NumericVector get_original(double low,double high,double sp_low,double sp_high,N
 //' @export
 // [[Rcpp::export]]
 List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean,double start_sd,double a,double mu,double nu,double lambda,double c,
-                            double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split,bool only_max_num_trees){
+                            double sigma_mu,double pen,int num_cp,NumericMatrix test_data,int num_rounds,double alpha,double beta,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split,bool only_max_num_trees,
+                            unsigned int min_num_obs_for_split, unsigned int min_num_obs_after_split){
   bool is_test_data=0;
   if(test_data.nrow()>0){
     is_test_data=1;
@@ -2667,7 +2674,8 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
     //get current set of trees.
     if(j==0){
       CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,//first_round,
-                              parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split);
+                              parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split,
+                              min_num_obs_for_split, min_num_obs_after_split);
       
     }else{
       
@@ -2676,7 +2684,8 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
       
       //if j >0 then sum of trees become a list so need to read in list and get likelihood for each split point and terminal node
       CART_BMA=get_best_trees_sum(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,//first_round,
-                                  parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,num_splits,gridsize,zero_split);
+                                  parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,prev_sum_trees,prev_sum_trees_mat,y_scaled,num_splits,gridsize,zero_split,
+                                  min_num_obs_for_split, min_num_obs_after_split);
     }
     //Rcout << "Get past get_best_trees in outer loop number " << j << " . \n";
     
