@@ -111,8 +111,8 @@ get_grow_obs <- function(xmat, grow_obs, split_var) {
     .Call(`_bartBMAnew_get_grow_obs`, xmat, grow_obs, split_var)
 }
 
-grow_tree <- function(xmat, y, prior_tree_matrix, grow_node, prior_tree_table, splitvar, splitpoint, terminal_nodes, grow_obs, d, get_min, data_curr_node) {
-    .Call(`_bartBMAnew_grow_tree`, xmat, y, prior_tree_matrix, grow_node, prior_tree_table, splitvar, splitpoint, terminal_nodes, grow_obs, d, get_min, data_curr_node)
+grow_tree <- function(xmat, prior_tree_matrix, grow_node, prior_tree_table, splitvar, splitpoint, grow_obs, d) {
+    .Call(`_bartBMAnew_grow_tree`, xmat, prior_tree_matrix, grow_node, prior_tree_table, splitvar, splitpoint, grow_obs, d)
 }
 
 set_daughter <- function(left_daughter, right_daughter, ld_obs, rd_obs, tree_matrix_temp, term_cols) {

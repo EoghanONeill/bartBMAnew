@@ -452,8 +452,12 @@ NumericVector get_grow_obs(arma::mat& xmat,NumericVector grow_obs,int split_var)
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-List grow_tree(arma::mat& xmat,NumericVector y,NumericMatrix prior_tree_matrix,int grow_node,NumericMatrix prior_tree_table,int splitvar,double splitpoint,
-               NumericVector terminal_nodes,NumericVector grow_obs,double d,NumericVector get_min,arma::mat& data_curr_node)
+List grow_tree(arma::mat& xmat,//NumericVector y,
+               NumericMatrix prior_tree_matrix,int grow_node,NumericMatrix prior_tree_table,int splitvar,
+               double splitpoint,//NumericVector terminal_nodes,
+               NumericVector grow_obs,
+               double d//,NumericVector get_min,arma::mat& data_curr_node
+                 )
 {
   
   NumericMatrix prior_tree_matrix_temp=clone(prior_tree_matrix);
@@ -943,26 +947,26 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
   int best_sv;
   double best_sp;
   double tree_prior=0;
-  List changetree;
+  //List changetree;
   double BIC;
   int p;
   List eval_model;
   NumericVector int_nodes;
-  arma::colvec curr_col=data.col(0);
-  arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
-  NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
-  arma::mat data_curr_node=data.rows(grow_obs);
-  double d=d1[0];
-  NumericVector get_min=get_grow_obs(data,wrap(grow_obs),cp_mat(0,0)+1);
+  //arma::colvec curr_col=data.col(0);
+  //arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
+  //NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
+  //arma::mat data_curr_node=data.rows(grow_obs);
+  //double d=d1[0];
+  //NumericVector get_min=get_grow_obs(data,wrap(grow_obs),cp_mat(0,0)+1);
   double lik;
   
   for(int l=0;l<terminal_nodes.size();l++){
     //loop over each terminal node
-    grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
+    arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
     //depth of tree at current terminal node
-    d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
-    data_curr_node=data.rows(grow_obs);
-    d=d1[0];
+    NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
+    arma::mat data_curr_node=data.rows(grow_obs);
+    double d=d1[0];
     int w=cp_mat.nrow();
     if(data_curr_node.n_rows<=min_num_obs_for_split){
       throw std::range_error("not enough obs in node to grow any further");
@@ -970,8 +974,8 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
     }
     for(int k=0;k<w;k++){
       split_var=cp_mat(k,0)+1;
-      arma::colvec curr_cols=data.col(split_var-1);
-      get_min=get_grow_obs(data,wrap(grow_obs),split_var);
+      //arma::colvec curr_cols=data.col(split_var-1);
+      //NumericVector get_min=get_grow_obs(data,wrap(grow_obs),split_var);
       // The following lines are unnecessary because get_min.size()=data_curr_node.n_rows above
       // if(get_min.size()<=2){
       //   throw std::range_error("obs in this terminal node are too small");
@@ -986,7 +990,12 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
       if(ld_prop.size()<=min_num_obs_after_split || rd_prop.size()<=min_num_obs_after_split){
         continue;
       }
-      proposal_tree=grow_tree(data,resids,treemat_c,terminal_nodes[l],treetable_c,split_var,split_point,terminal_nodes,wrap(grow_obs),d,get_min,data_curr_node);
+      proposal_tree=grow_tree(data,//resids,
+                              treemat_c,terminal_nodes[l],treetable_c,
+                              split_var,split_point,//terminal_nodes,
+                              wrap(grow_obs),
+                              d//,get_min,data_curr_node
+                                );
       
       // Test lines below have been removed
       // NumericMatrix test =proposal_tree[0];
@@ -1135,28 +1144,28 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
   int best_sv;
   double best_sp;
   double tree_prior=1;
-  List changetree;
+  //List changetree;
   double BIC;
   //int p;
   int p_other=0;
   List eval_model;
   NumericVector int_nodes;
   NumericVector other_int_nodes;
-  arma::colvec curr_col=data.col(0);
-  arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
-  NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
-  arma::mat data_curr_node=data.rows(grow_obs);
-  double d=d1[0];
-  NumericVector get_min=get_grow_obs(data,wrap(grow_obs),cp_mat(0,0)+1);
+  //arma::colvec curr_col=data.col(0);
+  //arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
+  //NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
+  //arma::mat data_curr_node=data.rows(grow_obs);
+  //double d=d1[0];
+  //NumericVector get_min=get_grow_obs(data,wrap(grow_obs),cp_mat(0,0)+1);
   double lik;
   
   for(int l=0;l<terminal_nodes.size();l++){
     //loop over each terminal node
-    grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
+    arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
     //depth of tree at current terminal node
-    d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
-    data_curr_node=data.rows(grow_obs);
-    d=d1[0];
+    NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
+    arma::mat data_curr_node=data.rows(grow_obs);
+    double d=d1[0];
     int w=cp_mat.nrow();
     if(data_curr_node.n_rows<=min_num_obs_for_split){
       throw std::range_error("not enough obs in node to grow any further");
@@ -1165,8 +1174,8 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
     for(int k=0;k<w;k++){
       p_other=0;
       split_var=cp_mat(k,0)+1;
-      arma::colvec curr_cols=data.col(split_var-1);
-      get_min=get_grow_obs(data,wrap(grow_obs),split_var);
+      //arma::colvec curr_cols=data.col(split_var-1);
+      NumericVector get_min=get_grow_obs(data,wrap(grow_obs),split_var);
       
       // The following lines are unnecessary because get_min.size()=data_curr_node.n_rows above
       // if(get_min.size()<=2){
@@ -1182,7 +1191,12 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
       if(ld_prop.size()<=min_num_obs_after_split || rd_prop.size()<=min_num_obs_after_split){
         continue;
       }
-      proposal_tree=grow_tree(data,resids,treemat_c,terminal_nodes[l],treetable_c,split_var,split_point,terminal_nodes,wrap(grow_obs),d,get_min,data_curr_node);
+      proposal_tree=grow_tree(data,//resids,
+                              treemat_c,terminal_nodes[l],treetable_c,split_var,
+                              split_point,//terminal_nodes,
+                              wrap(grow_obs),
+                              d//,get_min,data_curr_node
+                                );
       
       //Test lines below have been removed
       //NumericMatrix test =proposal_tree[0];

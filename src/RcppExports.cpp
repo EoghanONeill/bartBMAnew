@@ -358,24 +358,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // grow_tree
-List grow_tree(arma::mat& xmat, NumericVector y, NumericMatrix prior_tree_matrix, int grow_node, NumericMatrix prior_tree_table, int splitvar, double splitpoint, NumericVector terminal_nodes, NumericVector grow_obs, double d, NumericVector get_min, arma::mat& data_curr_node);
-RcppExport SEXP _bartBMAnew_grow_tree(SEXP xmatSEXP, SEXP ySEXP, SEXP prior_tree_matrixSEXP, SEXP grow_nodeSEXP, SEXP prior_tree_tableSEXP, SEXP splitvarSEXP, SEXP splitpointSEXP, SEXP terminal_nodesSEXP, SEXP grow_obsSEXP, SEXP dSEXP, SEXP get_minSEXP, SEXP data_curr_nodeSEXP) {
+List grow_tree(arma::mat& xmat, NumericMatrix prior_tree_matrix, int grow_node, NumericMatrix prior_tree_table, int splitvar, double splitpoint, NumericVector grow_obs, double d);
+RcppExport SEXP _bartBMAnew_grow_tree(SEXP xmatSEXP, SEXP prior_tree_matrixSEXP, SEXP grow_nodeSEXP, SEXP prior_tree_tableSEXP, SEXP splitvarSEXP, SEXP splitpointSEXP, SEXP grow_obsSEXP, SEXP dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat& >::type xmat(xmatSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type prior_tree_matrix(prior_tree_matrixSEXP);
     Rcpp::traits::input_parameter< int >::type grow_node(grow_nodeSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type prior_tree_table(prior_tree_tableSEXP);
     Rcpp::traits::input_parameter< int >::type splitvar(splitvarSEXP);
     Rcpp::traits::input_parameter< double >::type splitpoint(splitpointSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type terminal_nodes(terminal_nodesSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type grow_obs(grow_obsSEXP);
     Rcpp::traits::input_parameter< double >::type d(dSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type get_min(get_minSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type data_curr_node(data_curr_nodeSEXP);
-    rcpp_result_gen = Rcpp::wrap(grow_tree(xmat, y, prior_tree_matrix, grow_node, prior_tree_table, splitvar, splitpoint, terminal_nodes, grow_obs, d, get_min, data_curr_node));
+    rcpp_result_gen = Rcpp::wrap(grow_tree(xmat, prior_tree_matrix, grow_node, prior_tree_table, splitvar, splitpoint, grow_obs, d));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1344,7 +1340,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bartBMAnew_get_daughter_obs", (DL_FUNC) &_bartBMAnew_get_daughter_obs, 4},
     {"_bartBMAnew_find_term_cols", (DL_FUNC) &_bartBMAnew_find_term_cols, 2},
     {"_bartBMAnew_get_grow_obs", (DL_FUNC) &_bartBMAnew_get_grow_obs, 3},
-    {"_bartBMAnew_grow_tree", (DL_FUNC) &_bartBMAnew_grow_tree, 12},
+    {"_bartBMAnew_grow_tree", (DL_FUNC) &_bartBMAnew_grow_tree, 8},
     {"_bartBMAnew_set_daughter", (DL_FUNC) &_bartBMAnew_set_daughter, 6},
     {"_bartBMAnew_order_", (DL_FUNC) &_bartBMAnew_order_, 1},
     {"_bartBMAnew_orderforOW", (DL_FUNC) &_bartBMAnew_orderforOW, 1},
