@@ -2591,7 +2591,9 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
   r.insert_cols(0,yarma);
   NumericMatrix resids=wrap(r);
   //int first_round;
-  List overall_trees(num_rounds);
+  int first_round_break=0;
+  
+  //List overall_trees(num_rounds);
   List overall_mat;
   List overall_lik;
   NumericMatrix prev_round_preds;  
@@ -2606,12 +2608,18 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
   List prev_sum_tree_resids;
   List prev_sum_trees_mat;  
   List cp_mat_list;
-  int oo_size=300;
-  List overall_overall_sum_trees(oo_size);
-  List overall_overall_sum_tree_resids(oo_size);
-  List overall_overall_sum_trees_mat(oo_size);
-  List overall_overall_sum_BIC(oo_size);
-  int oo_count=0;
+  //int oo_size=300;
+  //List overall_overall_sum_trees(oo_size);
+  //List overall_overall_sum_tree_resids(oo_size);
+  //List overall_overall_sum_trees_mat(oo_size);
+  //List overall_overall_sum_BIC(oo_size);
+  
+  List overall_overall_sum_trees;
+  List overall_overall_sum_tree_resids;
+  List overall_overall_sum_trees_mat;
+  NumericVector overall_overall_sum_BIC;
+  
+  //int oo_count=0;
   arma::mat overall_overall_sum_preds;
   IntegerVector prev_par;
   arma::colvec predicted_values;
@@ -2698,6 +2706,17 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
     curr_BIC=CART_BMA[6];
     if(curr_round_lik.size()==0) {
       //Rcout << "Break because curr_round_lik.size()==0 in outer loop number " << j << " . \n";
+      if(j==0){
+        first_round_break=1;
+      }else{
+        overall_overall_sum_trees=prev_sum_trees;
+        overall_overall_sum_trees_mat=prev_sum_trees_mat;
+        overall_overall_sum_tree_resids=prev_sum_tree_resids;
+        overall_overall_sum_BIC=prev_round_BIC2;
+        overall_overall_sum_preds=prev_round_preds2;
+        if(is_test_data==1) overall_overall_sum_test_preds= prev_round_test_preds2;
+      }
+      
       break;
     } 
     
@@ -2747,10 +2766,11 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
         temp_sum_tree_resids[count]=resids(_,curr_round_parent[k]);        
       }
       count++;     
-    }  
-    if(curr_round_lik.size()==0){
-      throw std::range_error("No trees chosen in last round");
     }
+    // Removing unnecessary if statement. Same condition results in a break from the loop above
+    //if(curr_round_lik.size()==0){
+    //  throw std::range_error("No trees chosen in last round");
+    //}
     for(int k=0;k<curr_round_lik.size();k++){
       int size_mat=300;
       List sum_of_trees(size_mat);
@@ -2957,23 +2977,29 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
       prev_round_preds2=overall_sum_preds;
       if(is_test_data==1) prev_round_test_preds2=overall_sum_test_preds;
     }
-    overall_overall_sum_trees[oo_count]=overall_sum_trees;
-    overall_overall_sum_tree_resids[oo_count]=overall_sum_tree_resids;
-    overall_overall_sum_trees_mat[oo_count]=overall_sum_trees_mat;
-    overall_overall_sum_BIC[oo_count]=overall_sum_BIC;
-    oo_count ++;
-    if(oo_count==(oo_size-1)){
-      oo_size=oo_size*2;
-      overall_overall_sum_trees=resize_bigger(overall_overall_sum_trees,oo_size);
-      overall_overall_sum_tree_resids=resize_bigger(overall_overall_sum_tree_resids,oo_size);
-      overall_overall_sum_trees_mat=resize_bigger(overall_overall_sum_trees_mat,oo_size);
-      overall_overall_sum_BIC=resize_bigger(overall_overall_sum_BIC,oo_size);
-    }    
+    // overall_overall_sum_trees[oo_count]=overall_sum_trees;
+    // overall_overall_sum_tree_resids[oo_count]=overall_sum_tree_resids;
+    // overall_overall_sum_trees_mat[oo_count]=overall_sum_trees_mat;
+    // overall_overall_sum_BIC[oo_count]=overall_sum_BIC;
+    // oo_count ++;
+    // if(oo_count==(oo_size-1)){
+    //   oo_size=oo_size*2;
+    //   overall_overall_sum_trees=resize_bigger(overall_overall_sum_trees,oo_size);
+    //   overall_overall_sum_tree_resids=resize_bigger(overall_overall_sum_tree_resids,oo_size);
+    //   overall_overall_sum_trees_mat=resize_bigger(overall_overall_sum_trees_mat,oo_size);
+    //   overall_overall_sum_BIC=resize_bigger(overall_overall_sum_BIC,oo_size);
+    // } 
+    if(j==num_rounds-1){
+    overall_overall_sum_trees=overall_sum_trees;
+    overall_overall_sum_tree_resids=overall_sum_tree_resids;
+    overall_overall_sum_trees_mat=overall_sum_trees_mat;
+    overall_overall_sum_BIC=overall_sum_BIC;
     overall_overall_sum_preds=overall_sum_preds;
-    
     if(is_test_data==1) overall_overall_sum_test_preds=overall_sum_test_preds;
-    overall_trees[j]=curr_round_trees;
-    overall_mat.push_back(curr_round_mat);
+    }
+    
+    //overall_trees[j]=curr_round_trees;
+    //overall_mat.push_back(curr_round_mat);
     overall_lik.push_back(curr_round_lik);
     prev_par=seq_len(overall_sum_trees.size())-1;
     //Rcout << "Get to end of outer loop number " << j << " . \n";
@@ -2981,15 +3007,22 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
   }
   //Rcout << "Get past outer loop \n";
   
-  if(oo_count==0){
+  if(first_round_break==1){
     throw std::range_error("BART-BMA didnt find any suitable model for the data. Maybe limit for Occam's window is too small. Alternatively, try using more observations or change parameter values.");
   }
-  overall_overall_sum_trees=resize(overall_overall_sum_trees,oo_count);
-  overall_overall_sum_tree_resids=resize(overall_overall_sum_tree_resids,oo_count);
-  overall_overall_sum_trees_mat=resize(overall_overall_sum_trees_mat,oo_count);
-  overall_overall_sum_BIC=resize(overall_overall_sum_BIC,oo_count);
+  
+  //overall_overall_sum_trees=resize(overall_overall_sum_trees,oo_count);
+  //overall_overall_sum_tree_resids=resize(overall_overall_sum_tree_resids,oo_count);
+  //overall_overall_sum_trees_mat=resize(overall_overall_sum_trees_mat,oo_count);
+  //overall_overall_sum_BIC=resize(overall_overall_sum_BIC,oo_count);
+  
+  
+  
   //Rcout << "Get to defining end_BIC \n";
-  NumericVector end_BIC=overall_overall_sum_BIC[overall_overall_sum_BIC.size()-1] ;
+  //NumericVector end_BIC=overall_overall_sum_BIC[overall_overall_sum_BIC.size()-1] ;
+  NumericVector end_BIC=overall_overall_sum_BIC ;
+  
+  
   //Rcout << "Get to defining past defining end_BIC \n";
   NumericMatrix overallpreds(n,end_BIC.size());
   NumericMatrix overall_test_preds(test_data.nrow(),end_BIC.size());

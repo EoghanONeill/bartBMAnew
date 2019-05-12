@@ -12,7 +12,8 @@ probit_bartBMA(x, ...)
   x.test = matrix(0, 0, 0), num_rounds = 5, alpha = 0.95, beta = 1,
   split_rule_node = 0, gridpoint = 0, maxOWsize = 100,
   num_splits = 5, gridsize = 10, zero_split = 1,
-  only_max_num_trees = 1)
+  only_max_num_trees = 1, min_num_obs_for_split = 2,
+  min_num_obs_after_split = 2)
 }
 \arguments{
 \item{x.train}{Training data covariate matrix}

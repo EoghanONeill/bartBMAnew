@@ -28,6 +28,8 @@
 #' @param gridsize This integer determines the size of the grid across which to search if gridpoint=1 when finding changepoints for constructing trees.
 #' @param zero_split Binary variable. If equals 1, then zero split trees can be included in a sum-of-trees model. If equals zero, then only trees with at least one split can be included in a sum-of-trees model.
 #' @param only_max_num_trees Binary variable. If equals 1, then only sum-of-trees models containing the maximum number of trees, num_rounds, are selected. If equals 0, then sum-of-trees models containing less than num_rounds trees can be selected. The default is only_max_num_trees=1.
+#' @param min_num_obs_for_split This integer determines the minimum number of observations in a (parent) tree node for the algorithm to consider potential splits of the node.
+#' @param min_num_obs_after_split This integer determines the minimum number of observations in a child node resulting from a split in order for a split to occur. If the left or right chikd node has less than this number of observations, then the split can not occur.
 #' @export 
 #' @return A vector of Individual Treatment Effect Estimates.
 
@@ -36,7 +38,8 @@ GS_ITEs_PIs_bartBMA<-function(num_iter,burnin,l_quant,u_quant,newdata=NULL,updat
                        a1=3,nu1=3,sigquant1=0.9,c1=1000,
                        pen1=12,num_cp1=20,x.test1=matrix(0.0,0,0),
                        num_rounds1=5,alpha1=0.95,beta1=1,split_rule_node1=0,
-                       gridpoint1=0,maxOWsize1=100,num_splits1=5,gridsize1=10,zero_split1=1,only_max_num_trees1=1){
+                       gridpoint1=0,maxOWsize1=100,num_splits1=5,gridsize1=10,zero_split1=1,only_max_num_trees1=1,
+                       min_num_obs_for_split1=2, min_num_obs_after_split1=2){
   
   
   
@@ -46,7 +49,8 @@ GS_ITEs_PIs_bartBMA<-function(num_iter,burnin,l_quant,u_quant,newdata=NULL,updat
                               a=a1,nu=nu1,sigquant=sigquant1,c=c1,
                               pen=pen1,num_cp=num_cp1,x.test=x.test1,
                               num_rounds=num_rounds1,alpha=alpha1,beta=beta1,split_rule_node=split_rule_node1,
-                              gridpoint=gridpoint1,maxOWsize=maxOWsize1,num_splits=num_splits1,gridsize=gridsize1,zero_split=zero_split1,only_max_num_trees=only_max_num_trees1)
+                              gridpoint=gridpoint1,maxOWsize=maxOWsize1,num_splits=num_splits1,gridsize=gridsize1,zero_split=zero_split1,only_max_num_trees=only_max_num_trees1,
+                              min_num_obs_for_split=min_num_obs_for_split1, min_num_obs_after_split=min_num_obs_after_split1)
   
   
   

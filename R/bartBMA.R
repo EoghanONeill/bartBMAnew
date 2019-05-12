@@ -108,17 +108,17 @@ bartBMA.default<-function(x.train,y.train,
   if(length(bartBMA_call)==6){
     #length of bartBMA_call is 6 if test data was included in the call
     names(bartBMA_call)<-c("fitted.values","sumoftrees","obs_to_termNodesMatrix","bic","test.preds","sum_residuals")
-    bartBMA_call[[6]]<-bartBMA_call[[6]][[length(bartBMA_call[[6]])]]
+    bartBMA_call[[6]]<-bartBMA_call[[6]]#[[length(bartBMA_call[[6]])]]
     bartBMA_call$test_data<-x.test
   }else{
     names(bartBMA_call)<-c("fitted.values","sumoftrees","obs_to_termNodesMatrix","bic","sum_residuals")
-    bartBMA_call[[5]]<-bartBMA_call[[5]][[length(bartBMA_call[[5]])]]
+    bartBMA_call[[5]]<-bartBMA_call[[5]]#[[length(bartBMA_call[[5]])]]
   }
   
   bartBMA_call$numvars<-ncol(x.train)
   bartBMA_call$call<-match.call()
-  bartBMA_call[[2]]<-bartBMA_call[[2]][[length(bartBMA_call[[2]])]]
-  bartBMA_call[[3]]<-bartBMA_call[[3]][[length(bartBMA_call[[3]])]]
+  bartBMA_call[[2]]<-bartBMA_call[[2]]#[[length(bartBMA_call[[2]])]]
+  bartBMA_call[[3]]<-bartBMA_call[[3]]#[[length(bartBMA_call[[3]])]]
   bartBMA_call$y_minmax<-range(y.train)
   bartBMA_call$response<-y.train
   bartBMA_call$nrowTrain<-nrow(x.train)

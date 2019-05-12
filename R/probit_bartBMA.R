@@ -51,7 +51,8 @@ probit_bartBMA.default<-function(x.train,y.train,
                           a=3,nu=3,sigquant=0.9,c=1000,
                           pen=12,num_cp=20,x.test=matrix(0.0,0,0),
                           num_rounds=5,alpha=0.95,beta=1,split_rule_node=0,
-                          gridpoint=0,maxOWsize=100,num_splits=5,gridsize=10,zero_split=1,only_max_num_trees=1){
+                          gridpoint=0,maxOWsize=100,num_splits=5,gridsize=10,zero_split=1,only_max_num_trees=1,
+                          min_num_obs_for_split=2, min_num_obs_after_split=2){
   
   if(is.factor(y.train)) {
     if(length(levels(y.train)) != 2) stop("y.train is a factor with number of levels != 2")
@@ -116,22 +117,23 @@ probit_bartBMA.default<-function(x.train,y.train,
   if(num_cp<0 || num_cp>100)stop("Value of num_cp should be a value between 1 and 100."); 
   
   bartBMA_call=BART_BMA_sumLikelihood(x.train,Zlatent.train,start_mean,start_sd,a,mu,nu,lambda,c,sigma_mu,
-                                      pen,num_cp,x.test,num_rounds,alpha,beta,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split,only_max_num_trees)
+                                      pen,num_cp,x.test,num_rounds,alpha,beta,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split,only_max_num_trees,
+                                      min_num_obs_for_split, min_num_obs_after_split)
   
   if(length(bartBMA_call)==6){
     #length of bartBMA_call is 6 if test data was included in the call
     names(bartBMA_call)<-c("fitted.values","sumoftrees","obs_to_termNodesMatrix","bic","test.preds","sum_residuals")
-    bartBMA_call[[6]]<-bartBMA_call[[6]][[length(bartBMA_call[[6]])]]
+    bartBMA_call[[6]]<-bartBMA_call[[6]]#[[length(bartBMA_call[[6]])]]
     bartBMA_call$test_data<-x.test
   }else{
     names(bartBMA_call)<-c("fitted.values","sumoftrees","obs_to_termNodesMatrix","bic","sum_residuals")
-    bartBMA_call[[5]]<-bartBMA_call[[5]][[length(bartBMA_call[[5]])]]
+    bartBMA_call[[5]]<-bartBMA_call[[5]]#[[length(bartBMA_call[[5]])]]
   }
   
   bartBMA_call$numvars<-ncol(x.train)
   bartBMA_call$call<-match.call()
-  bartBMA_call[[2]]<-bartBMA_call[[2]][[length(bartBMA_call[[2]])]]
-  bartBMA_call[[3]]<-bartBMA_call[[3]][[length(bartBMA_call[[3]])]]
+  bartBMA_call[[2]]<-bartBMA_call[[2]]#[[length(bartBMA_call[[2]])]]
+  bartBMA_call[[3]]<-bartBMA_call[[3]]#[[length(bartBMA_call[[3]])]]
   bartBMA_call$y_minmax<-range(Zlatent.train)
   bartBMA_call$response<-Zlatent.train
   bartBMA_call$nrowTrain<-nrow(x.train)
