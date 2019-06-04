@@ -49,23 +49,23 @@ NumericMatrix addcol(NumericMatrix prior_tree_matrix_temp,int grow_node,NumericV
   arma::mat M=Rcpp::as<arma::mat>(prior_tree_matrix_temp);
   M.insert_cols(ncol,1);
   for(int i =0;i<ld_obs.size();i++){
-    try{
-      if(ld_obs[i]>prior_tree_matrix_temp.nrow()){
-        throw std::range_error("can't add col because ld row index is out of range");
-      }
-    }catch(...){
-      ::Rf_error("there is a problem adding col to mat don't know why");
-    }
+    // try{
+    //   if(ld_obs[i]>prior_tree_matrix_temp.nrow()){
+    //     throw std::range_error("can't add col because ld row index is out of range");
+    //   }
+    // }catch(...){
+    //   ::Rf_error("there is a problem adding col to mat don't know why");
+    // }
     M(ld_obs[i],ncol)=grow_node+1;
   }
   for(int i =0;i<rd_obs.size();i++){
-    try{
-      if(rd_obs[i]>prior_tree_matrix_temp.nrow()){
-        throw std::range_error("can't add col because rd row index is out of range");
-      }
-    }catch(...){
-      ::Rf_error("there is a problem adding rd col to mat");
-    }    
+    // try{
+    //   if(rd_obs[i]>prior_tree_matrix_temp.nrow()){
+    //     throw std::range_error("can't add col because rd row index is out of range");
+    //   }
+    // }catch(...){
+    //   ::Rf_error("there is a problem adding rd col to mat");
+    // }    
     M(rd_obs[i],ncol)=grow_node+2;
   }
   return(wrap(M));
@@ -104,7 +104,7 @@ NumericMatrix set_daughter_to_end_tree(int grow_node,NumericMatrix prior_tree_ta
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-NumericMatrix set_daughter_to_end_mat(double d,NumericMatrix prior_tree_matrix_temp,double left_daughter,NumericVector ld_obs,NumericVector rd_obs){
+NumericMatrix set_daughter_to_end_mat(int d,NumericMatrix prior_tree_matrix_temp,double left_daughter,NumericVector ld_obs,NumericVector rd_obs){
   int ncol_mat=prior_tree_matrix_temp.ncol();
   arma::mat N=Rcpp::as<arma::mat>(prior_tree_matrix_temp);
   arma::vec colmat=N.col(d);
@@ -116,14 +116,18 @@ NumericMatrix set_daughter_to_end_mat(double d,NumericMatrix prior_tree_matrix_t
     NumericVector colmatzero(nrow_mat);
     colmatzero[ld_obs]=left_daughter;
     colmatzero[rd_obs]=left_daughter+1;
-    colmat=Rcpp::as<arma::vec>(colmatzero);
-    N.col(d+1)=colmat;
+    //colmat=Rcpp::as<arma::vec>(colmatzero);
+    //N.col(d+1)=colmat;
+    N.col(d+1)=Rcpp::as<arma::vec>(colmatzero);
+    
   }else{
     //else just update existing column
     colmat2[ld_obs]=left_daughter;
     colmat2[rd_obs]=left_daughter+1;
-    colmat=Rcpp::as<arma::vec>(colmat2);
-    N.col(d)=colmat;  
+    //colmat=Rcpp::as<arma::vec>(colmat2);
+    //N.col(d)=colmat; 
+    N.col(d)=Rcpp::as<arma::vec>(colmat2);
+
   }
   
   return(wrap(N));
@@ -220,9 +224,17 @@ double likelihood_function(NumericVector y_temp,NumericMatrix treetable_temp,Num
     arma::vec y_k_sq=pow(y_k,2);
     double sum_yksq=sum(y_k_sq);
     double b2=pow(ni*ybar +a*mu,2)/(ni+a);
-    term2+=(sum_yksq+a*pow(mu,2)-b2+nu*lambda);
+    //term2+=(sum_yksq+a*pow(mu,2)-b2+nu*lambda);
+
+    
+    term2+=(sum_yksq+a*pow(mu,2)-b2);
   }
-  tree_log_lik=(b/2)*log(a)-0.5*term1-((y_temp.size()+nu)/2)*log(term2);
+  //tree_log_lik=(b/2)*log(a)-0.5*term1-((y_temp.size()+nu)/2)*log(term2);
+
+  
+  tree_log_lik=(b/2)*log(a)-0.5*term1-((y_temp.size()+nu)/2)*log(term2+nu*lambda);
+  
+  
   // for(int i=0;i<b;i++){
   //   if(n[i]<=5){
   //     tree_log_lik=tree_log_lik-(100000);
@@ -232,7 +244,8 @@ double likelihood_function(NumericVector y_temp,NumericMatrix treetable_temp,Num
   //   }
   // }
   return(tree_log_lik);
-}  //######################################################################################################################//
+}  
+//######################################################################################################################//
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
@@ -312,7 +325,7 @@ NumericMatrix set_tree_to_middle(NumericVector node_to_update,NumericMatrix prio
 //######################################################################################################################//
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
-NumericMatrix update_grow_obs(NumericMatrix prior_tree_matrix_temp,double grow_node,double left_daughter,double d,NumericVector ld_obs,NumericVector rd_obs){
+NumericMatrix update_grow_obs(NumericMatrix prior_tree_matrix_temp,double grow_node,double left_daughter,int d,NumericVector ld_obs,NumericVector rd_obs){
   arma::mat prior_tree_matrix_temp2(prior_tree_matrix_temp.begin(),prior_tree_matrix_temp.nrow(),prior_tree_matrix_temp.ncol(),false);
   arma::vec ptm2=prior_tree_matrix_temp2.col(d);
   NumericVector ptm=wrap(ptm2);
@@ -326,7 +339,7 @@ NumericMatrix update_grow_obs(NumericMatrix prior_tree_matrix_temp,double grow_n
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-NumericMatrix find_obs_to_update_grow(NumericMatrix prior_tree_matrix_temp,double left_daughter,double d,NumericVector ld_obs,NumericVector rd_obs){
+NumericMatrix find_obs_to_update_grow(NumericMatrix prior_tree_matrix_temp,double left_daughter,int d,NumericVector ld_obs,NumericVector rd_obs){
   
   int rows=prior_tree_matrix_temp.nrow();
   int cols=prior_tree_matrix_temp.ncol();
@@ -351,22 +364,30 @@ NumericMatrix find_obs_to_update_grow(NumericMatrix prior_tree_matrix_temp,doubl
       if(prior_tree_matrix_temp(rows_obs[k],cols_obs[k])<left_daughter){
         prior_tree_matrix_temp(rows_obs[k],cols_obs[k])=prior_tree_matrix_temp(rows_obs[k],cols_obs[k]);
       }else if(prior_tree_matrix_temp(rows_obs[k],cols_obs[k])==0){
-        prior_tree_matrix_temp(rows_obs[k],cols_obs[k])=0;
+        //prior_tree_matrix_temp(rows_obs[k],cols_obs[k])=0;
       }else{   
-        int temp=prior_tree_matrix_temp(rows_obs[k],cols_obs[k])+2;
-        prior_tree_matrix_temp(rows_obs[k],cols_obs[k])=temp;
+        //int temp=prior_tree_matrix_temp(rows_obs[k],cols_obs[k])+2;
+        //prior_tree_matrix_temp(rows_obs[k],cols_obs[k])=temp;
+        prior_tree_matrix_temp(rows_obs[k],cols_obs[k])=prior_tree_matrix_temp(rows_obs[k],cols_obs[k])+2;
+        
       }
     }
   }
+  
+  
+  arma::mat prior_tree_matrix_temp2(prior_tree_matrix_temp.begin(),prior_tree_matrix_temp.nrow(),prior_tree_matrix_temp.ncol(),false);	// copy as arma mat with new name
+  
   //update prior_tree_matrix
   //insert extra column for the new split node 
-  if(prior_tree_matrix_temp.ncol()>d+1){
-    arma::mat M=Rcpp::as<arma::mat>(prior_tree_matrix_temp);
-    M.insert_cols(prior_tree_matrix_temp.ncol(),1);  
-    NumericMatrix prior_tree_matrix=as<NumericMatrix>(wrap(M));
+  if(prior_tree_matrix_temp.ncol()==d+1){								// If the number of columns is greater than d+1
+    //arma::mat M=Rcpp::as<arma::mat>(prior_tree_matrix_temp);		// M equals arma mat copy of the matrix
+    //M.insert_cols(prior_tree_matrix_temp.ncol(),1);  				// insert one column after last column
+    //NumericMatrix prior_tree_matrix=as<NumericMatrix>(wrap(M));		// convert back to NumericMatrix and save as prior_tree_matrix
+    
+    prior_tree_matrix_temp2.insert_cols(prior_tree_matrix_temp.ncol(),1);  				// insert one column after last column
   }
   
-  arma::mat prior_tree_matrix_temp2(prior_tree_matrix_temp.begin(),prior_tree_matrix_temp.nrow(),prior_tree_matrix_temp.ncol(),false);
+  
   arma::vec ptm2=prior_tree_matrix_temp2.col(d+1);
   NumericVector ptm=wrap(ptm2);
   ptm[ld_obs]=left_daughter;
@@ -411,26 +432,29 @@ List get_daughter_obs(arma::mat& xmat,NumericVector obs_to_update,int split_var,
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-NumericVector find_term_cols(NumericMatrix tree_matrix_temp,int terminal_node){
+int find_term_cols(NumericMatrix tree_matrix_temp,int terminal_node){
   
   arma::mat tree_matrix_temp2(tree_matrix_temp.begin(),tree_matrix_temp.nrow(),tree_matrix_temp.ncol(),false);
-  int count=0;
-  std::vector<double> term_cols(tree_matrix_temp.ncol());
-  
+  //int count=0;
+  //std::vector<double> term_cols(tree_matrix_temp.ncol());
+  int term_col=0;
   for(int j=0;j<tree_matrix_temp.ncol();j++){
     
     arma::vec tempcol=tree_matrix_temp2.col(j);
     arma::uvec term_nodes=find(tempcol==terminal_node);
     
     if(term_nodes.size()>0){  
-      term_cols[count]=j;
-      count++;
+      //term_cols[count]=j;
+      //count++;
+      term_col=j;
+      break;
     }
   }
   
-  term_cols.resize(count);
+  //term_cols.resize(count);
   
-  return(wrap(term_cols));
+  //return(wrap(term_cols));
+  return(term_col);
   
 }
 
@@ -456,7 +480,7 @@ List grow_tree(arma::mat& xmat,//NumericVector y,
                NumericMatrix prior_tree_matrix,int grow_node,NumericMatrix prior_tree_table,int splitvar,
                double splitpoint,//NumericVector terminal_nodes,
                NumericVector grow_obs,
-               double d//,NumericVector get_min,arma::mat& data_curr_node
+               int d//,NumericVector get_min,arma::mat& data_curr_node
                  )
 {
   
@@ -567,12 +591,12 @@ double get_tree_prior(NumericMatrix tree_table,NumericMatrix tree_matrix,double 
   double propsplit=1;
   IntegerVector d;
   IntegerVector d2;
-  int col=tree_matrix.ncol();
-  std::vector<int> int_nodes_index(100*col); // Why  100* ? 
-  std::vector<int> term_nodes_index(100*col); //
+  //int col=tree_matrix.ncol();
+  //std::vector<int> int_nodes_index(100*col); // Why  100* ? 
+  //std::vector<int> term_nodes_index(100*col); //
   
-  int index_count=0;  
-  int index_count2=0;
+  //int index_count=0;  
+  //int index_count2=0;
   arma::uvec internal_nodes_prop=find_internal_nodes(tree_table);
   NumericVector terminal_nodes_prop_wrapped=find_term_nodes(tree_table);
   arma::uvec terminal_nodes_prop=as<arma::uvec>(terminal_nodes_prop_wrapped);
@@ -587,20 +611,21 @@ double get_tree_prior(NumericMatrix tree_table,NumericMatrix tree_matrix,double 
       arma::vec armacol=tree_matrix2.col(j);
       arma::uvec found=find(armacol==internal_nodes_prop[k]);      
       if(found.size()>0){        
-        int_nodes_index[index_count]=j;
-        index_count++;
+        //int_nodes_index[index_count]=j;
+        //index_count++;
+        propsplit*=alpha*pow((j+1),-beta) ; 
         break;
       }        
     }
-    int_nodes_index.resize(index_count);
-    if(int_nodes_index.size()!=0){      
-      d=unique(as<IntegerVector>(wrap(int_nodes_index)));
-      double d1=d[0];
-      propsplit*=alpha*pow((d1+1),-beta) ;  
-    }
-    std::vector<int> temp(col);
-    int_nodes_index=temp;
-    index_count=0;
+    //int_nodes_index.resize(index_count);
+    //if(int_nodes_index.size()!=0){      
+    //  d=unique(as<IntegerVector>(wrap(int_nodes_index)));
+    //  double d1=d[0];
+    //  propsplit*=alpha*pow((d1+1),-beta) ;  
+    //}
+    //std::vector<int> temp(col);
+    //int_nodes_index=temp;
+    //index_count=0;
   } 
   
   if(count!=0){  
@@ -609,20 +634,22 @@ double get_tree_prior(NumericMatrix tree_table,NumericMatrix tree_matrix,double 
         arma::vec armacol=tree_matrix2.col(j);
         arma::uvec found=find(armacol==terminal_nodes_prop[k]);      
         if(found.size()>0){        
-          term_nodes_index[index_count2]=j;
-          index_count2++;
+          //term_nodes_index[index_count2]=j;
+          //index_count2++;
+          propsplit*=1-alpha*pow((j+1),-beta) ;  
+          
           break;
         }        
       }
-      term_nodes_index.resize(index_count2);
-      if(term_nodes_index.size()!=0){      
-        d2=unique(as<IntegerVector>(wrap(term_nodes_index)));
-        double d1=d2[0];
-        propsplit*=1-alpha*pow((d1+1),-beta) ;  
-      }
-      std::vector<int> temp2(col);
-      term_nodes_index=temp2;
-      index_count2=0;
+      //term_nodes_index.resize(index_count2);
+      //if(term_nodes_index.size()!=0){      
+      //  d2=unique(as<IntegerVector>(wrap(term_nodes_index)));
+      //  double d1=d2[0];
+      //  propsplit*=1-alpha*pow((d1+1),-beta) ;  
+      //}
+      //std::vector<int> temp2(col);
+      //term_nodes_index=temp2;
+      //index_count2=0;
     }
   }
   
@@ -641,6 +668,28 @@ NumericMatrix start_tree(double start_mean,double start_sd){
       treemat(k,j)=testrow[j];
     }
   }
+  List dimnms = // two vec. with static names
+    List::create(CharacterVector::create("1"),
+                 CharacterVector::create("left daughter","right daughter","split var","split point","status","mean","std dev"));
+  // and assign it
+  treemat.attr("dimnames") = dimnms;
+  
+  return(treemat);
+}
+//######################################################################################################################//
+
+// [[Rcpp::export]]
+NumericMatrix start_tree2(){
+  
+  NumericMatrix treemat(1,7);
+  //double rand=R::rnorm(start_mean,start_sd);
+  NumericVector testrow = NumericVector::create(0,0,0,0,-1,0,0);
+  //for(int k=0;k<1;k++){
+    for(int j=0;j<7;j++){
+      //treemat(k,j)=testrow[j];
+      treemat(0,j)=testrow[j];
+    }
+  //}
   List dimnms = // two vec. with static names
     List::create(CharacterVector::create("1"),
                  CharacterVector::create("left daughter","right daughter","split var","split point","status","mean","std dev"));
@@ -672,11 +721,11 @@ List evaluate_model_occams_window(NumericVector tree_lik,double lowest_BIC,doubl
       break;
     }
     //delete tree from tree list
-    if((tree_lik[sorted_lik_index[s]-1])-(lowest_BIC)>c){
+    //if((tree_lik[sorted_lik_index[s]-1])-(lowest_BIC)>c){
       //set indicator for index of trees to be removed 
       to_be_removed[s]=sorted_lik_index[s]-1;
       s+=1;
-    }
+    //}
   }
   
   to_be_removed.resize(s);
@@ -704,7 +753,8 @@ List evaluate_model_occams_window(NumericVector tree_lik,double lowest_BIC,doubl
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-NumericVector get_testdata_term_obs(NumericMatrix test_data,NumericMatrix tree_data,NumericVector term_node_means) {
+NumericVector get_testdata_term_obs(NumericMatrix test_data,NumericMatrix tree_data//,NumericVector term_node_means
+                                      ) {
   //Function to make predictions from test data, given a single tree and the terminal node predictions, this function will be called
   //for each tree accepted in Occam's Window.
   
@@ -712,7 +762,7 @@ NumericVector get_testdata_term_obs(NumericMatrix test_data,NumericMatrix tree_d
   arma::mat testd(test_data.begin(), test_data.nrow(), test_data.ncol(), false);
   NumericVector terminal_nodes=find_term_nodes(tree_data);
   arma::vec arma_terminal_nodes=Rcpp::as<arma::vec>(terminal_nodes);
-  NumericVector tree_predictions;
+  //NumericVector tree_predictions;
   //for each internal node find the observations that belong to the terminal nodes
   NumericVector predictions(test_data.nrow());
   if(terminal_nodes.size()==1){
@@ -766,15 +816,15 @@ NumericVector get_testdata_term_obs(NumericMatrix test_data,NumericMatrix tree_d
       }
       
       arma::uvec temp_pred_indices;
-      arma::vec data_subset = testd.col(split);
-      data_subset=data_subset.elem(pred_indices);
+      //arma::vec data_subset = testd.col(split);
+      //data_subset=data_subset.elem(pred_indices);
       int n=node_split_mat.n_rows;
       
       for(int j=1;j<n;j++){
         int curr_sv=node_split_mat(j,0);
         double split_p = node_split_mat(j,1);
         
-        data_subset = testd.col(curr_sv-1);
+        arma::vec data_subset = testd.col(curr_sv-1);
         data_subset=data_subset.elem(pred_indices);
         
         if(node_split_mat(j,2)==0){
@@ -799,6 +849,148 @@ NumericVector get_testdata_term_obs(NumericMatrix test_data,NumericMatrix tree_d
 }
 //######################################################################################################################//
 
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+List get_initial_resids(NumericMatrix test_data,List List_of_lists_tree_tables,NumericVector ytrain
+) {
+  //Function to make predictions from test data, given a single tree and the terminal node predictions, this function will be called
+  //for each tree accepted in Occam's Window.
+  
+  List List_of_resid_lists(List_of_lists_tree_tables.size());
+  List new_pred_list(List_of_lists_tree_tables.size());
+  
+  for(int k=0;k<List_of_lists_tree_tables.size();k++){
+    
+  List One_sum_of_tree_list = List_of_lists_tree_tables[k];  
+    //create list of outcomes from which to take away predictions in each round to create residuals
+  NumericMatrix new_pred_mat(test_data.nrow(),One_sum_of_tree_list.size());
+    
+    List temp_resid_list(One_sum_of_tree_list.size()) ; 
+    for(int q=0;q<One_sum_of_tree_list.size();q++){
+      temp_resid_list[q]=ytrain;
+    }
+    
+    
+    for(int l=0;l<One_sum_of_tree_list.size();l++){
+      
+  
+  NumericMatrix tree_data = One_sum_of_tree_list[l];
+  
+  arma::mat arma_tree(tree_data.begin(), tree_data.nrow(), tree_data.ncol(), false);
+  arma::mat testd(test_data.begin(), test_data.nrow(), test_data.ncol(), false);
+  NumericVector terminal_nodes=find_term_nodes(tree_data);
+  arma::vec arma_terminal_nodes=Rcpp::as<arma::vec>(terminal_nodes);
+  //NumericVector tree_predictions;
+  //for each internal node find the observations that belong to the terminal nodes
+  NumericVector predictions(test_data.nrow());
+  if(terminal_nodes.size()==1){
+    double nodemean=mean(ytrain)/One_sum_of_tree_list.size();				// let nodemean equal tree_data row terminal_nodes[i]^th row , 6th column. The minus 1 is because terminal nodes consists of indices starting at 1, but need indices to start at 0.
+    predictions=rep(nodemean,test_data.nrow());
+  }
+  else{
+    for(int i=0;i<terminal_nodes.size();i++){
+      arma::mat subdata=testd;
+      int curr_term=terminal_nodes[i];
+      int row_index;
+      int term_node=terminal_nodes[i];
+      if(curr_term % 2==0){
+        row_index=terminal_nodes[i];
+      }else{
+        row_index=terminal_nodes[i]-1;
+      }
+      //save the left and right node data into arma uvec
+      
+      arma::vec left_nodes=arma_tree.col(0);
+      arma::vec right_nodes=arma_tree.col(1);
+      arma::mat node_split_mat;    
+      node_split_mat.set_size(0,3);
+      
+      while(row_index!=1){
+        //for each terminal node work backwards and see if the parent node was a left or right node
+        //append split info to a matrix 
+        int rd=0;
+        arma::uvec parent_node=arma::find(left_nodes == term_node);
+        
+        if(parent_node.size()==0){
+          parent_node=arma::find(right_nodes == term_node);
+          rd=1;
+        }      
+        node_split_mat.insert_rows(0,1);
+        node_split_mat(0,0)=tree_data(parent_node[0],2);
+        node_split_mat(0,1)=tree_data(parent_node[0],3);
+        node_split_mat(0,2)=rd;
+        row_index=parent_node[0] +1;
+        term_node=parent_node[0]+1;
+      }  
+      //fill in the predicted value for tree
+      arma::uvec pred_indices;
+      int split= node_split_mat(0,0)-1;
+      arma::vec tempvec = testd.col(split);
+      double temp_split = node_split_mat(0,1);
+      if(node_split_mat(0,2)==0){
+        pred_indices = arma::find(tempvec <= temp_split);
+      }else{
+        pred_indices = arma::find(tempvec > temp_split);
+      }
+      
+      arma::uvec temp_pred_indices;
+      //arma::vec data_subset = testd.col(split);
+      //data_subset=data_subset.elem(pred_indices);
+      int n=node_split_mat.n_rows;
+      
+      for(int j=1;j<n;j++){
+        int curr_sv=node_split_mat(j,0);
+        double split_p = node_split_mat(j,1);
+        
+        arma::vec data_subset = testd.col(curr_sv-1);
+        data_subset=data_subset.elem(pred_indices);
+        
+        if(node_split_mat(j,2)==0){
+          //split is to the left
+          temp_pred_indices=arma::find(data_subset <= split_p);
+        }else{
+          //split is to the right
+          temp_pred_indices=arma::find(data_subset > split_p);
+        }
+        pred_indices=pred_indices.elem(temp_pred_indices);
+        
+        if(pred_indices.size()==0){
+          continue;
+        }
+      }
+      IntegerVector predind=as<IntegerVector>(wrap(pred_indices));
+      NumericVector ys_in_node= ytrain[predind];
+      double nodemean=mean(ys_in_node)/One_sum_of_tree_list.size();
+      predictions[predind]= nodemean;
+    } 
+  }
+  
+  //Add predictions to tree predictions
+  for(int q=0;q<One_sum_of_tree_list.size();q++){
+    if(q==l){
+      
+    }else{
+      NumericVector temp_for_update = temp_resid_list[q];
+      temp_resid_list[q]=temp_for_update-predictions;
+    }
+  }
+  
+  new_pred_mat(_,l)=predictions;
+  
+  }
+    List_of_resid_lists[k]=temp_resid_list;
+    new_pred_list[k]=new_pred_mat;
+  }
+  
+  List ret(2);
+  ret[0]=List_of_resid_lists;
+  ret[1]=new_pred_list;
+  
+  return(ret);
+  
+}
+//######################################################################################################################//
+
 // [[Rcpp::export]]
 List resize(const List& x, int n ){
   List y(n) ;
@@ -819,7 +1011,7 @@ List resize_bigger( const List& x, int n ){
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-arma::mat J(NumericMatrix treetable_temp,NumericMatrix obs_to_nodes_temp,NumericVector tree_term_nodes){
+arma::mat J(NumericMatrix obs_to_nodes_temp,NumericVector tree_term_nodes){
   //this function will make a binary nxb matrix where each column assigns observations to terminal nodes
   
   //create J matrix with correct dimensions and fill with zeros
@@ -836,6 +1028,10 @@ arma::mat J(NumericMatrix treetable_temp,NumericMatrix obs_to_nodes_temp,Numeric
     obs_col[term_obs2]=1;
     arma::vec colmat=Rcpp::as<arma::vec>(obs_col);
     Jmat.col(i)= colmat;
+    
+     // arma::vec  colmat=arma::zeros(Jmat.n_rows) ;// colmattest(Jmat.n_rows,0);
+     // colmat.elem(term_obs).fill(1);
+     // Jmat.col(i)= colmat;
   }
   return(Jmat);
 }
@@ -876,13 +1072,120 @@ arma::mat W(List sum_treetable ,List sum_obs_to_nodes,int n){
     NumericVector tree_term_nodes=find_term_nodes(curr_tree);
     int b_j=tree_term_nodes.size();
     //will make J as we go in BART-BMA no need to create it again here....
-    arma::mat Jmat=J(curr_tree,curr_obs_nodes,tree_term_nodes);
+    arma::mat Jmat=J(curr_obs_nodes,tree_term_nodes);
     W.insert_cols(upsilon,Jmat);
     upsilon+=b_j;
   }
   
   return(W);
   // ret[1]=mu_vec;
+}
+//######################################################################################################################//
+// 
+// #include <RcppDist.h>
+// // [[Rcpp::depends(RcppArmadillo)]]
+// // [[Rcpp::export]]
+// double likelihood_function_new(NumericVector y_temp,NumericMatrix treetable_temp,NumericMatrix obs_to_nodes_temp,double a,double mu,double nu,double lambda){
+//   
+//   int n=y_temp.size();
+//   NumericVector tree_term_nodes=find_term_nodes(treetable_temp);
+//   //int b_j=tree_term_nodes.size();
+//   //will make J as we go in BART-BMA no need to create it again here....
+//   arma::mat Wmat=J(obs_to_nodes_temp,tree_term_nodes);
+// 
+//   arma::vec yvec=Rcpp::as<arma::vec>(y_temp);
+//   arma::mat y(n,1);
+//   y.col(0)=yvec;
+//   
+// 
+//   arma::mat WWt=(1/a)*(Wmat*Wmat.t());
+//   arma::mat In(n,n);
+//   arma::mat covar=lambda*(In.eye()+WWt);
+//   arma::vec  muvec=arma::zeros(y.n_rows) ;
+//   
+// 
+//   arma::vec rel= dmvt(y.t(), muvec,
+//                       covar, nu, 
+//                       true); 
+//   
+// 
+//   double rel2=as<double>(wrap(rel));
+//   
+//   // double tree_log_lik;
+//   // NumericVector terminal_nodes=find_term_nodes(treetable_temp);
+//   // double b=terminal_nodes.size();
+//   // IntegerVector n(b);
+//   // double term1=0;
+//   // double term2=0;
+//   // arma::uvec term_obs;
+//   // int ni;
+//   // arma::vec y_temp2=as<arma::vec>(y_temp);
+//   // for(int i=0;i< b;i++){
+//   //   term_obs=find_term_obs(obs_to_nodes_temp,terminal_nodes[i]);
+//   //   arma::vec y_k=y_temp2.elem(term_obs);
+//   //   ni=term_obs.size();
+//   //   n[i]=ni;
+//   //   double ybar=0;
+//   //   if(y_k.size()!=0){
+//   //     ybar=mean(y_k);
+//   //   }
+//   //   term1+=log(ni+a);
+//   //   arma::vec y_k_sq=pow(y_k,2);
+//   //   double sum_yksq=sum(y_k_sq);
+//   //   double b2=pow(ni*ybar +a*mu,2)/(ni+a);
+//   //   term2+=(sum_yksq+a*pow(mu,2)-b2+nu*lambda);
+//   // }
+//   // tree_log_lik=(b/2)*log(a)-0.5*term1-((y_temp.size()+nu)/2)*log(term2);
+//   // for(int i=0;i<b;i++){
+//   //   if(n[i]<=5){
+//   //     tree_log_lik=tree_log_lik-(100000);
+//   //   }
+//   //   else{
+//   //     tree_log_lik=tree_log_lik;
+//   //   }
+//   // }
+//   return(rel2);
+// }
+//######################################################################################################################//
+
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+double likelihood_function2(NumericVector y_temp,NumericMatrix treetable_temp,NumericMatrix obs_to_nodes_temp,double a,double mu,double nu,double lambda){
+  
+  int n=y_temp.size();
+  NumericVector tree_term_nodes=find_term_nodes(treetable_temp);
+  //int b_j=tree_term_nodes.size();
+  //will make J as we go in BART-BMA no need to create it again here....
+  arma::mat Wmat=J(obs_to_nodes_temp,tree_term_nodes);
+  double b=Wmat.n_cols;
+  
+  arma::vec yvec=Rcpp::as<arma::vec>(y_temp);
+  arma::mat y(n,1);
+  y.col(0)=yvec;
+  
+  
+  //get exponent
+  double expon=(n+nu)/2;
+  //get y^Tpsi^{-1}y
+  // arma::mat psi_inv=psi.i();
+  arma::mat yty=y.t()*y;
+  
+  //get t(y)inv(psi)J
+  arma::mat ytW=y.t()*Wmat;
+  //get t(J)inv(psi)J  
+  arma::mat WtW=Wmat.t()*Wmat;
+  //get jpsij +aI
+  arma::mat aI(b,b);
+  aI=a*aI.eye();
+  arma::mat sec_term=WtW+aI;
+  arma::mat sec_term_inv=sec_term.i();
+  //get t(J)inv(psi)y
+  arma::mat third_term=Wmat.t()*y;
+  //get m^TV^{-1}m
+  arma::mat mvm= ytW*sec_term_inv*third_term;
+  arma::mat rel=(b/2)*log(a)-(1/2)*log(det(sec_term))-expon*log(nu*lambda - mvm +yty);
+  double rel2=as<double>(wrap(rel));
+  return(rel2);
 }
 //############################################################################################################################//
 
@@ -918,6 +1221,184 @@ double sumtree_likelihood_function(NumericVector y_temp,List sum_treetable ,List
   double rel2=as<double>(wrap(rel));
   return(rel2);
 }  
+//############################################################################################################################//
+// 
+// #include <RcppDist.h>
+// // [[Rcpp::depends(RcppArmadillo)]]
+// // [[Rcpp::export]]
+// double sumtree_likelihood_function_new(NumericVector y_temp,List sum_treetable ,List sum_obs_to_nodes,int n,double a,double nu,double lambda){
+//   //make W and mu matrices for the sum of trees
+// 
+//   arma::mat Wmat=W(sum_treetable,sum_obs_to_nodes,n);
+// 
+//   //double b=Wmat.n_cols;
+//   arma::vec yvec=Rcpp::as<arma::vec>(y_temp);
+//   arma::mat y(n,1);
+//   y.col(0)=yvec;
+//   //get exponent
+//   //double expon=(n+nu+b)/2;
+//   //get y^Tpsi^{-1}y
+//   // arma::mat psi_inv=psi.i();
+//   //arma::mat yty=y.t()*y;
+// 
+//   arma::mat WWt=(1/a)*(Wmat*Wmat.t());
+//   arma::mat In(n,n);
+//   arma::mat covar=lambda*(In.eye()+WWt);
+//   
+//   arma::vec  muvec=arma::zeros(y.n_rows) ;
+// 
+//   arma::vec rel= dmvt(y.t(), muvec,
+//                       covar, nu, 
+//                       true); 
+// 
+// 
+//   double rel2=as<double>(wrap(rel));
+//   
+//   //get t(y)inv(psi)J
+//   //arma::mat ytW=y.t()*Wmat;
+//   //get t(J)inv(psi)J  
+//   //arma::mat WtW=Wmat.t()*Wmat;
+//   //get jpsij +aI
+//   //arma::mat aI(b,b);
+//   //aI=a*aI.eye();
+//   //arma::mat sec_term=WtW+aI;
+//   //arma::mat sec_term_inv=sec_term.i();
+//   //get t(J)inv(psi)y
+//   //arma::mat third_term=Wmat.t()*y;
+//   //get m^TV^{-1}m
+//   //arma::mat mvm= ytW*sec_term_inv*third_term;
+//   //arma::mat rel=-expon*log(nu*lambda - mvm +yty);
+//   //double rel2=as<double>(wrap(rel));
+//   
+//   return(rel2);
+// }
+//############################################################################################################################//
+
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+double sumtree_likelihood_function2(NumericVector y_temp,List sum_treetable ,List sum_obs_to_nodes,int n,double a,double nu,double lambda){
+  //make W and mu matrices for the sum of trees
+  arma::mat Wmat=W(sum_treetable,sum_obs_to_nodes,n);
+  double b=Wmat.n_cols;
+  arma::vec yvec=Rcpp::as<arma::vec>(y_temp);
+  arma::mat y(n,1);
+  y.col(0)=yvec;
+  //get exponent
+  double expon=(n+nu)/2;
+  //get y^Tpsi^{-1}y
+  // arma::mat psi_inv=psi.i();
+  arma::mat yty=y.t()*y;
+  
+  //get t(y)inv(psi)J
+  arma::mat ytW=y.t()*Wmat;
+  //get t(J)inv(psi)J  
+  arma::mat WtW=Wmat.t()*Wmat;
+  //get jpsij +aI
+  arma::mat aI(b,b);
+  aI=a*aI.eye();
+  arma::mat sec_term=WtW+aI;
+  arma::mat sec_term_inv=sec_term.i();
+  //get t(J)inv(psi)y
+  arma::mat third_term=Wmat.t()*y;
+  //get m^TV^{-1}m
+  arma::mat mvm= ytW*sec_term_inv*third_term;
+  arma::mat rel=(b/2)*log(a)-(1/2)*log(det(sec_term))-expon*log(nu*lambda - mvm +yty);
+  double rel2=as<double>(wrap(rel));
+  return(rel2);
+}  
+//############################################################################################################################//
+
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+double sumtree_likelihood_function3(NumericVector y_temp,List sum_treetable ,List sum_obs_to_nodes,int n,double a,double nu,double lambda){
+  
+  //Cholesky attempt
+  
+  //make W and mu matrices for the sum of trees
+  arma::mat Wmat=W(sum_treetable,sum_obs_to_nodes,n);
+  double b=Wmat.n_cols;
+  arma::vec yvec=Rcpp::as<arma::vec>(y_temp);
+  arma::mat y(n,1);
+  y.col(0)=yvec;
+  //get exponent
+  double expon=(n+nu)/2;
+  //get y^Tpsi^{-1}y
+  // arma::mat psi_inv=psi.i();
+  arma::mat yty=y.t()*y;
+  
+  //get t(y)inv(psi)J
+  arma::mat ytW=y.t()*Wmat;
+  //get t(J)inv(psi)J  
+  arma::mat WtW=Wmat.t()*Wmat;
+  //get jpsij +aI
+  arma::mat aI(b,b);
+  aI=a*aI.eye();
+  arma::mat sec_term=WtW+aI;
+  
+  //Obtain (lower triangular?) matrix t(L) by Cholesky decomposition such that sec_term_inv=L*t(L)
+  arma::mat rooti = arma::trans(arma::inv(trimatu(arma::chol(sec_term))));
+  //obtain the log of the root of the determinant
+  double rootisum = arma::sum(log(rooti.diag()));
+  
+  
+  //arma::mat sec_term_inv=sec_term.i();
+  //get t(J)inv(psi)y
+  //arma::mat third_term=Wmat.t()*y;
+  //get m^TV^{-1}m
+  //arma::mat mvm= ytW*sec_term_inv*third_term;
+  
+  //t(:)*W^T*Y
+  arma::mat LtWtY= rooti*(Wmat.t()*y);
+  
+  
+  arma::mat rel=(b/2)*log(a)+rootisum -expon*log(nu*lambda - arma::sum(LtWtY%LtWtY) +yty);
+  double rel2=as<double>(wrap(rel));
+  return(rel2);
+} 
+//############################################################################################################################//
+
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+double sumtree_likelihood_function4(NumericVector y_temp,List sum_treetable ,List sum_obs_to_nodes,int n,double a,double nu,double lambda){
+  
+  //Eigenvalue attempt
+  
+  //make W and mu matrices for the sum of trees
+  arma::mat Wmat=W(sum_treetable,sum_obs_to_nodes,n);
+  double b=Wmat.n_cols;
+  arma::vec yvec=Rcpp::as<arma::vec>(y_temp);
+  arma::mat y(n,1);
+  y.col(0)=yvec;
+  //get exponent
+  double expon=(n+nu)/2;
+  //get y^Tpsi^{-1}y
+  // arma::mat psi_inv=psi.i();
+  arma::mat yty=y.t()*y;
+  
+  //get t(y)inv(psi)J
+  arma::mat ytW=y.t()*Wmat;
+  //get t(J)inv(psi)J  
+  arma::mat WtW=Wmat.t()*Wmat;
+  //get jpsij +aI
+  arma::mat aI(b,b);
+  aI=a*aI.eye();
+  arma::mat sec_term=WtW+aI;
+  
+ 
+  
+  arma::mat sec_term_inv=sec_term.i();
+  //get t(J)inv(psi)y
+  arma::mat third_term=Wmat.t()*y;
+  //get m^TV^{-1}m
+  arma::mat mvm= ytW*sec_term_inv*third_term;
+  
+  double logdet = sum(arma::log(arma::eig_sym(sec_term)));
+  
+  
+  arma::mat rel=(b/2)*log(a)-(1/2)*logdet-expon*log(nu*lambda - mvm +yty);
+  double rel2=as<double>(wrap(rel));
+  return(rel2);
+} 
 //######################################################################################################################//
 
 // [[Rcpp::depends(RcppArmadillo)]]
@@ -933,25 +1414,27 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
   NumericMatrix treemat_c=tree_mat;
   
   NumericVector terminal_nodes=find_term_nodes(treetable_c);
-  IntegerVector change_node1;
+  //IntegerVector change_node1;
   int list_size=1000;
   std::vector<double> tree_lik(list_size);
   List proposal_tree;
-  List ret(9);
+  //List ret(9);
+  List ret(4);
+  
   bool no_tree_err=0;
-  List likeliest_tree;
+  //List likeliest_tree;
   List tree_list(list_size);
   List tree_mat_list(list_size);
   int count=0;
-  std::vector<int> tree_parent(list_size);
-  int best_sv;
-  double best_sp;
+  //std::vector<int> tree_parent(list_size);
+  //int best_sv;
+  //double best_sp;
   double tree_prior=0;
   //List changetree;
   double BIC;
-  int p;
+  //int p;
   List eval_model;
-  NumericVector int_nodes;
+  //NumericVector int_nodes;
   //arma::colvec curr_col=data.col(0);
   //arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
   //NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
@@ -964,9 +1447,10 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
     //loop over each terminal node
     arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
     //depth of tree at current terminal node
-    NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
+    //NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
     arma::mat data_curr_node=data.rows(grow_obs);
-    double d=d1[0];
+    //double d=d1[0];
+    int d = find_term_cols(treemat_c,terminal_nodes[l]);
     int w=cp_mat.nrow();
     if(data_curr_node.n_rows<=min_num_obs_for_split){
       throw std::range_error("not enough obs in node to grow any further");
@@ -1016,43 +1500,45 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
       //   lik=likelihood_function(resids,proposal_tree[0],proposal_tree[1],a,mu,nu,lambda);  
       // }
       tree_prior=get_tree_prior(proposal_tree[0],proposal_tree[1],alpha,beta);
-      int_nodes=find_term_nodes(proposal_tree[0]);
-      p=int_nodes.size();
-      BIC=-2*(lik+log(tree_prior))+p*log(data.n_rows);  
+      //int_nodes=find_term_nodes(proposal_tree[0]);
+      //p=int_nodes.size();
+      //BIC=-2*(lik+log(tree_prior))+p*log(data.n_rows); 
+      BIC=-2*(lik+log(tree_prior));  
+      
       if(BIC<lowest_BIC){
         lowest_BIC=BIC;
-        best_sv=split_var;
-        best_sp=split_point;
-        likeliest_tree=proposal_tree;
+        //best_sv=split_var;
+        //best_sp=split_point;
+        //likeliest_tree=proposal_tree;
         tree_list[count]=proposal_tree[0];
         tree_mat_list[count]=proposal_tree[1];
         tree_lik[count]=BIC;
-        tree_parent[count]=parent;
+        //tree_parent[count]=parent;
         count++;
         if(count==(tree_list.size()-1)){
           list_size=list_size*2;
           tree_list=resize_bigger(tree_list,list_size);
           tree_mat_list=resize_bigger(tree_mat_list,list_size);
           tree_lik.resize(list_size);
-          tree_parent.resize(list_size);
+          //tree_parent.resize(list_size);
         }
       }else{
         if((BIC)-(lowest_BIC)<=c){
-          if(is<NumericMatrix>(proposal_tree[0])){
-          }else{
-            throw std::range_error("proposal tree not a matrix");
-          }
+          // if(is<NumericMatrix>(proposal_tree[0])){
+          // }else{
+          //   throw std::range_error("proposal tree not a matrix");
+          // }
           tree_list[count]=proposal_tree[0];
           tree_mat_list[count]=proposal_tree[1];
           tree_lik[count]=BIC;
-          tree_parent[count]=parent;
+          //tree_parent[count]=parent;
           count++;
           if(count==(tree_list.size()-1)){
             list_size=list_size*2;
             tree_list=resize_bigger(tree_list,list_size);
             tree_mat_list=resize_bigger(tree_mat_list,list_size);
             tree_lik.resize(list_size);
-            tree_parent.resize(list_size);						  
+            //tree_parent.resize(list_size);						  
           }
         }
       }
@@ -1061,9 +1547,11 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
   tree_list=resize(tree_list,count);
   tree_mat_list=resize(tree_mat_list,count);
   tree_lik.resize(count);
-  tree_parent.resize(count);
+  //tree_parent.resize(count);
+  IntegerVector tree_parent(count, parent);
   if(count>0){
-    eval_model=evaluate_model_occams_window(wrap(tree_lik),lowest_BIC,log(c),wrap(tree_list),wrap(tree_mat_list),wrap(tree_parent));
+    //eval_model=evaluate_model_occams_window(wrap(tree_lik),lowest_BIC,log(c),wrap(tree_list),wrap(tree_mat_list),wrap(tree_parent));
+    eval_model=evaluate_model_occams_window(wrap(tree_lik),lowest_BIC,log(c),wrap(tree_list),wrap(tree_mat_list),tree_parent);
     NumericVector testlik =eval_model[0];
     List testtree =eval_model[1];    
     List testmat =eval_model[2]; 
@@ -1090,16 +1578,22 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
         testmat=temp_omat;
         testpar=temp_oparent;
       }
-      ret[0]=lowest_BIC;
-      ret[1]=best_sv;
-      ret[2]=best_sp;
-      ret[3]=likeliest_tree;
-      ret[4]=testtree;
-      ret[5]=testlik;
-      ret[6]=testmat;
-      ret[7]=testpar;
-      ret[8]=no_tree_err;
+      // ret[0]=lowest_BIC;
+      // ret[1]=best_sv;
+      // ret[2]=best_sp;
+      // ret[3]=likeliest_tree;
+      // ret[4]=testtree;
+      // ret[5]=testlik;
+      // ret[6]=testmat;
+      // ret[7]=testpar;
+      // ret[8]=no_tree_err;
       
+      
+      ret[0]=testtree;
+      ret[1]=testlik;
+      ret[2]=testmat;
+      ret[3]=testpar;
+
       return (ret);
     }else{
       //if no trees are found within Occam's window function will return an error to main
@@ -1119,7 +1613,7 @@ List get_best_split(NumericVector resids,arma::mat& data,NumericMatrix treetable
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
 
-List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,
+List get_best_split_sum(arma::mat& data,NumericMatrix treetable,NumericMatrix tree_mat,
                         double a,double mu,double nu,double lambda,double c,double lowest_BIC,
                         int parent,NumericMatrix cp_mat,double alpha,double beta,int maxOWsize,//int first_round,
                         List sum_trees,List sum_trees_mat,NumericVector y_scaled,IntegerVector parent2,int i,
@@ -1130,27 +1624,28 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
   NumericMatrix treemat_c=tree_mat;
   
   NumericVector terminal_nodes=find_term_nodes(treetable_c);
-  IntegerVector change_node1;
+  //IntegerVector change_node1;
   int list_size=1000;
   std::vector<double> tree_lik(list_size);
   List proposal_tree;
-  List ret(9);
+  //List ret(9);
+  List ret(4);
   bool no_tree_err=0;
-  List likeliest_tree;
+  //List likeliest_tree;
   List tree_list(list_size);
   List tree_mat_list(list_size);
   int count=0;
-  std::vector<int> tree_parent(list_size);
-  int best_sv;
-  double best_sp;
+  //std::vector<int> tree_parent(list_size);
+  //int best_sv;
+  //double best_sp;
   double tree_prior=1;
   //List changetree;
   double BIC;
   //int p;
-  int p_other=0;
+  //int p_other=0;
   List eval_model;
-  NumericVector int_nodes;
-  NumericVector other_int_nodes;
+  //NumericVector int_nodes;
+  //NumericVector other_int_nodes;
   //arma::colvec curr_col=data.col(0);
   //arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[0]);
   //NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[0]));
@@ -1163,16 +1658,18 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
     //loop over each terminal node
     arma::uvec grow_obs=find_term_obs(treemat_c,terminal_nodes[l]);
     //depth of tree at current terminal node
-    NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
+    //NumericVector d1=unique(find_term_cols(treemat_c,terminal_nodes[l]));
     arma::mat data_curr_node=data.rows(grow_obs);
-    double d=d1[0];
+    //double d=d1[0];
+    int d = find_term_cols(treemat_c,terminal_nodes[l]);
+    
     int w=cp_mat.nrow();
     if(data_curr_node.n_rows<=min_num_obs_for_split){
       throw std::range_error("not enough obs in node to grow any further");
       //continue;
     }
     for(int k=0;k<w;k++){
-      p_other=0;
+      //p_other=0;
       split_var=cp_mat(k,0)+1;
       //arma::colvec curr_cols=data.col(split_var-1);
       NumericVector get_min=get_grow_obs(data,wrap(grow_obs),split_var);
@@ -1210,43 +1707,43 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
       
       //It should not be possible for get_best_split to be used outside of the first round, therefore removing the if condition below
       //if(first_round==1){
-        lik=likelihood_function(resids,proposal_tree[0],proposal_tree[1],a,mu,nu,lambda);
+      //  lik=likelihood_function(resids,proposal_tree[0],proposal_tree[1],a,mu,nu,lambda);
       // }else{
-      //   SEXP s = sum_trees[parent2[i]];
-      //   if(is<List>(s)){
-      //     List sum_trees2=sum_trees[parent2[i]];
-      //     List sum_trees_mat2=sum_trees_mat[parent2[i]];
-      //     sum_trees2.push_back(proposal_tree[0]);
-      //     sum_trees_mat2.push_back(proposal_tree[1]);
-      //     lik=sumtree_likelihood_function(y_scaled,sum_trees2,sum_trees_mat2,y_scaled.size(),a,nu,lambda);  
-      //     for(int t=0;t<sum_trees2.size();t++){
-      //       NumericMatrix tree=sum_trees2[t];
-      //       other_int_nodes = find_term_nodes(tree);
-      //       p_other+=other_int_nodes.size();
-      //       NumericMatrix mat=sum_trees_mat2[t];
-      //       tree_prior*=get_tree_prior(tree,mat,alpha,beta);
-      //     }
-      //   }else{
-      //     NumericMatrix sum_trees2=sum_trees[parent2[i]];
-      //     NumericMatrix sum_trees_mat2=sum_trees_mat[parent2[i]];
-      //     other_int_nodes = find_term_nodes(sum_trees2);
-      //     //p_other=other_int_nodes.size();
-      //     List st(2);
-      //     List st_mat(2);
-      //     st[0]=sum_trees2;
-      //     st[1]=proposal_tree[0];
-      //     st_mat[0]=sum_trees_mat2;
-      //     st_mat[1]=proposal_tree[1];
-      //     // return(st);
-      //     lik=sumtree_likelihood_function(y_scaled,st,st_mat,y_scaled.size(),a,nu,lambda); 
-      //     for(int t=0;t<st.size();t++){
-      //       NumericMatrix tree=st[t];
-      //       NumericMatrix mat=st_mat[t];
-      //       other_int_nodes = find_term_nodes(tree);
-      //       p_other+=other_int_nodes.size();
-      //       tree_prior*=get_tree_prior(tree,mat,alpha,beta);
-      //     }
-      //   }  
+        SEXP s = sum_trees[parent2[i]];
+        if(is<List>(s)){
+          List sum_trees2=sum_trees[parent2[i]];
+          List sum_trees_mat2=sum_trees_mat[parent2[i]];
+          sum_trees2.push_back(proposal_tree[0]);
+          sum_trees_mat2.push_back(proposal_tree[1]);
+          lik=sumtree_likelihood_function2(y_scaled,sum_trees2,sum_trees_mat2,y_scaled.size(),a,nu,lambda);
+          for(int t=0;t<sum_trees2.size();t++){
+            NumericMatrix tree=sum_trees2[t];
+            //other_int_nodes = find_term_nodes(tree);
+            //p_other+=other_int_nodes.size();
+            NumericMatrix mat=sum_trees_mat2[t];
+            tree_prior*=get_tree_prior(tree,mat,alpha,beta);
+          }
+        }else{
+          NumericMatrix sum_trees2=sum_trees[parent2[i]];
+          NumericMatrix sum_trees_mat2=sum_trees_mat[parent2[i]];
+          //other_int_nodes = find_term_nodes(sum_trees2);
+          //p_other=other_int_nodes.size();
+          List st(2);
+          List st_mat(2);
+          st[0]=sum_trees2;
+          st[1]=proposal_tree[0];
+          st_mat[0]=sum_trees_mat2;
+          st_mat[1]=proposal_tree[1];
+          // return(st);
+          lik=sumtree_likelihood_function2(y_scaled,st,st_mat,y_scaled.size(),a,nu,lambda);
+          for(int t=0;t<st.size();t++){
+            NumericMatrix tree=st[t];
+            NumericMatrix mat=st_mat[t];
+            //other_int_nodes = find_term_nodes(tree);
+            //p_other+=other_int_nodes.size();
+            tree_prior*=get_tree_prior(tree,mat,alpha,beta);
+          }
+        }
       // }It should not be possible for get_best_split to be used outside o
       
       
@@ -1254,23 +1751,24 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
       
       //int_nodes=find_term_nodes(proposal_tree[0]);
       //p=int_nodes.size()+p_other; //COULD ADD 1 for the variance parameter, and more numbers for other parameters. (This might influence probability-weights, but not the ranking of BICs)
-      BIC=-2*(lik+log(tree_prior))+p_other*log(data.n_rows);  
-      if(BIC<lowest_BIC){
+      //BIC=-2*(lik+log(tree_prior))+p_other*log(data.n_rows);  
+        BIC=-2*(lik+log(tree_prior));  
+        if(BIC<lowest_BIC){
         lowest_BIC=BIC;
-        best_sv=split_var;
-        best_sp=split_point;
-        likeliest_tree=proposal_tree;
+        //best_sv=split_var;
+        //best_sp=split_point;
+        //likeliest_tree=proposal_tree;
         tree_list[count]=proposal_tree[0];
         tree_mat_list[count]=proposal_tree[1];
         tree_lik[count]=BIC;
-        tree_parent[count]=parent;
+        //tree_parent[count]=parent;
         count++;
         if(count==(tree_list.size()-1)){
           list_size=list_size*2;
           tree_list=resize_bigger(tree_list,list_size);
           tree_mat_list=resize_bigger(tree_mat_list,list_size);
           tree_lik.resize(list_size);
-          tree_parent.resize(list_size);
+          //tree_parent.resize(list_size);
         }
       }else{
         if((BIC)-(lowest_BIC)<=c){
@@ -1282,14 +1780,14 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
           tree_list[count]=proposal_tree[0];
           tree_mat_list[count]=proposal_tree[1];
           tree_lik[count]=BIC;
-          tree_parent[count]=parent;
+          //tree_parent[count]=parent;
           count++;
           if(count==(tree_list.size()-1)){
             list_size=list_size*2;
             tree_list=resize_bigger(tree_list,list_size);
             tree_mat_list=resize_bigger(tree_mat_list,list_size);
             tree_lik.resize(list_size);
-            tree_parent.resize(list_size);						  
+            //tree_parent.resize(list_size);						  
           }
         }
       }
@@ -1298,9 +1796,12 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
   tree_list=resize(tree_list,count);
   tree_mat_list=resize(tree_mat_list,count);
   tree_lik.resize(count);
-  tree_parent.resize(count);
+  //tree_parent.resize(count);
+  IntegerVector tree_parent(count, parent);
+  
   if(count>0){
-    eval_model=evaluate_model_occams_window(wrap(tree_lik),lowest_BIC,log(c),wrap(tree_list),wrap(tree_mat_list),wrap(tree_parent));
+    //eval_model=evaluate_model_occams_window(wrap(tree_lik),lowest_BIC,log(c),wrap(tree_list),wrap(tree_mat_list),wrap(tree_parent));
+    eval_model=evaluate_model_occams_window(wrap(tree_lik),lowest_BIC,log(c),wrap(tree_list),wrap(tree_mat_list),tree_parent);
     NumericVector testlik =eval_model[0];
     List testtree =eval_model[1];    
     List testmat =eval_model[2]; 
@@ -1327,16 +1828,21 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
         testmat=temp_omat;
         testpar=temp_oparent;
       }
-      ret[0]=lowest_BIC;
-      ret[1]=best_sv;
-      ret[2]=best_sp;
-      ret[3]=likeliest_tree;
-      ret[4]=testtree;
-      ret[5]=testlik;
-      ret[6]=testmat;
-      ret[7]=testpar;
-      ret[8]=no_tree_err;
+      // ret[0]=lowest_BIC;
+      // ret[1]=best_sv;
+      // ret[2]=best_sp;
+      // ret[3]=likeliest_tree;
+      // ret[4]=testtree;
+      // ret[5]=testlik;
+      // ret[6]=testmat;
+      // ret[7]=testpar;
+      // ret[8]=no_tree_err;
       
+      ret[0]=testtree;
+      ret[1]=testlik;
+      ret[2]=testmat;
+      ret[3]=testpar;
+
       return (ret);
     }else{
       //if no trees are found within Occam's window function will return an error to main
@@ -1357,13 +1863,13 @@ List get_best_split_sum(NumericVector resids,arma::mat& data,NumericMatrix treet
 // [[Rcpp::export]]
 NumericVector update_mean_var(NumericMatrix tree_table,NumericMatrix tree_matrix,NumericVector resids,double a){
   //Rcout << "Get to start of update_mean_var. \n";
-  List update_params(1);
+  //List update_params(1);
   NumericVector terminal_nodes;
   arma::uvec term_obs;
   terminal_nodes= find_term_nodes(tree_table);
   NumericVector Tj(terminal_nodes.size());
   NumericVector new_mean(terminal_nodes.size());
-  arma::vec armaresids=as<arma::vec>(resids);
+  //arma::vec armaresids=as<arma::vec>(resids);
   
   for(int k=0;k< terminal_nodes.size();k++){    
     term_obs=find_term_obs(tree_matrix,terminal_nodes[k]);
@@ -1479,8 +1985,8 @@ IntegerVector PELT_meanvar_norm2(NumericVector resp,double pen)
   NumericVector tmplike(n+1);
   IntegerVector tmpt(n+1);
   int tstar,i,whichout,nchecktmp;
-  double mll_meanvar();
-  void min_which();
+  //double mll_meanvar();
+  //void min_which();
   lastchangelike[0]= -pen;
   lastchangecpts[0]=0; lastchangecpts[n]=0;
   double x=y[1];
@@ -1500,7 +2006,7 @@ IntegerVector PELT_meanvar_norm2(NumericVector resp,double pen)
   checklist[1]=2;
   
   for(tstar=4;tstar<(n+1);tstar++){
-    R_CheckUserInterrupt(); // checks if user has interrupted the R session and quits if true 
+    //R_CheckUserInterrupt(); // checks if user has interrupted the R session and quits if true 
     
     for(i=0;i<nchecklist;i++){
       tmplike[i]=lastchangelike[checklist[i]] + mll_meanvar2(y[tstar]- y[checklist[i]],y2[tstar]-y2[checklist[i]],tstar-checklist[i])+pen;
@@ -1707,10 +2213,12 @@ List make_pelt_cpmat(NumericMatrix data,NumericVector resp,double pen,int num_cp
       IntegerVector pelt_sp=sorted_var[ans];
       NumericVector split_values=coli[pelt_sp];
       NumericVector unique_sp=unique(split_values);
-      NumericVector all_sp=coli[pelt_sp];
+      //NumericVector all_sp=coli[pelt_sp];
       
-      if(unique_sp.size()<all_sp.size()){
-        IntegerVector index=match(unique_sp,all_sp);
+      //if(unique_sp.size()<all_sp.size()){
+      if(unique_sp.size()<split_values.size()){
+        //IntegerVector index=match(unique_sp,all_sp);
+        IntegerVector index=match(unique_sp,split_values);
         arma::vec indexarma=as<arma::vec>(index);
         IntegerVector t4=ifelse(is_na(index),1,0);
         arma::vec t4arma=as<arma::vec>(t4);
@@ -1728,8 +2236,10 @@ List make_pelt_cpmat(NumericMatrix data,NumericVector resp,double pen,int num_cp
         arma::vec xLeft;
         arma::vec xRight;
         double splitpoint;
-        if(unique_sp.size()<all_sp.size()){
-          splitpoint = all_sp[j];
+        //if(unique_sp.size()<all_sp.size()){
+        //  splitpoint = all_sp[j];
+        if(unique_sp.size()<split_values.size()){
+          splitpoint = split_values[j];
           xLeft = resp_ar.elem(arma::find(coli_ar<=splitpoint));
           xRight = resp_ar.elem(arma::find(coli_ar>splitpoint));
         }else{
@@ -1795,7 +2305,8 @@ List make_pelt_cpmat(NumericMatrix data,NumericVector resp,double pen,int num_cp
 
 List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double nu,double lambda,double c,
                     double sigma_mu,List tree_table,List tree_mat,double lowest_BIC,//int first_round,
-                    IntegerVector parent,List cp_mat_list,IntegerVector err_list,NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split,
+                    IntegerVector parent,List cp_mat_list,//IntegerVector err_list,
+                    NumericMatrix test_data,double alpha,double beta,bool is_test_data,double pen,int num_cp,bool split_rule_node,bool gridpoint,int maxOWsize,int num_splits,int gridsize, bool zero_split,
                     unsigned int min_num_obs_for_split, unsigned int min_num_obs_after_split
 ){
   List eval_model;
@@ -1818,7 +2329,9 @@ List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double
     overall_parent2[0]=-1;
     double lik_temp=likelihood_function(resids,tree_table[0],tree_mat[0],a,mu,nu,lambda);
     double tree_prior_temp=get_tree_prior(tree_table[0],tree_mat[0],alpha,beta);
-    double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
+    //double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp))+1*log(D1.n_rows);
+    double lowest_BIC_temp=-2*(lik_temp+log(tree_prior_temp));
+    
     overall_lik[0]= lowest_BIC_temp;
     overall_count=1;  
   }
@@ -1844,10 +2357,14 @@ List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double
       if(best_subset.size()==1){
         continue;
       }
-      List temp_trees=best_subset[4];
-      List temp_mat=best_subset[6];
-      lik_list=best_subset[5];
-      IntegerVector temp_parent=best_subset[7];
+      // List temp_trees=best_subset[4];
+      // List temp_mat=best_subset[6];
+      // lik_list=best_subset[5];
+      // IntegerVector temp_parent=best_subset[7];
+      List temp_trees=best_subset[0];
+      List temp_mat=best_subset[2];
+      lik_list=best_subset[1];
+      IntegerVector temp_parent=best_subset[3];
       if(temp_parent.size()!= temp_trees.size()){
         throw std::range_error("there should be a parent for each tree!!!");
       }
@@ -1932,8 +2449,8 @@ List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double
     }
     
     tree_table=table_subset_curr_round;
-    IntegerVector temp1(table_subset_curr_round.size(),1);
-    err_list=temp1;
+    //IntegerVector temp1(table_subset_curr_round.size(),1);
+    //err_list=temp1;
     if(overall_trees.size()<overall_size-1){
       overall_trees=resize_bigger(overall_trees,overall_size);
       overall_mat=resize_bigger(overall_mat,overall_size);
@@ -2012,7 +2529,7 @@ List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double
   lowest_BIC=min(overall_lik2);
   //Rcout << "Line 1944. \n";
   for(int k=0;k<overall_trees.size();k++){
-    NumericVector terminal_nodes;
+    //NumericVector terminal_nodes;
     //Rcout << "Line 1947. k = " << k << ". \n";
     if(overall_parent2[k]==-1){
       //Rcout << "Line 1949. k = " << k << ". \n";
@@ -2023,28 +2540,37 @@ List get_best_trees(arma::mat& D1,NumericMatrix resids,double a,double mu,double
       new_mean=update_mean_var(overall_trees[k],overall_mat[k],resids(_,overall_parent2[k]),a);
     }
     //Rcout << "Line 1953. k = " << k << ". \n";
-    terminal_nodes=find_term_nodes(overall_trees[k]);
+    //terminal_nodes=find_term_nodes(overall_trees[k]);
     updated_preds=update_predictions(overall_trees[k],overall_mat[k],new_mean,D1.n_rows);
     //get the predicted values for the test data.
-    if(is_test_data) test_preds=get_testdata_term_obs(test_data,overall_trees[k],new_mean);
+    if(is_test_data) test_preds=get_testdata_term_obs(test_data,overall_trees[k]//,new_mean
+                                                        );
     temp_preds=updated_preds[1];
     overallpreds(_,k)=temp_preds;
     if(is_test_data)overall_test_preds(_,k)=test_preds;
     //Rcout << "Line 1961. k = " << k << ". \n";
   }
   arma::mat M1(overallpreds.begin(), overallpreds.nrow(), overallpreds.ncol(), false);
-  arma::colvec predicted_values=sum(M1,1);
+  //arma::colvec predicted_values=sum(M1,1);
   arma::mat M2(overall_test_preds.begin(), overall_test_preds.nrow(), overall_test_preds.ncol(), false);
-  arma::colvec predicted_test_values=sum(M2,1);
-  List ret(8);
+  //arma::colvec predicted_test_values=sum(M2,1);
+  // List ret(8);
+  // ret[0]=overall_lik2;
+  // ret[1]=overall_trees;
+  // ret[2]=overall_mat;
+  // ret[3]=predicted_values;
+  // ret[4]=overall_parent2;
+  // ret[5]=wrap(M1);
+  // ret[6]=lowest_BIC;
+  // ret[7]=wrap(M2);
+  List ret(7);
   ret[0]=overall_lik2;
   ret[1]=overall_trees;
   ret[2]=overall_mat;
-  ret[3]=predicted_values;
-  ret[4]=overall_parent2;
-  ret[5]=wrap(M1);
-  ret[6]=lowest_BIC;
-  ret[7]=wrap(M2);
+  ret[3]=overall_parent2;
+  ret[4]=wrap(M1);
+  ret[5]=lowest_BIC;
+  ret[6]=wrap(M2);
   return(ret);
 }
 //######################################################################################################################//
@@ -2089,22 +2615,23 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
         List sum_trees_mat2_temp=prev_sum_trees_mat[parent[q]];
         sum_trees2_temp.push_back(tree_table[0]);
         sum_trees_mat2_temp.push_back(tree_mat[0]);
-        double lik_temp=sumtree_likelihood_function(y_scaled,sum_trees2_temp,sum_trees_mat2_temp,y_scaled.size(),a,nu,lambda);  
+        double lik_temp=sumtree_likelihood_function2(y_scaled,sum_trees2_temp,sum_trees_mat2_temp,y_scaled.size(),a,nu,lambda);  
         double tree_prior_temp=1;
-        int p_other=0;
-        NumericVector other_int_nodes;
+        //int p_other=0;
+        //NumericVector other_int_nodes;
         //Rcout << "Get to loop over t. \n";
         
         for(int t=0;t<sum_trees2_temp.size();t++){
           NumericMatrix tree=sum_trees2_temp[t];
           NumericMatrix mat=sum_trees_mat2_temp[t];
-          other_int_nodes = find_term_nodes(tree);
-          p_other+=other_int_nodes.size();
+          //other_int_nodes = find_term_nodes(tree);
+          //p_other+=other_int_nodes.size();
           tree_prior_temp*=get_tree_prior(tree,mat,alpha,beta);
         }
         //Rcout << "Finish Loop. \n";
         
-        double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_other)*log(D1.n_rows);  
+        //double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_other)*log(D1.n_rows);  
+        double BIC=-2*(lik_temp+log(tree_prior_temp));  
         
         ////Rcout << "Get to fill in overall_. \n";
         
@@ -2132,19 +2659,20 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
         st_mat[0]=sum_trees_mat2;
         st_mat[1]=tree_mat[0];
         // return(st);
-        double lik_temp=sumtree_likelihood_function(y_scaled,st,st_mat,y_scaled.size(),a,nu,lambda);  
+        double lik_temp=sumtree_likelihood_function2(y_scaled,st,st_mat,y_scaled.size(),a,nu,lambda);  
         double tree_prior_temp=1;
-        int p_other=0;
-        NumericVector other_int_nodes;
+        //int p_other=0;
+        //NumericVector other_int_nodes;
         for(int t=0;t<st.size();t++){
           NumericMatrix tree=st[t];
           NumericMatrix mat=st_mat[t];
-          other_int_nodes = find_term_nodes(tree);
-          p_other+=other_int_nodes.size();
+          //other_int_nodes = find_term_nodes(tree);
+          //p_other+=other_int_nodes.size();
           tree_prior_temp*=get_tree_prior(tree,mat,alpha,beta);
         }
         
-        double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_other)*log(D1.n_rows);  
+        //double BIC=-2*(lik_temp+log(tree_prior_temp))+(p_other)*log(D1.n_rows);  
+        double BIC=-2*(lik_temp+log(tree_prior_temp));  
         
         
         overall_trees[overall_count]= tree_table[0];
@@ -2256,7 +2784,7 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
           NumericMatrix test_treemat=tree_mat[i];
           NumericMatrix test_cpmat= cp_mat_list[parent[i]];
           //need to append current tree_table[i] to its parent sum_of_trees   
-          best_subset=get_best_split_sum(resids(_,parent[i]),D1,tree_table[i],tree_mat[i],a,mu,nu,lambda,log(c),lowest_BIC,parent[i],cp_mat_list[parent[i]],
+          best_subset=get_best_split_sum(D1,tree_table[i],tree_mat[i],a,mu,nu,lambda,log(c),lowest_BIC,parent[i],cp_mat_list[parent[i]],
                                          alpha,beta,maxOWsize,//first_round,
                                          prev_sum_trees,prev_sum_trees_mat,y_scaled,parent,i,
                                          min_num_obs_for_split,min_num_obs_after_split);    
@@ -2282,10 +2810,14 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
         //Rcout << "CONTINUE. \n";
         continue;
       }
-      List temp_trees=best_subset[4];
-      List temp_mat=best_subset[6];
-      lik_list=best_subset[5];
-      IntegerVector temp_parent=best_subset[7];
+      // List temp_trees=best_subset[4];
+      // List temp_mat=best_subset[6];
+      // lik_list=best_subset[5];
+      // IntegerVector temp_parent=best_subset[7];
+      List temp_trees=best_subset[0];
+      List temp_mat=best_subset[2];
+      lik_list=best_subset[1];
+      IntegerVector temp_parent=best_subset[3];
       if(temp_parent.size()!= temp_trees.size()){
         throw std::range_error("there should be a parent for each tree!!!");
       }
@@ -2408,7 +2940,7 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
       NumericMatrix curr_resids(resids.nrow(),resids.ncol());
       
       for(int k=0;k<table_subset_curr_round.size();k++){
-        NumericVector terminal_nodes;
+        //NumericVector terminal_nodes;
         
         if(parent_curr_round[k]==-1){
           new_mean=update_mean_var(table_subset_curr_round[k],mat_subset_curr_round[k],resids(_,0),a);
@@ -2416,7 +2948,7 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
           new_mean=update_mean_var(table_subset_curr_round[k],mat_subset_curr_round[k],resids(_,parent_curr_round[k]),a);
         }  
         
-        terminal_nodes=find_term_nodes(table_subset_curr_round[k]);
+        //terminal_nodes=find_term_nodes(table_subset_curr_round[k]);
         updated_curr_preds=update_predictions(table_subset_curr_round[k],mat_subset_curr_round[k],new_mean,D1.n_rows);
         NumericVector test_res;
         
@@ -2476,7 +3008,7 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
   //Rcout << "overall_parent2.size()= " << overall_parent2.size() << " \n";
   
   for(int k=0;k<overall_trees.size();k++){
-    NumericVector terminal_nodes;
+    //NumericVector terminal_nodes;
     
     if(overall_parent2[k]==-1){
       //Rcout << "within update mean var. overall_parent2[k]= " << overall_parent2[k] << " \n";
@@ -2509,10 +3041,11 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
     }
     //Rcout << "Get past update mean_var. k= " << k << " \n";
     
-    terminal_nodes=find_term_nodes(overall_trees[k]);
+    //terminal_nodes=find_term_nodes(overall_trees[k]);
     updated_preds=update_predictions(overall_trees[k],overall_mat[k],new_mean,D1.n_rows);
     //get the predicted values for the test data.
-    if(is_test_data) test_preds=get_testdata_term_obs(test_data,overall_trees[k],new_mean);
+    if(is_test_data) test_preds=get_testdata_term_obs(test_data,overall_trees[k]//,new_mean
+                                                        );
     temp_preds=updated_preds[1];
     overallpreds(_,k)=temp_preds;
     if(is_test_data)overall_test_preds(_,k)=test_preds;
@@ -2520,19 +3053,27 @@ List get_best_trees_sum(arma::mat& D1,NumericMatrix resids,double a,double mu,do
   //Rcout << "Get to end of update mean loop. \n";
   
   arma::mat M1(overallpreds.begin(), overallpreds.nrow(), overallpreds.ncol(), false);
-  arma::colvec predicted_values=sum(M1,1);
+  //arma::colvec predicted_values=sum(M1,1);
   arma::mat M2(overall_test_preds.begin(), overall_test_preds.nrow(), overall_test_preds.ncol(), false);
-  arma::colvec predicted_test_values=sum(M2,1);
+  //arma::colvec predicted_test_values=sum(M2,1);
   //Rcout << "Get to end of get_est_trees_sum. \n";
-  List ret(8);
+  // List ret(8);
+  // ret[0]=overall_lik2;
+  // ret[1]=overall_trees;
+  // ret[2]=overall_mat;
+  // ret[3]=predicted_values;
+  // ret[4]=overall_parent2;
+  // ret[5]=wrap(M1);
+  // ret[6]=lowest_BIC;
+  // ret[7]=wrap(M2);
+  List ret(7);
   ret[0]=overall_lik2;
   ret[1]=overall_trees;
   ret[2]=overall_mat;
-  ret[3]=predicted_values;
-  ret[4]=overall_parent2;
-  ret[5]=wrap(M1);
-  ret[6]=lowest_BIC;
-  ret[7]=wrap(M2);
+  ret[3]=overall_parent2;
+  ret[4]=wrap(M1);
+  ret[5]=lowest_BIC;
+  ret[6]=wrap(M2);
   return(ret);
 }
 //######################################################################################################################//
@@ -2583,7 +3124,8 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
   if(num_cp<0 || num_cp>100){
     throw std::range_error("Value of num_cp should be a value between 1 and 100."); 
   }
-  NumericMatrix treetable=start_tree(mu,sigma_mu);
+  //NumericMatrix treetable=start_tree(mu,sigma_mu);
+  NumericMatrix treetable=start_tree2();
   NumericMatrix treemat=start_matrix(data.nrow());
   //initialize the tree table and matrix
   NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
@@ -2593,7 +3135,8 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
   //	double lik=likelihood_function(y_scaled,treetable,treemat,a,mu,nu,lambda);
   double lik=likelihood_function(y_scaled,treetable,treemat,a,mu,nu,lambda);
   double tree_prior=get_tree_prior(treetable,treemat,alpha,beta);
-  double lowest_BIC=-2*(lik+log(tree_prior))+1*log(n);
+  //double lowest_BIC=-2*(lik+log(tree_prior))+1*log(n);
+  double lowest_BIC=-2*(lik+log(tree_prior));
   List best_subset;  
   List tree_table;
   List tree_mat;
@@ -2696,7 +3239,8 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
     //get current set of trees.
     if(j==0){
       CART_BMA=get_best_trees(D1, resids, a,mu,nu,lambda,c,sigma_mu,tree_table,tree_mat,lowest_BIC,//first_round,
-                              parent,resids_cp_mat,as<IntegerVector>(wrap(err_list)),test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split,
+                              parent,resids_cp_mat,//as<IntegerVector>(wrap(err_list)),
+                              test_data,alpha,beta,is_test_data,pen,num_cp,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split,
                               min_num_obs_for_split, min_num_obs_after_split);
       
     }else{
@@ -2714,10 +3258,10 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
     curr_round_lik=CART_BMA[0];
     curr_round_trees=CART_BMA[1];      
     curr_round_mat=CART_BMA[2];
-    curr_round_parent=CART_BMA[4];
-    NumericMatrix curr_round_preds=CART_BMA[5];
-    NumericMatrix curr_round_test_preds=CART_BMA[7];
-    curr_BIC=CART_BMA[6];
+    curr_round_parent=CART_BMA[3];
+    NumericMatrix curr_round_preds=CART_BMA[4];
+    NumericMatrix curr_round_test_preds=CART_BMA[6];
+    curr_BIC=CART_BMA[5];
     if(curr_round_lik.size()==0) {
       //Rcout << "Break because curr_round_lik.size()==0 in outer loop number " << j << " . \n";
       if(j==0){
@@ -2752,7 +3296,8 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
     List temp_sum_trees_mat(lsize);
     int count=0; 
     for(int k=0;k<curr_round_lik.size();k++){
-      tree_table[count]=start_tree(mu,sigma_mu);
+      //tree_table[count]=start_tree(mu,sigma_mu);
+      tree_table[count]=start_tree2();
       tree_mat[count]=start_matrix(n);
       if(j==0){
         temp_preds(_,k)=curr_round_preds(_,k);
@@ -2966,14 +3511,14 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
     if(j==0){  
       prev_sum_trees=temp_sum_trees;
       prev_sum_tree_resids=temp_sum_tree_resids;
-      NumericMatrix test=prev_sum_trees[0];
+      //NumericMatrix test=prev_sum_trees[0];
       prev_sum_trees_mat=temp_sum_trees_mat; 
-      overall_sum_trees=resize(temp_sum_trees,temp_sum_trees.size());
+      //overall_sum_trees=resize(temp_sum_trees,temp_sum_trees.size());
       overall_sum_trees=temp_sum_trees;
-      overall_sum_tree_resids=resize(temp_sum_tree_resids,temp_sum_tree_resids.size());
+      //overall_sum_tree_resids=resize(temp_sum_tree_resids,temp_sum_tree_resids.size());
       overall_sum_tree_resids=temp_sum_tree_resids;
       overall_sum_trees_mat=temp_sum_trees_mat; 
-      overall_sum_trees_mat=resize(temp_sum_trees_mat,temp_sum_trees.size());
+      //overall_sum_trees_mat=resize(temp_sum_trees_mat,temp_sum_trees.size());
       overall_sum_BIC=temp_BIC;
       overall_sum_preds= Rcpp::as<arma::mat>(temp_preds);
       if(is_test_data==1) overall_sum_test_preds= Rcpp::as<arma::mat>(temp_test_preds);
@@ -3074,9 +3619,9 @@ List BART_BMA_sumLikelihood(NumericMatrix data,NumericVector y,double start_mean
     if(is_test_data==1){
       orig_test_preds=get_original(min(y),max(y),-0.5,0.5,wrap(predicted_test_values)) ;
     }
-    NumericVector minmax(2);
-    minmax[0]=min(y);
-    minmax[1]=max(y);
+    //NumericVector minmax(2);
+    //minmax[0]=min(y);
+    //minmax[1]=max(y);
     //Rcout << "Get to defining ret \n";
     if(is_test_data==1){
       List ret(6);

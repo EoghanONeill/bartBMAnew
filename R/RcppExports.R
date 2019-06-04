@@ -135,6 +135,10 @@ start_tree <- function(start_mean, start_sd) {
     .Call(`_bartBMAnew_start_tree`, start_mean, start_sd)
 }
 
+start_tree2 <- function() {
+    .Call(`_bartBMAnew_start_tree2`)
+}
+
 start_matrix <- function(n) {
     .Call(`_bartBMAnew_start_matrix`, n)
 }
@@ -143,8 +147,12 @@ evaluate_model_occams_window <- function(tree_lik, lowest_BIC, c, tree_list, tre
     .Call(`_bartBMAnew_evaluate_model_occams_window`, tree_lik, lowest_BIC, c, tree_list, tree_mat_list, tree_parent)
 }
 
-get_testdata_term_obs <- function(test_data, tree_data, term_node_means) {
-    .Call(`_bartBMAnew_get_testdata_term_obs`, test_data, tree_data, term_node_means)
+get_testdata_term_obs <- function(test_data, tree_data) {
+    .Call(`_bartBMAnew_get_testdata_term_obs`, test_data, tree_data)
+}
+
+get_initial_resids <- function(test_data, List_of_lists_tree_tables, ytrain) {
+    .Call(`_bartBMAnew_get_initial_resids`, test_data, List_of_lists_tree_tables, ytrain)
 }
 
 resize <- function(x, n) {
@@ -155,8 +163,8 @@ resize_bigger <- function(x, n) {
     .Call(`_bartBMAnew_resize_bigger`, x, n)
 }
 
-J <- function(treetable_temp, obs_to_nodes_temp, tree_term_nodes) {
-    .Call(`_bartBMAnew_J`, treetable_temp, obs_to_nodes_temp, tree_term_nodes)
+J <- function(obs_to_nodes_temp, tree_term_nodes) {
+    .Call(`_bartBMAnew_J`, obs_to_nodes_temp, tree_term_nodes)
 }
 
 mu_vector <- function(sum_treetable, n) {
@@ -167,16 +175,32 @@ W <- function(sum_treetable, sum_obs_to_nodes, n) {
     .Call(`_bartBMAnew_W`, sum_treetable, sum_obs_to_nodes, n)
 }
 
+likelihood_function2 <- function(y_temp, treetable_temp, obs_to_nodes_temp, a, mu, nu, lambda) {
+    .Call(`_bartBMAnew_likelihood_function2`, y_temp, treetable_temp, obs_to_nodes_temp, a, mu, nu, lambda)
+}
+
 sumtree_likelihood_function <- function(y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda) {
     .Call(`_bartBMAnew_sumtree_likelihood_function`, y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda)
+}
+
+sumtree_likelihood_function2 <- function(y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda) {
+    .Call(`_bartBMAnew_sumtree_likelihood_function2`, y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda)
+}
+
+sumtree_likelihood_function3 <- function(y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda) {
+    .Call(`_bartBMAnew_sumtree_likelihood_function3`, y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda)
+}
+
+sumtree_likelihood_function4 <- function(y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda) {
+    .Call(`_bartBMAnew_sumtree_likelihood_function4`, y_temp, sum_treetable, sum_obs_to_nodes, n, a, nu, lambda)
 }
 
 get_best_split <- function(resids, data, treetable, tree_mat, a, mu, nu, lambda, c, lowest_BIC, parent, cp_mat, alpha, beta, maxOWsize, min_num_obs_for_split, min_num_obs_after_split) {
     .Call(`_bartBMAnew_get_best_split`, resids, data, treetable, tree_mat, a, mu, nu, lambda, c, lowest_BIC, parent, cp_mat, alpha, beta, maxOWsize, min_num_obs_for_split, min_num_obs_after_split)
 }
 
-get_best_split_sum <- function(resids, data, treetable, tree_mat, a, mu, nu, lambda, c, lowest_BIC, parent, cp_mat, alpha, beta, maxOWsize, sum_trees, sum_trees_mat, y_scaled, parent2, i, min_num_obs_for_split, min_num_obs_after_split) {
-    .Call(`_bartBMAnew_get_best_split_sum`, resids, data, treetable, tree_mat, a, mu, nu, lambda, c, lowest_BIC, parent, cp_mat, alpha, beta, maxOWsize, sum_trees, sum_trees_mat, y_scaled, parent2, i, min_num_obs_for_split, min_num_obs_after_split)
+get_best_split_sum <- function(data, treetable, tree_mat, a, mu, nu, lambda, c, lowest_BIC, parent, cp_mat, alpha, beta, maxOWsize, sum_trees, sum_trees_mat, y_scaled, parent2, i, min_num_obs_for_split, min_num_obs_after_split) {
+    .Call(`_bartBMAnew_get_best_split_sum`, data, treetable, tree_mat, a, mu, nu, lambda, c, lowest_BIC, parent, cp_mat, alpha, beta, maxOWsize, sum_trees, sum_trees_mat, y_scaled, parent2, i, min_num_obs_for_split, min_num_obs_after_split)
 }
 
 update_mean_var <- function(tree_table, tree_matrix, resids, a) {
@@ -223,8 +247,8 @@ make_pelt_cpmat <- function(data, resp, pen, num_cp) {
     .Call(`_bartBMAnew_make_pelt_cpmat`, data, resp, pen, num_cp)
 }
 
-get_best_trees <- function(D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split, min_num_obs_for_split, min_num_obs_after_split) {
-    .Call(`_bartBMAnew_get_best_trees`, D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split, min_num_obs_for_split, min_num_obs_after_split)
+get_best_trees <- function(D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, parent, cp_mat_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split, min_num_obs_for_split, min_num_obs_after_split) {
+    .Call(`_bartBMAnew_get_best_trees`, D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, parent, cp_mat_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, num_splits, gridsize, zero_split, min_num_obs_for_split, min_num_obs_after_split)
 }
 
 get_best_trees_sum <- function(D1, resids, a, mu, nu, lambda, c, sigma_mu, tree_table, tree_mat, lowest_BIC, parent, cp_mat_list, err_list, test_data, alpha, beta, is_test_data, pen, num_cp, split_rule_node, gridpoint, maxOWsize, prev_sum_trees, prev_sum_trees_mat, y_scaled, num_splits, gridsize, zero_split, min_num_obs_for_split, min_num_obs_after_split) {
@@ -261,8 +285,8 @@ calculate_resids <- function(predictions, response) {
     .Call(`_bartBMAnew_calculate_resids`, predictions, response)
 }
 
-update_Gibbs_mean_var <- function(tree_table, resids, a, sigma, mu_mu, terminal_nodes, term_obs_tree) {
-    .Call(`_bartBMAnew_update_Gibbs_mean_var`, tree_table, resids, a, sigma, mu_mu, terminal_nodes, term_obs_tree)
+update_Gibbs_mean_var <- function(resids, a, sigma, mu_mu, terminal_nodes, term_obs_tree) {
+    .Call(`_bartBMAnew_update_Gibbs_mean_var`, resids, a, sigma, mu_mu, terminal_nodes, term_obs_tree)
 }
 
 update_sigma <- function(a1, b, resids, n) {
@@ -285,8 +309,8 @@ get_new_mean <- function(terminal_nodes, new_mean_var) {
     .Call(`_bartBMAnew_get_new_mean`, terminal_nodes, new_mean_var)
 }
 
-update_predictions_gs <- function(tree_table, new_mean, new_var, n, terminal_nodes, term_obs_tree) {
-    .Call(`_bartBMAnew_update_predictions_gs`, tree_table, new_mean, new_var, n, terminal_nodes, term_obs_tree)
+update_predictions_gs <- function(new_mean, new_var, n, terminal_nodes, term_obs_tree) {
+    .Call(`_bartBMAnew_update_predictions_gs`, new_mean, new_var, n, terminal_nodes, term_obs_tree)
 }
 
 scale_response_gs <- function(a, b, c, d, y) {
@@ -331,6 +355,26 @@ gibbs_sampler_no_update2 <- function(overall_sum_trees, overall_sum_mat, y, BIC_
 
 #' @title Obtain draws from gibbs sampler
 #' @export
+gibbs_sampler_exp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data) {
+    .Call(`_bartBMAnew_gibbs_sampler_exp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data)
+}
+
+gibbs_sampler2_exp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids) {
+    .Call(`_bartBMAnew_gibbs_sampler2_exp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_no_update_exp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update_exp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data)
+}
+
+gibbs_sampler_no_update2_exp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update2_exp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
 gibbs_sampler_ITE <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data) {
     .Call(`_bartBMAnew_gibbs_sampler_ITE`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data)
 }
@@ -347,5 +391,65 @@ gibbs_sampler_ITE_no_update <- function(overall_sum_trees, overall_sum_mat, y, B
 
 gibbs_sampler_ITE_no_update2 <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data) {
     .Call(`_bartBMAnew_gibbs_sampler_ITE_no_update2`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list)
+}
+
+gibbs_sampler2_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler2_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_no_update_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list)
+}
+
+gibbs_sampler_no_update2_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update2_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_exp_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_exp_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list)
+}
+
+gibbs_sampler2_exp_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler2_exp_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_no_update_exp_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update_exp_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, test_data, new_pred_list)
+}
+
+gibbs_sampler_no_update2_exp_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_no_update2_exp_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, new_pred_list)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_ITE_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list)
+}
+
+gibbs_sampler_ITE2_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE2_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list)
+}
+
+#' @title Obtain draws from gibbs sampler
+#' @export
+gibbs_sampler_ITE_no_update_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE_no_update_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list)
+}
+
+gibbs_sampler_ITE_no_update2_new_inits <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list) {
+    .Call(`_bartBMAnew_gibbs_sampler_ITE_no_update2_new_inits`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, resids, all_treated_data, all_control_data, new_pred_list)
 }
 
