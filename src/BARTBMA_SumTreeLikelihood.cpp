@@ -1672,7 +1672,7 @@ List get_best_split_sum(arma::mat& data,NumericMatrix treetable,NumericMatrix tr
       //p_other=0;
       split_var=cp_mat(k,0)+1;
       //arma::colvec curr_cols=data.col(split_var-1);
-      NumericVector get_min=get_grow_obs(data,wrap(grow_obs),split_var);
+      //NumericVector get_min=get_grow_obs(data,wrap(grow_obs),split_var);
       
       // The following lines are unnecessary because get_min.size()=data_curr_node.n_rows above
       // if(get_min.size()<=2){
