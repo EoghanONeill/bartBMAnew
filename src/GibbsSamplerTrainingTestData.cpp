@@ -10,7 +10,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 
 NumericVector find_term_nodes_gs(NumericMatrix tree_table){
-  NumericVector terminal_nodes;
+  //NumericVector terminal_nodes;
   arma::mat arma_tree(tree_table.begin(),tree_table.nrow(), tree_table.ncol(), false); 
   
   arma::vec colmat=arma_tree.col(4);
@@ -300,9 +300,9 @@ List get_tree_info_test_data(NumericMatrix test_data,NumericMatrix tree_data) {
   
   arma::mat arma_tree(tree_data.begin(), tree_data.nrow(), tree_data.ncol(), false);
   arma::mat testd(test_data.begin(), test_data.nrow(), test_data.ncol(), false);
-  NumericVector internal_nodes=find_internal_nodes_gs(tree_data);
+  //NumericVector internal_nodes=find_internal_nodes_gs(tree_data);
   NumericVector terminal_nodes=find_term_nodes_gs(tree_data);
-  arma::vec arma_terminal_nodes=Rcpp::as<arma::vec>(terminal_nodes);
+  //arma::vec arma_terminal_nodes=Rcpp::as<arma::vec>(terminal_nodes);
   NumericVector tree_predictions;
   
   //now for each internal node find the observations that belong to the terminal nodes
@@ -317,7 +317,7 @@ List get_tree_info_test_data(NumericMatrix test_data,NumericMatrix tree_data) {
   }
   else{
   for(int i=0;i<terminal_nodes.size();i++){
-  arma::mat subdata=testd;
+  //arma::mat subdata=testd;
   int curr_term=terminal_nodes[i];
   int row_index;
   int term_node=terminal_nodes[i];

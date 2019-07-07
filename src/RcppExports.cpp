@@ -992,6 +992,267 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_termobs_test_data
+List get_termobs_test_data(NumericMatrix test_data, NumericMatrix tree_data);
+RcppExport SEXP _bartBMAnew_get_termobs_test_data(SEXP test_dataSEXP, SEXP tree_dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type tree_data(tree_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_termobs_test_data(test_data, tree_data));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_termobs_testdata_overall
+List get_termobs_testdata_overall(List overall_sum_trees, NumericMatrix test_data);
+RcppExport SEXP _bartBMAnew_get_termobs_testdata_overall(SEXP overall_sum_treesSEXP, SEXP test_dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_termobs_testdata_overall(overall_sum_trees, test_data));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_J_test
+arma::mat get_J_test(List curr_termobs, NumericVector tree_term_nodes, int n);
+RcppExport SEXP _bartBMAnew_get_J_test(SEXP curr_termobsSEXP, SEXP tree_term_nodesSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type curr_termobs(curr_termobsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tree_term_nodes(tree_term_nodesSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_J_test(curr_termobs, tree_term_nodes, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_W_test
+arma::mat get_W_test(List sum_treetable, List termobs_testdata_onemodel, int n);
+RcppExport SEXP _bartBMAnew_get_W_test(SEXP sum_treetableSEXP, SEXP termobs_testdata_onemodelSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type sum_treetable(sum_treetableSEXP);
+    Rcpp::traits::input_parameter< List >::type termobs_testdata_onemodel(termobs_testdata_onemodelSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_W_test(sum_treetable, termobs_testdata_onemodel, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// preds_bbma_lin_alg_outsamp
+NumericVector preds_bbma_lin_alg_outsamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, int num_test_obs, double a, double sigma, double mu_mu, double nu, double lambda, NumericMatrix test_data);
+RcppExport SEXP _bartBMAnew_preds_bbma_lin_alg_outsamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP num_test_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP test_dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_test_obs(num_test_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(preds_bbma_lin_alg_outsamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data));
+    return rcpp_result_gen;
+END_RCPP
+}
+// preds_bbma_lin_alg_insamp
+NumericVector preds_bbma_lin_alg_insamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, double a, double sigma, double mu_mu, double nu, double lambda);
+RcppExport SEXP _bartBMAnew_preds_bbma_lin_alg_insamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    rcpp_result_gen = Rcpp::wrap(preds_bbma_lin_alg_insamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mean_vars_lin_alg_outsamp
+List mean_vars_lin_alg_outsamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, int num_test_obs, double a, double sigma, double mu_mu, double nu, double lambda, NumericMatrix test_data);
+RcppExport SEXP _bartBMAnew_mean_vars_lin_alg_outsamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP num_test_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP test_dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_test_obs(num_test_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(mean_vars_lin_alg_outsamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mean_vars_lin_alg_insamp
+List mean_vars_lin_alg_insamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, int num_test_obs, double a, double sigma, double mu_mu, double nu, double lambda, NumericMatrix test_data);
+RcppExport SEXP _bartBMAnew_mean_vars_lin_alg_insamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP num_test_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP test_dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_test_obs(num_test_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(mean_vars_lin_alg_insamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Quantile
+Rcpp::NumericVector Quantile(Rcpp::NumericVector x, Rcpp::NumericVector probs);
+RcppExport SEXP _bartBMAnew_Quantile(SEXP xSEXP, SEXP probsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type probs(probsSEXP);
+    rcpp_result_gen = Rcpp::wrap(Quantile(x, probs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_ints_lin_alg_outsamp
+List pred_ints_lin_alg_outsamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, int num_test_obs, double a, double sigma, double mu_mu, double nu, double lambda, NumericMatrix test_data, double lower_prob, double upper_prob);
+RcppExport SEXP _bartBMAnew_pred_ints_lin_alg_outsamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP num_test_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP test_dataSEXP, SEXP lower_probSEXP, SEXP upper_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_test_obs(num_test_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    Rcpp::traits::input_parameter< double >::type lower_prob(lower_probSEXP);
+    Rcpp::traits::input_parameter< double >::type upper_prob(upper_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_ints_lin_alg_outsamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_ints_lin_alg_insamp
+List pred_ints_lin_alg_insamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, int num_test_obs, double a, double sigma, double mu_mu, double nu, double lambda, NumericMatrix test_data, double lower_prob, double upper_prob);
+RcppExport SEXP _bartBMAnew_pred_ints_lin_alg_insamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP num_test_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP test_dataSEXP, SEXP lower_probSEXP, SEXP upper_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_test_obs(num_test_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    Rcpp::traits::input_parameter< double >::type lower_prob(lower_probSEXP);
+    Rcpp::traits::input_parameter< double >::type upper_prob(upper_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_ints_lin_alg_insamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_ints_chol_attempt_outsamp
+List pred_ints_chol_attempt_outsamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, int num_test_obs, double a, double sigma, double mu_mu, double nu, double lambda, NumericMatrix test_data, double lower_prob, double upper_prob);
+RcppExport SEXP _bartBMAnew_pred_ints_chol_attempt_outsamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP num_test_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP test_dataSEXP, SEXP lower_probSEXP, SEXP upper_probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_test_obs(num_test_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    Rcpp::traits::input_parameter< double >::type lower_prob(lower_probSEXP);
+    Rcpp::traits::input_parameter< double >::type upper_prob(upper_probSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_ints_chol_attempt_outsamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_ints_lin_alg_parallel_outsamp
+List pred_ints_lin_alg_parallel_outsamp(List overall_sum_trees, List overall_sum_mat, NumericVector y, NumericVector BIC_weights, int num_iter, int burnin, int num_obs, int num_test_obs, double a, double sigma, double mu_mu, double nu, double lambda, NumericMatrix test_data, double lower_prob, double upper_prob, int num_cores);
+RcppExport SEXP _bartBMAnew_pred_ints_lin_alg_parallel_outsamp(SEXP overall_sum_treesSEXP, SEXP overall_sum_matSEXP, SEXP ySEXP, SEXP BIC_weightsSEXP, SEXP num_iterSEXP, SEXP burninSEXP, SEXP num_obsSEXP, SEXP num_test_obsSEXP, SEXP aSEXP, SEXP sigmaSEXP, SEXP mu_muSEXP, SEXP nuSEXP, SEXP lambdaSEXP, SEXP test_dataSEXP, SEXP lower_probSEXP, SEXP upper_probSEXP, SEXP num_coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type overall_sum_trees(overall_sum_treesSEXP);
+    Rcpp::traits::input_parameter< List >::type overall_sum_mat(overall_sum_matSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type BIC_weights(BIC_weightsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_iter(num_iterSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type num_obs(num_obsSEXP);
+    Rcpp::traits::input_parameter< int >::type num_test_obs(num_test_obsSEXP);
+    Rcpp::traits::input_parameter< double >::type a(aSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_mu(mu_muSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type test_data(test_dataSEXP);
+    Rcpp::traits::input_parameter< double >::type lower_prob(lower_probSEXP);
+    Rcpp::traits::input_parameter< double >::type upper_prob(upper_probSEXP);
+    Rcpp::traits::input_parameter< int >::type num_cores(num_coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_ints_lin_alg_parallel_outsamp(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob, num_cores));
+    return rcpp_result_gen;
+END_RCPP
+}
 // find_term_nodes_gs
 NumericVector find_term_nodes_gs(NumericMatrix tree_table);
 RcppExport SEXP _bartBMAnew_find_term_nodes_gs(SEXP tree_tableSEXP) {
@@ -1866,6 +2127,19 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bartBMAnew_scale_response", (DL_FUNC) &_bartBMAnew_scale_response, 5},
     {"_bartBMAnew_get_original", (DL_FUNC) &_bartBMAnew_get_original, 5},
     {"_bartBMAnew_BART_BMA_sumLikelihood", (DL_FUNC) &_bartBMAnew_BART_BMA_sumLikelihood, 25},
+    {"_bartBMAnew_get_termobs_test_data", (DL_FUNC) &_bartBMAnew_get_termobs_test_data, 2},
+    {"_bartBMAnew_get_termobs_testdata_overall", (DL_FUNC) &_bartBMAnew_get_termobs_testdata_overall, 2},
+    {"_bartBMAnew_get_J_test", (DL_FUNC) &_bartBMAnew_get_J_test, 3},
+    {"_bartBMAnew_get_W_test", (DL_FUNC) &_bartBMAnew_get_W_test, 3},
+    {"_bartBMAnew_preds_bbma_lin_alg_outsamp", (DL_FUNC) &_bartBMAnew_preds_bbma_lin_alg_outsamp, 14},
+    {"_bartBMAnew_preds_bbma_lin_alg_insamp", (DL_FUNC) &_bartBMAnew_preds_bbma_lin_alg_insamp, 12},
+    {"_bartBMAnew_mean_vars_lin_alg_outsamp", (DL_FUNC) &_bartBMAnew_mean_vars_lin_alg_outsamp, 14},
+    {"_bartBMAnew_mean_vars_lin_alg_insamp", (DL_FUNC) &_bartBMAnew_mean_vars_lin_alg_insamp, 14},
+    {"_bartBMAnew_Quantile", (DL_FUNC) &_bartBMAnew_Quantile, 2},
+    {"_bartBMAnew_pred_ints_lin_alg_outsamp", (DL_FUNC) &_bartBMAnew_pred_ints_lin_alg_outsamp, 16},
+    {"_bartBMAnew_pred_ints_lin_alg_insamp", (DL_FUNC) &_bartBMAnew_pred_ints_lin_alg_insamp, 16},
+    {"_bartBMAnew_pred_ints_chol_attempt_outsamp", (DL_FUNC) &_bartBMAnew_pred_ints_chol_attempt_outsamp, 16},
+    {"_bartBMAnew_pred_ints_lin_alg_parallel_outsamp", (DL_FUNC) &_bartBMAnew_pred_ints_lin_alg_parallel_outsamp, 17},
     {"_bartBMAnew_find_term_nodes_gs", (DL_FUNC) &_bartBMAnew_find_term_nodes_gs, 1},
     {"_bartBMAnew_find_term_obs_gs", (DL_FUNC) &_bartBMAnew_find_term_obs_gs, 2},
     {"_bartBMAnew_calc_rowsums", (DL_FUNC) &_bartBMAnew_calc_rowsums, 1},
