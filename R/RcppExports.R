@@ -273,6 +273,10 @@ get_termobs_test_data <- function(test_data, tree_data) {
     .Call(`_bartBMAnew_get_termobs_test_data`, test_data, tree_data)
 }
 
+get_termobs_test_data_fields <- function(test_data, tree_data) {
+    .Call(`_bartBMAnew_get_termobs_test_data_fields`, test_data, tree_data)
+}
+
 get_termobs_testdata_overall <- function(overall_sum_trees, test_data) {
     .Call(`_bartBMAnew_get_termobs_testdata_overall`, overall_sum_trees, test_data)
 }
@@ -335,6 +339,18 @@ pred_ints_chol_attempt_outsamp <- function(overall_sum_trees, overall_sum_mat, y
 #' @export
 pred_ints_lin_alg_parallel_outsamp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob, num_cores) {
     .Call(`_bartBMAnew_pred_ints_lin_alg_parallel_outsamp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob, num_cores)
+}
+
+#' @title Obtain BARTBMA predictions
+#' @export
+pred_ints_lin_alg_fields_outsamp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob, num_cores) {
+    .Call(`_bartBMAnew_pred_ints_lin_alg_fields_outsamp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob, num_cores)
+}
+
+#' @title Obtain BARTBMA predictions
+#' @export
+mean_vars_lin_alg_parallel_outsamp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, num_cores) {
+    .Call(`_bartBMAnew_mean_vars_lin_alg_parallel_outsamp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, num_cores)
 }
 
 find_term_nodes_gs <- function(tree_table) {
