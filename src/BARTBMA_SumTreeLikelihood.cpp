@@ -4419,12 +4419,12 @@ List mean_vars_lin_alg_insamp(List overall_sum_trees,
                                         NumericVector BIC_weights,
                                         int num_iter,int burnin,int num_obs,int num_test_obs,
                                         double a,double sigma,double mu_mu,double nu,
-                                        double lambda,//List resids,
-                                        NumericMatrix test_data){
+                                        double lambda//,List resids,
+                                        ){
   
   //NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y); 
   
-  List termobs_testdata_overall= get_termobs_testdata_overall(overall_sum_trees,test_data);
+  //List termobs_testdata_overall= get_termobs_testdata_overall(overall_sum_trees,test_data);
   //NumericMatrix preds_all_models(num_test_obs,BIC_weights.size()); 
   arma::mat preds_all_models_arma(num_obs,BIC_weights.size()); 
   arma::mat weighted_preds_all_models_arma(num_test_obs,BIC_weights.size());
@@ -4905,10 +4905,10 @@ List pred_ints_lin_alg_insamp(List overall_sum_trees,
                                int num_iter,int burnin,int num_obs,int num_test_obs,
                                double a,double sigma,double mu_mu,double nu,
                                double lambda,//List resids,
-                               NumericMatrix test_data, double lower_prob, double upper_prob){
+                               double lower_prob, double upper_prob){
   
   
-  List termobs_testdata_overall= get_termobs_testdata_overall(overall_sum_trees,test_data);
+  //List termobs_testdata_overall= get_termobs_testdata_overall(overall_sum_trees,test_data);
   //NumericMatrix preds_all_models(num_test_obs,BIC_weights.size());
   arma::mat preds_all_models_arma(num_obs,BIC_weights.size());
   arma::mat weighted_preds_all_models_arma(num_obs,BIC_weights.size());

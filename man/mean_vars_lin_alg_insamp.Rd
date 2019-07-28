@@ -6,7 +6,7 @@
 \usage{
 mean_vars_lin_alg_insamp(overall_sum_trees, overall_sum_mat, y,
   BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu,
-  nu, lambda, test_data)
+  nu, lambda)
 }
 \description{
 Obtain BARTBMA predictions
