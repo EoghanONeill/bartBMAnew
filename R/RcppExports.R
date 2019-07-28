@@ -349,6 +349,12 @@ pred_ints_lin_alg_fields_outsamp <- function(overall_sum_trees, overall_sum_mat,
 
 #' @title Obtain BARTBMA predictions
 #' @export
+pred_ints_chol_parallel_outsamp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob, num_cores) {
+    .Call(`_bartBMAnew_pred_ints_chol_parallel_outsamp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, lower_prob, upper_prob, num_cores)
+}
+
+#' @title Obtain BARTBMA predictions
+#' @export
 mean_vars_lin_alg_parallel_outsamp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, num_cores) {
     .Call(`_bartBMAnew_mean_vars_lin_alg_parallel_outsamp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, test_data, num_cores)
 }
