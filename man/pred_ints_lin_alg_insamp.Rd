@@ -5,8 +5,8 @@
 \title{Obtain BARTBMA predictions}
 \usage{
 pred_ints_lin_alg_insamp(overall_sum_trees, overall_sum_mat, y,
-  BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu,
-  nu, lambda, lower_prob, upper_prob)
+  BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda,
+  lower_prob, upper_prob)
 }
 \description{
 Obtain BARTBMA predictions

@@ -4902,7 +4902,7 @@ List pred_ints_lin_alg_insamp(List overall_sum_trees,
                                List overall_sum_mat,
                                NumericVector y,
                                NumericVector BIC_weights,
-                               int num_iter,int burnin,int num_obs,int num_test_obs,
+                               int num_iter,int burnin,int num_obs,
                                double a,double sigma,double mu_mu,double nu,
                                double lambda,//List resids,
                                double lower_prob, double upper_prob){
@@ -5020,7 +5020,7 @@ List pred_ints_lin_alg_insamp(List overall_sum_trees,
   arma::colvec predicted_values=sum(weighted_preds_all_models_arma,1);
   
   //NumericMatrix draws_wrapped= wrap(draws_for_preds);
-  NumericMatrix output(3, num_test_obs);
+  NumericMatrix output(3, num_obs);
   //NumericVector probs_for_quantiles =  NumericVector::create(lower_prob, 0.5, upper_prob);
   std::vector<double> probs_for_quantiles {lower_prob, 0.5, upper_prob};
   
@@ -5028,7 +5028,7 @@ List pred_ints_lin_alg_insamp(List overall_sum_trees,
   
   typedef std::vector<double> stdvec;
   
-  for(int i=0;i<num_test_obs;i++){
+  for(int i=0;i<num_obs;i++){
     //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
     std::vector<double> tempcol= arma::conv_to<stdvec>::from(draws_for_preds.col(i));
     std::vector<double> tempquant= Quantile2(tempcol, probs_for_quantiles);

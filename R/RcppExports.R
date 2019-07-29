@@ -325,8 +325,8 @@ pred_ints_lin_alg_outsamp <- function(overall_sum_trees, overall_sum_mat, y, BIC
 
 #' @title Obtain BARTBMA predictions
 #' @export
-pred_ints_lin_alg_insamp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, lower_prob, upper_prob) {
-    .Call(`_bartBMAnew_pred_ints_lin_alg_insamp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, num_test_obs, a, sigma, mu_mu, nu, lambda, lower_prob, upper_prob)
+pred_ints_lin_alg_insamp <- function(overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, lower_prob, upper_prob) {
+    .Call(`_bartBMAnew_pred_ints_lin_alg_insamp`, overall_sum_trees, overall_sum_mat, y, BIC_weights, num_iter, burnin, num_obs, a, sigma, mu_mu, nu, lambda, lower_prob, upper_prob)
 }
 
 #' @title Obtain BARTBMA predictions
