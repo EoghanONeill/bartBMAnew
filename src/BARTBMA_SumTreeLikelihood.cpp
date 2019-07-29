@@ -4504,7 +4504,7 @@ List mean_vars_lin_alg_insamp(List overall_sum_trees,
   //arma::colvec predicted_values;
   
   //arma::mat M1(preds_all_models.begin(), preds_all_models.nrow(), preds_all_models.ncol(), false);
-  arma::colvec predicted_values=sum(preds_all_models_arma,1);
+  arma::colvec predicted_values=sum(weighted_preds_all_models_arma,1);
   
   
   //NumericVector orig_preds=get_original(min(y),max(y),-0.5,0.5,wrap(predicted_values)) ;
