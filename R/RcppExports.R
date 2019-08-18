@@ -143,8 +143,8 @@ start_matrix <- function(n) {
     .Call(`_bartBMAnew_start_matrix`, n)
 }
 
-evaluate_model_occams_window <- function(tree_lik, lowest_BIC, c, tree_list, tree_mat_list, tree_parent) {
-    .Call(`_bartBMAnew_evaluate_model_occams_window`, tree_lik, lowest_BIC, c, tree_list, tree_mat_list, tree_parent)
+evaluate_model_occams_window <- function(tree_lik, lowest_BIC, c, tree_list, tree_mat_list, tree_parent, tree_pred_list) {
+    .Call(`_bartBMAnew_evaluate_model_occams_window`, tree_lik, lowest_BIC, c, tree_list, tree_mat_list, tree_parent, tree_pred_list)
 }
 
 get_testdata_term_obs <- function(test_data, tree_data) {

@@ -461,8 +461,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // evaluate_model_occams_window
-List evaluate_model_occams_window(NumericVector tree_lik, double lowest_BIC, double c, List tree_list, List tree_mat_list, IntegerVector tree_parent);
-RcppExport SEXP _bartBMAnew_evaluate_model_occams_window(SEXP tree_likSEXP, SEXP lowest_BICSEXP, SEXP cSEXP, SEXP tree_listSEXP, SEXP tree_mat_listSEXP, SEXP tree_parentSEXP) {
+List evaluate_model_occams_window(NumericVector tree_lik, double lowest_BIC, double c, List tree_list, List tree_mat_list, IntegerVector tree_parent, List tree_pred_list);
+RcppExport SEXP _bartBMAnew_evaluate_model_occams_window(SEXP tree_likSEXP, SEXP lowest_BICSEXP, SEXP cSEXP, SEXP tree_listSEXP, SEXP tree_mat_listSEXP, SEXP tree_parentSEXP, SEXP tree_pred_listSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -472,7 +472,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type tree_list(tree_listSEXP);
     Rcpp::traits::input_parameter< List >::type tree_mat_list(tree_mat_listSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type tree_parent(tree_parentSEXP);
-    rcpp_result_gen = Rcpp::wrap(evaluate_model_occams_window(tree_lik, lowest_BIC, c, tree_list, tree_mat_list, tree_parent));
+    Rcpp::traits::input_parameter< List >::type tree_pred_list(tree_pred_listSEXP);
+    rcpp_result_gen = Rcpp::wrap(evaluate_model_occams_window(tree_lik, lowest_BIC, c, tree_list, tree_mat_list, tree_parent, tree_pred_list));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -563,7 +564,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // likelihood_function2
-double likelihood_function2(NumericVector y_temp, NumericMatrix treetable_temp, NumericMatrix obs_to_nodes_temp, double a, double mu, double nu, double lambda);
+List likelihood_function2(NumericVector y_temp, NumericMatrix treetable_temp, NumericMatrix obs_to_nodes_temp, double a, double mu, double nu, double lambda);
 RcppExport SEXP _bartBMAnew_likelihood_function2(SEXP y_tempSEXP, SEXP treetable_tempSEXP, SEXP obs_to_nodes_tempSEXP, SEXP aSEXP, SEXP muSEXP, SEXP nuSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -597,7 +598,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // sumtree_likelihood_function2
-double sumtree_likelihood_function2(NumericVector y_temp, List sum_treetable, List sum_obs_to_nodes, int n, double a, double nu, double lambda);
+List sumtree_likelihood_function2(NumericVector y_temp, List sum_treetable, List sum_obs_to_nodes, int n, double a, double nu, double lambda);
 RcppExport SEXP _bartBMAnew_sumtree_likelihood_function2(SEXP y_tempSEXP, SEXP sum_treetableSEXP, SEXP sum_obs_to_nodesSEXP, SEXP nSEXP, SEXP aSEXP, SEXP nuSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -2320,7 +2321,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bartBMAnew_start_tree", (DL_FUNC) &_bartBMAnew_start_tree, 2},
     {"_bartBMAnew_start_tree2", (DL_FUNC) &_bartBMAnew_start_tree2, 0},
     {"_bartBMAnew_start_matrix", (DL_FUNC) &_bartBMAnew_start_matrix, 1},
-    {"_bartBMAnew_evaluate_model_occams_window", (DL_FUNC) &_bartBMAnew_evaluate_model_occams_window, 6},
+    {"_bartBMAnew_evaluate_model_occams_window", (DL_FUNC) &_bartBMAnew_evaluate_model_occams_window, 7},
     {"_bartBMAnew_get_testdata_term_obs", (DL_FUNC) &_bartBMAnew_get_testdata_term_obs, 2},
     {"_bartBMAnew_get_initial_resids", (DL_FUNC) &_bartBMAnew_get_initial_resids, 3},
     {"_bartBMAnew_resize", (DL_FUNC) &_bartBMAnew_resize, 2},
