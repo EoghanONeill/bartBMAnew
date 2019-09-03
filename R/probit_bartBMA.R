@@ -122,8 +122,10 @@ probit_bartBMA.default<-function(x.train,y.train,
   if(c<1)stop("Value of Occam's Window has to be greater than 0."); 
   if(num_cp<0 || num_cp>100)stop("Value of num_cp should be a value between 1 and 100."); 
   
-  bartBMA_call=BART_BMA_sumLikelihood(x.train,Zlatent.train,start_mean,start_sd,a,mu,nu,lambda,c,sigma_mu,
-                                      pen,num_cp,x.test,num_rounds,alpha,beta,split_rule_node,gridpoint,maxOWsize,num_splits,gridsize,zero_split,only_max_num_trees,
+  bartBMA_call=BART_BMA_sumLikelihood(spike_tree,num_obs,num_vars,lambda_poisson,
+                                      x.train,Zlatent.train,start_mean,start_sd,a,mu,nu,lambda,c,sigma_mu,
+                                      pen,num_cp,x.test,num_rounds,alpha,beta,split_rule_node,gridpoint,maxOWsize,
+                                      num_splits,gridsize,zero_split,only_max_num_trees,
                                       min_num_obs_for_split, min_num_obs_after_split,
                                       exact_residuals)
   
