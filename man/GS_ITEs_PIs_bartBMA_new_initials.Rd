@@ -11,7 +11,8 @@ GS_ITEs_PIs_bartBMA_new_initials(num_iter, burnin, l_quant, u_quant,
   alpha1 = 0.95, beta1 = 2, split_rule_node1 = 0, gridpoint1 = 0,
   maxOWsize1 = 100, num_splits1 = 5, gridsize1 = 10,
   zero_split1 = 1, only_max_num_trees1 = 1,
-  min_num_obs_for_split1 = 2, min_num_obs_after_split1 = 2)
+  min_num_obs_for_split1 = 2, min_num_obs_after_split1 = 2,
+  exact_residuals = 1, spike_tree = 0, lambda_poisson = 10)
 }
 \arguments{
 \item{num_iter}{Total number of iterations of the Gibbs sampler (including burn-in).}
@@ -31,6 +32,12 @@ GS_ITEs_PIs_bartBMA_new_initials(num_iter, burnin, l_quant, u_quant,
 \item{z_train}{treatment vector for traiing bartBMA.}
 
 \item{y_train}{outcome vector for training bartBMA.}
+
+\item{exact_residuals}{Binary variable. If equal to 1, then trees are added to sum-of-tree models within each round of the algorithm by detecting changepoints in the exact residuals. If equals zero, then changepoints are detected in residuals that are constructed from approximate predictions.}
+
+\item{spike_tree}{If equal to 1, then the Spike-and-Tree prior will be used, otherwise the standard BART prior will be used. The number of splitting variables has a beta-binomial prior. The number of terminal nodes has a truncated Poisson prior, and then a uniform prior is placed on the set of valid constructions of trees given the splitting variables and number of terminal nodes.}
+
+\item{lambda_poisson}{This is a parameter for the Spike-and-Tree prior. It is the parameter for the (truncated and conditional on the number of splitting variables) Poisson prior on the number of terminal nodes.}
 
 \item{object}{bartBMA object obtained from function bartBMA}
 

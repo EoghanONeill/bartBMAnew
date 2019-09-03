@@ -8,11 +8,11 @@ bartBMA_with_ITEs_exact_par(l_quant, u_quant, newdata = NULL,
   update_resids = 1, num_cores = 1, root_alg_precision = 1e-05,
   x_covariates, z_train, y_train, a1 = 3, nu1 = 3, sigquant1 = 0.9,
   c1 = 1000, pen1 = 12, num_cp1 = 20, x.test1 = matrix(0, 0, 0),
-  num_rounds1 = 5, alpha1 = 0.95, beta1 = 1, split_rule_node1 = 0,
+  num_rounds1 = 5, alpha1 = 0.95, beta1 = 2, split_rule_node1 = 0,
   gridpoint1 = 0, maxOWsize1 = 100, num_splits1 = 5,
   gridsize1 = 10, zero_split1 = 1, only_max_num_trees1 = 1,
   min_num_obs_for_split1 = 2, min_num_obs_after_split1 = 2,
-  exact_residuals1 = 1)
+  exact_residuals1 = 1, spike_tree = 0, lambda_poisson = 10)
 }
 \arguments{
 \item{newdata}{Test data for which predictions are to be produced. Default = NULL. If NULL, then produces prediction intervals for training data if no test data was used in producing the bartBMA object, or produces prediction intervals for the original test data if test data was used in producing the bartBMA object.}
@@ -20,6 +20,10 @@ bartBMA_with_ITEs_exact_par(l_quant, u_quant, newdata = NULL,
 \item{update_resids}{Option for whether to update the partial residuals in the gibbs sampler. If equal to 1, updates partial residuals, if equal to zero, does not update partial residuals. The defaullt setting is to update the partial residuals.}
 
 \item{root_alg_precision}{The algorithm should obtain approximate bounds that are within the distance root_alg_precision of the true quantile for the chosen average of models.}
+
+\item{spike_tree}{If equal to 1, then the Spike-and-Tree prior will be used, otherwise the standard BART prior will be used. The number of splitting variables has a beta-binomial prior. The number of terminal nodes has a truncated Poisson prior, and then a uniform prior is placed on the set of valid constructions of trees given the splitting variables and number of terminal nodes.}
+
+\item{lambda_poisson}{This is a parameter for the Spike-and-Tree prior. It is the parameter for the (truncated and conditional on the number of splitting variables) Poisson prior on the number of terminal nodes.}
 
 \item{min_possible}{The highest value that the upper quantile of any prediction interval could possibly take. This is required for a bisection root finding algorithm.}
 
