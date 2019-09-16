@@ -87,8 +87,8 @@ bartBMA_with_ITEs_exact_par <-function(l_quant,u_quant,newdata=NULL,update_resid
   
   names(ret)<-c("ITE_intervals",
                 "ITE_estimates",
-                "CATE_Interval",
-                "CATE_estimate")
+                "CATE_estimate",
+                "CATE_Interval")
   
   
   ret

@@ -1568,6 +1568,51 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_original_arma
+arma::vec get_original_arma(double low, double high, double sp_low, double sp_high, arma::vec sum_preds);
+RcppExport SEXP _bartBMAnew_get_original_arma(SEXP lowSEXP, SEXP highSEXP, SEXP sp_lowSEXP, SEXP sp_highSEXP, SEXP sum_predsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< double >::type high(highSEXP);
+    Rcpp::traits::input_parameter< double >::type sp_low(sp_lowSEXP);
+    Rcpp::traits::input_parameter< double >::type sp_high(sp_highSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type sum_preds(sum_predsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_original_arma(low, high, sp_low, sp_high, sum_preds));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_original_TE_arma
+arma::vec get_original_TE_arma(double low, double high, double sp_low, double sp_high, arma::vec sum_preds);
+RcppExport SEXP _bartBMAnew_get_original_TE_arma(SEXP lowSEXP, SEXP highSEXP, SEXP sp_lowSEXP, SEXP sp_highSEXP, SEXP sum_predsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< double >::type high(highSEXP);
+    Rcpp::traits::input_parameter< double >::type sp_low(sp_lowSEXP);
+    Rcpp::traits::input_parameter< double >::type sp_high(sp_highSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type sum_preds(sum_predsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_original_TE_arma(low, high, sp_low, sp_high, sum_preds));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_original_TE_double
+double get_original_TE_double(double low, double high, double sp_low, double sp_high, double sum_preds);
+RcppExport SEXP _bartBMAnew_get_original_TE_double(SEXP lowSEXP, SEXP highSEXP, SEXP sp_lowSEXP, SEXP sp_highSEXP, SEXP sum_predsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< double >::type high(highSEXP);
+    Rcpp::traits::input_parameter< double >::type sp_low(sp_lowSEXP);
+    Rcpp::traits::input_parameter< double >::type sp_high(sp_highSEXP);
+    Rcpp::traits::input_parameter< double >::type sum_preds(sum_predsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_original_TE_double(low, high, sp_low, sp_high, sum_preds));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_termobs_test_data
 List get_termobs_test_data(NumericMatrix test_data, NumericMatrix tree_data);
 RcppExport SEXP _bartBMAnew_get_termobs_test_data(SEXP test_dataSEXP, SEXP tree_dataSEXP) {
@@ -3042,6 +3087,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bartBMAnew_get_best_trees_sum_update_splits_exact", (DL_FUNC) &_bartBMAnew_get_best_trees_sum_update_splits_exact, 40},
     {"_bartBMAnew_scale_response", (DL_FUNC) &_bartBMAnew_scale_response, 5},
     {"_bartBMAnew_get_original", (DL_FUNC) &_bartBMAnew_get_original, 5},
+    {"_bartBMAnew_get_original_arma", (DL_FUNC) &_bartBMAnew_get_original_arma, 5},
+    {"_bartBMAnew_get_original_TE_arma", (DL_FUNC) &_bartBMAnew_get_original_TE_arma, 5},
+    {"_bartBMAnew_get_original_TE_double", (DL_FUNC) &_bartBMAnew_get_original_TE_double, 5},
     {"_bartBMAnew_get_termobs_test_data", (DL_FUNC) &_bartBMAnew_get_termobs_test_data, 2},
     {"_bartBMAnew_get_termobs_test_data_fields", (DL_FUNC) &_bartBMAnew_get_termobs_test_data_fields, 2},
     {"_bartBMAnew_get_termobs_testdata_overall", (DL_FUNC) &_bartBMAnew_get_termobs_testdata_overall, 2},

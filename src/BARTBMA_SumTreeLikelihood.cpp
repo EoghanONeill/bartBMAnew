@@ -8769,6 +8769,30 @@ NumericVector get_original(double low,double high,double sp_low,double sp_high,N
   
   return(original_y);
 }
+//######################################################################################################################//
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+arma::vec get_original_arma(double low,double high,double sp_low,double sp_high,arma::vec sum_preds){
+  arma::vec original_y=(sum_preds*(-low+high))/(-sp_low+sp_high) + (-high*sp_low+low*sp_high)/(-sp_low+sp_high);
+  
+  return(original_y);
+}
+//######################################################################################################################//
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+arma::vec get_original_TE_arma(double low,double high,double sp_low,double sp_high,arma::vec sum_preds){
+  arma::vec original_y=sum_preds*((-low+high)/(-sp_low+sp_high));
+  
+  return(original_y); // reverse scaling of predictions of scaled variable (??)
+}
+//######################################################################################################################//
+
+// [[Rcpp::export]]
+double get_original_TE_double(double low,double high,double sp_low,double sp_high,double sum_preds){
+  double original_y=sum_preds*((-low+high)/(-sp_low+sp_high)); 
+  
+  return(original_y); // reverse scaling of predictions of scaled variable (??)
+}
 //###########################################################################################################################//
 
 // [[Rcpp::export]]
@@ -9409,7 +9433,7 @@ List mean_vars_lin_alg_outsamp(List overall_sum_trees,
                                double lambda,//List resids,
                                NumericMatrix test_data){
   
-  //NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y); 
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y); 
   
   List termobs_testdata_overall= get_termobs_testdata_overall(overall_sum_trees,test_data);
   //NumericMatrix preds_all_models(num_test_obs,BIC_weights.size()); 
@@ -9435,7 +9459,7 @@ List mean_vars_lin_alg_outsamp(List overall_sum_trees,
     
     
     double b=Wmat.n_cols;
-    arma::vec yvec=Rcpp::as<arma::vec>(y);
+    arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
     arma::mat y_arma(num_obs,1);
     y_arma.col(0)=yvec;
     //get exponent
@@ -9533,7 +9557,7 @@ List mean_vars_lin_alg_insamp(List overall_sum_trees,
                               double lambda//,List resids,
 ){
   
-  //NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y); 
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y); 
   
   //List termobs_testdata_overall= get_termobs_testdata_overall(overall_sum_trees,test_data);
   //NumericMatrix preds_all_models(num_test_obs,BIC_weights.size()); 
@@ -9559,7 +9583,7 @@ List mean_vars_lin_alg_insamp(List overall_sum_trees,
     
     
     double b=Wmat.n_cols;
-    arma::vec yvec=Rcpp::as<arma::vec>(y);
+    arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
     arma::mat y_arma(num_obs,1);
     y_arma.col(0)=yvec;
     //get exponent
@@ -10240,37 +10264,38 @@ List BART_BMA_sumLikelihood(double less_greedy,double spike_tree, int s_t_hyperp
   // Rcout << "Get to defining end_BIC \n";
   //NumericVector end_BIC=overall_overall_sum_BIC[overall_overall_sum_BIC.size()-1] ;
   NumericVector end_BIC=overall_overall_sum_BIC ;
-  
-  
-  //Rcout << "Get to defining past defining end_BIC \n";
-  NumericMatrix overallpreds(n,end_BIC.size());
-  NumericMatrix overall_test_preds(test_data.nrow(),end_BIC.size());
-  NumericVector post_weights(end_BIC.size());
-  //Rcout << "Get to loop that defines temp_pred M1 \n";
-  for(int k=0;k<end_BIC.size();k++){
-    NumericMatrix oosp=Rcpp::as<NumericMatrix>(wrap(overall_overall_sum_preds));
-    NumericVector temp_preds=oosp(_,k);
-    NumericVector temp_test_preds;
-    if(is_test_data==1){
-      NumericMatrix oostp=Rcpp::as<NumericMatrix>(wrap(overall_overall_sum_test_preds));
-      temp_test_preds=oostp(_,k); 
-    }
-    //Rcout << "Get to defining orig_temp_pred \n";
-    NumericVector orig_temp_preds=get_original(min(y),max(y),-0.5,0.5,temp_preds) ;
-    NumericVector BICi=-0.5*end_BIC;
-    double max_BIC=max(BICi);
-    double weight=exp(BICi[k]-(max_BIC+log(sum(exp(BICi-max_BIC)))));
-    post_weights[k]=weight;
-    overallpreds(_,k) = temp_preds*weight;
-    if(is_test_data==1){
-      overall_test_preds(_,k) = temp_test_preds*weight;
-    }
-  }
-  //Rcout << "Get to defining M1 \n";
-  arma::mat M1(overallpreds.begin(), overallpreds.nrow(), overallpreds.ncol(), false);
-  predicted_values=sum(M1,1);
-  arma::mat M2(overall_test_preds.begin(), overall_test_preds.nrow(), overall_test_preds.ncol(), false);
-  if(is_test_data==1) predicted_test_values=sum(M2,1);
+  // 
+  // 
+  // //Rcout << "Get to defining past defining end_BIC \n";
+  // NumericMatrix overallpreds(n,end_BIC.size());
+  // NumericMatrix overall_test_preds(test_data.nrow(),end_BIC.size());
+  // NumericVector post_weights(end_BIC.size());
+  // //Rcout << "Get to loop that defines temp_pred M1 \n";
+  // for(int k=0;k<end_BIC.size();k++){
+  //   NumericMatrix oosp=Rcpp::as<NumericMatrix>(wrap(overall_overall_sum_preds));
+  //   NumericVector temp_preds=oosp(_,k);
+  //   NumericVector temp_test_preds;
+  //   if(is_test_data==1){
+  //     NumericMatrix oostp=Rcpp::as<NumericMatrix>(wrap(overall_overall_sum_test_preds));
+  //     temp_test_preds=oostp(_,k); 
+  //   }
+  //   //Rcout << "Get to defining orig_temp_pred \n";
+  //   NumericVector orig_temp_preds=get_original(min(y),max(y),-0.5,0.5,temp_preds) ;
+  //   NumericVector BICi=-0.5*end_BIC;
+  //   double max_BIC=max(BICi);
+  //   double weight=exp(BICi[k]-(max_BIC+log(sum(exp(BICi-max_BIC)))));
+  //   post_weights[k]=weight;
+  //   overallpreds(_,k) = temp_preds*weight;
+  //   if(is_test_data==1){
+  //     overall_test_preds(_,k) = temp_test_preds*weight;
+  //   }
+  // }
+  // //Rcout << "Get to defining M1 \n";
+  // arma::mat M1(overallpreds.begin(), overallpreds.nrow(), overallpreds.ncol(), false);
+  // predicted_values=sum(M1,1);
+  // arma::mat M2(overall_test_preds.begin(), overall_test_preds.nrow(), overall_test_preds.ncol(), false);
+  // 
+  //if(is_test_data==1) predicted_test_values=sum(M2,1);
   if(overall_lik.size()==0){
     throw std::range_error("BART-BMA didnt find any suitable model for the data. Maybe limit for Occam's window is too small.");
   }else{
@@ -10598,8 +10623,8 @@ List pred_ints_exact_outsamp(List overall_sum_trees,
   
   //  {
   //#pragma omp for schedule(dynamic,1) 
-  
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   arma::mat yty=y_arma.t()*y_arma;
@@ -10815,9 +10840,18 @@ List pred_ints_exact_outsamp(List overall_sum_trees,
       
     }  
   }
+  
+
+  
+  for(int i=0;i<output.ncol();i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output(_,i)=get_original(min(y),max(y),-0.5,0.5, output(_,i));
+  }  
+
   List ret(2);
   ret[0]= output;
-  ret[1]= wrap(predicted_values);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -10882,7 +10916,8 @@ List pred_ints_exact_outsamp_par(List overall_sum_trees,
   
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   arma::mat yty=y_arma.t()*y_arma;
@@ -11261,9 +11296,23 @@ List pred_ints_exact_outsamp_par(List overall_sum_trees,
 #pragma omp barrier  
   }
   
+  arma::mat output_rescaled(output.n_rows, output.n_cols);
+  
+  
+#pragma omp parallel num_threads(num_cores)
+#pragma omp for
+  for(unsigned int i=0;i<output.n_cols;i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output_rescaled.col(i)=get_original_arma(min(y),max(y),-0.5,0.5, output.col(i));
+    
+    
+  }  
+#pragma omp barrier 
+  
   List ret(2);
-  ret[0]= wrap(output);
-  ret[1]= wrap(predicted_values);
+  ret[0]= wrap(output_rescaled);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -11320,7 +11369,8 @@ List pred_ints_lin_alg_outsamp(List overall_sum_trees,
   //arma::mat draws_for_preds(num_iter,num_test_obs);
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   //get exponent
@@ -11533,9 +11583,16 @@ List pred_ints_lin_alg_outsamp(List overall_sum_trees,
     
   }  
   
+  for(int i=0;i<output.ncol();i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output(_,i)=get_original(min(y),max(y),-0.5,0.5, output(_,i));
+  }  
+  
+  
   List ret(2);
   ret[0]= output;
-  ret[1]= wrap(predicted_values);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -11600,7 +11657,8 @@ List pred_ints_lin_alg_insamp(List overall_sum_trees,
     
     
     double b=Wmat.n_cols;
-    arma::vec yvec=Rcpp::as<arma::vec>(y);
+    NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+    arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
     arma::mat y_arma(num_obs,1);
     y_arma.col(0)=yvec;
     //get exponent
@@ -11699,11 +11757,18 @@ List pred_ints_lin_alg_insamp(List overall_sum_trees,
     NumericVector tempforoutput = wrap(tempquant);
     output(_,i)= tempforoutput;
     
+  } 
+  
+  for(int i=0;i<output.ncol();i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output(_,i)=get_original(min(y),max(y),-0.5,0.5, output(_,i));
   }  
+  
   
   List ret(2);
   ret[0]= output;
-  ret[1]= wrap(predicted_values);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -11766,7 +11831,8 @@ List pred_ints_chol_attempt_outsamp(List overall_sum_trees,
     
     
     double b=Wmat.n_cols;
-    arma::vec yvec=Rcpp::as<arma::vec>(y);
+    NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+    arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
     arma::mat y_arma(num_obs,1);
     y_arma.col(0)=yvec;
     //get exponent
@@ -11956,9 +12022,17 @@ List pred_ints_chol_attempt_outsamp(List overall_sum_trees,
     
   }  
   
+  for(int i=0;i<output.ncol();i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output(_,i)=get_original(min(y),max(y),-0.5,0.5, output(_,i));
+  }  
+  
+  
+  
   List ret(2);
   ret[0]= output;
-  ret[1]= wrap(predicted_values);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -12025,7 +12099,8 @@ List pred_ints_lin_alg_parallel_outsamp(List overall_sum_trees,
   //  {
   //#pragma omp for schedule(dynamic,1) 
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   arma::mat yty=y_arma.t()*y_arma;
@@ -12238,9 +12313,15 @@ List pred_ints_lin_alg_parallel_outsamp(List overall_sum_trees,
     
   }  
   
+  for(int i=0;i<output.ncol();i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output(_,i)=get_original(min(y),max(y),-0.5,0.5, output(_,i));
+  }  
+  
   List ret(2);
   ret[0]= output;
-  ret[1]= wrap(predicted_values);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -12309,7 +12390,8 @@ List pred_ints_lin_alg_fields_outsamp(List overall_sum_trees,
   arma::mat draws_for_preds(num_iter,num_test_obs);
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   //get exponent
@@ -12693,9 +12775,16 @@ List pred_ints_lin_alg_fields_outsamp(List overall_sum_trees,
     
   }  
   
+  for(int i=0;i<output.ncol();i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output(_,i)=get_original(min(y),max(y),-0.5,0.5, output(_,i));
+  }  
+  
+  
   List ret(2);
   ret[0]= output;
-  ret[1]= wrap(predicted_values);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -12760,7 +12849,8 @@ List pred_ints_chol_parallel_outsamp(List overall_sum_trees,
   //arma::mat draws_for_preds(0,num_test_obs);
   arma::mat draws_for_preds(num_iter,num_test_obs);
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   //get exponent
@@ -13152,9 +13242,16 @@ List pred_ints_chol_parallel_outsamp(List overall_sum_trees,
     
   }  
   
+  for(int i=0;i<output.ncol();i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output(_,i)=get_original(min(y),max(y),-0.5,0.5, output(_,i));
+  }  
+  
+  
   List ret(2);
   ret[0]= output;
-  ret[1]= wrap(predicted_values);
+  ret[1]= wrap(get_original_arma(min(y),max(y),-0.5,0.5,predicted_values));
   
   
   return(ret);
@@ -13233,7 +13330,8 @@ List mean_vars_lin_alg_parallel_outsamp(List overall_sum_trees,
   arma::field<arma::mat> covar_matricesF(BIC_weights.size());
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   //get exponent
@@ -13542,7 +13640,8 @@ List pred_ints_ITE_outsamp_par(List overall_sum_trees,
   
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   arma::mat yty=y_arma.t()*y_arma;
@@ -14042,12 +14141,28 @@ List pred_ints_ITE_outsamp_par(List overall_sum_trees,
 #pragma omp barrier  
   }
   
+  arma::mat output_rescaled(output.n_rows, output.n_cols);
+  
+  
+#pragma omp parallel num_threads(num_cores)
+#pragma omp for
+  for(unsigned int i=0;i<output.n_cols;i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output_rescaled.col(i)=get_original_TE_arma(min(y),max(y),-0.5,0.5, output.col(i));
+    
+    
+  }  
+#pragma omp barrier  
+  
+  arma::mat cate_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, cate_ints.col(0));
+  
   
   List ret(4);
-  ret[0]= wrap(output);
-  ret[1]= wrap(predicted_values);
-  ret[2]= cate_pred;
-  ret[3]= wrap(cate_ints);
+  ret[0]= wrap(output_rescaled);
+  ret[1]= wrap(get_original_TE_arma(min(y),max(y),-0.5,0.5,predicted_values));
+  ret[2]= get_original_TE_double(min(y),max(y),-0.5,0.5,cate_pred);
+  ret[3]= wrap(cate_ints_rescaled);
   
   return(ret);
   
@@ -14129,7 +14244,8 @@ List pred_ints_ITE_insamp_par(List overall_sum_trees,
   
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   arma::mat yty=y_arma.t()*y_arma;
@@ -14630,14 +14746,31 @@ List pred_ints_ITE_insamp_par(List overall_sum_trees,
     }  
 #pragma omp barrier  
   }
+  arma::mat output_rescaled(output.n_rows, output.n_cols);
+  
+  
+#pragma omp parallel num_threads(num_cores)
+#pragma omp for
+  for(unsigned int i=0;i<output.n_cols;i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output_rescaled.col(i)=get_original_TE_arma(min(y),max(y),-0.5,0.5, output.col(i));
+    
+    
+  }  
+#pragma omp barrier  
+  
+  arma::mat cate_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, cate_ints.col(0));
+  
   
   List ret(4);
-  ret[0]= wrap(output);
-  ret[1]= wrap(predicted_values);
-  ret[2]= wrap(cate_ints);
-  ret[3]= cate_pred;
+  ret[0]= wrap(output_rescaled);
+  ret[1]= wrap(get_original_TE_arma(min(y),max(y),-0.5,0.5,predicted_values));
+  ret[2]= get_original_TE_double(min(y),max(y),-0.5,0.5,cate_pred);
+  ret[3]= wrap(cate_ints_rescaled);
   
   return(ret);
+  
   
 }
 
@@ -14725,7 +14858,8 @@ List pred_ints_ITE_CATT_outsamp_par(List overall_sum_trees,
   arma::vec catnt_averagingvec=(1/(num_test_obs-arma::sum(ztest_arma)))*(1-ztest_arma);
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   arma::mat yty=y_arma.t()*y_arma;
@@ -15338,16 +15472,35 @@ List pred_ints_ITE_CATT_outsamp_par(List overall_sum_trees,
 #pragma omp barrier  
   }
   
+  arma::mat output_rescaled(output.n_rows, output.n_cols);
+  
+  
+#pragma omp parallel num_threads(num_cores)
+#pragma omp for
+  for(unsigned int i=0;i<output.n_cols;i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output_rescaled.col(i)=get_original_TE_arma(min(y),max(y),-0.5,0.5, output.col(i));
+    
+    
+  }  
+#pragma omp barrier  
+  
+  arma::mat cate_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, cate_ints.col(0));
+  arma::mat catt_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, catt_ints.col(0));
+  arma::mat catnt_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, catnt_ints.col(0));
+  
   
   List ret(8);
-  ret[0]= wrap(output);
-  ret[1]= wrap(predicted_values);
-  ret[2]= cate_pred;
-  ret[3]= wrap(cate_ints);
-  ret[4]= catt_pred;
-  ret[5]= wrap(catt_ints);
-  ret[6]= catnt_pred;
-  ret[7]= wrap(catnt_ints);
+  ret[0]= wrap(output_rescaled);
+  ret[1]= wrap(get_original_TE_arma(min(y),max(y),-0.5,0.5,predicted_values));
+  ret[2]= get_original_TE_double(min(y),max(y),-0.5,0.5,cate_pred);
+  ret[3]= wrap(cate_ints_rescaled);
+  ret[4]= get_original_TE_double(min(y),max(y),-0.5,0.5,catt_pred);
+  ret[5]= wrap(catt_ints_rescaled);
+  ret[6]= get_original_TE_double(min(y),max(y),-0.5,0.5,catnt_pred);
+  ret[7]= wrap(catnt_ints_rescaled);
+  
   
   return(ret);
   
@@ -15440,7 +15593,8 @@ List pred_ints_ITE_CATT_insamp_par(List overall_sum_trees,
   arma::vec catnt_averagingvec=(1/(num_obs-arma::sum(ztrain_arma)))*(1-ztrain_arma);
   
   
-  arma::vec yvec=Rcpp::as<arma::vec>(y);
+  NumericVector y_scaled=scale_response(min(y),max(y),-0.5,0.5,y);
+  arma::vec yvec=Rcpp::as<arma::vec>(y_scaled);
   arma::mat y_arma(num_obs,1);
   y_arma.col(0)=yvec;
   arma::mat yty=y_arma.t()*y_arma;
@@ -16055,15 +16209,36 @@ List pred_ints_ITE_CATT_insamp_par(List overall_sum_trees,
 #pragma omp barrier  
   }
   
+  arma::mat output_rescaled(output.n_rows, output.n_cols);
+  
+  
+#pragma omp parallel num_threads(num_cores)
+#pragma omp for
+  for(unsigned int i=0;i<output.n_cols;i++){
+    //output(_,i)=Quantile(draws_wrapped(_,i), probs_for_quantiles);
+    
+    output_rescaled.col(i)=get_original_TE_arma(min(y),max(y),-0.5,0.5, output.col(i));
+    
+    
+  }  
+#pragma omp barrier  
+  
+  arma::mat cate_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, cate_ints.col(0));
+  arma::mat catt_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, catt_ints.col(0));
+  arma::mat catnt_ints_rescaled=get_original_TE_arma(min(y),max(y),-0.5,0.5, catnt_ints.col(0));
+  
+  
   List ret(8);
-  ret[0]= wrap(output);
-  ret[1]= wrap(predicted_values);
-  ret[2]= cate_pred;
-  ret[3]= wrap(cate_ints);
-  ret[4]= catt_pred;
-  ret[5]= wrap(catt_ints);
-  ret[6]= catnt_pred;
-  ret[7]= wrap(catnt_ints);
+  ret[0]= wrap(output_rescaled);
+  ret[1]= wrap(get_original_TE_arma(min(y),max(y),-0.5,0.5,predicted_values));
+  ret[2]= get_original_TE_double(min(y),max(y),-0.5,0.5,cate_pred);
+  ret[3]= wrap(cate_ints_rescaled);
+  ret[4]= get_original_TE_double(min(y),max(y),-0.5,0.5,catt_pred);
+  ret[5]= wrap(catt_ints_rescaled);
+  ret[6]= get_original_TE_double(min(y),max(y),-0.5,0.5,catnt_pred);
+  ret[7]= wrap(catnt_ints_rescaled);
+  
+  
   
   
   return(ret);

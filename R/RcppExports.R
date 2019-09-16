@@ -323,6 +323,18 @@ get_original <- function(low, high, sp_low, sp_high, sum_preds) {
     .Call(`_bartBMAnew_get_original`, low, high, sp_low, sp_high, sum_preds)
 }
 
+get_original_arma <- function(low, high, sp_low, sp_high, sum_preds) {
+    .Call(`_bartBMAnew_get_original_arma`, low, high, sp_low, sp_high, sum_preds)
+}
+
+get_original_TE_arma <- function(low, high, sp_low, sp_high, sum_preds) {
+    .Call(`_bartBMAnew_get_original_TE_arma`, low, high, sp_low, sp_high, sum_preds)
+}
+
+get_original_TE_double <- function(low, high, sp_low, sp_high, sum_preds) {
+    .Call(`_bartBMAnew_get_original_TE_double`, low, high, sp_low, sp_high, sum_preds)
+}
+
 get_termobs_test_data <- function(test_data, tree_data) {
     .Call(`_bartBMAnew_get_termobs_test_data`, test_data, tree_data)
 }
