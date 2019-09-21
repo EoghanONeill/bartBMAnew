@@ -127,6 +127,11 @@ orderforOW <- function(x) {
     .Call(`_bartBMAnew_orderforOW`, x)
 }
 
+#' @export
+secondKindStirlingNumber <- function(n, k) {
+    .Call(`_bartBMAnew_secondKindStirlingNumber`, n, k)
+}
+
 get_tree_prior <- function(spike_tree, s_t_hyperprior, p_s_t, a_s_t, b_s_t, num_obs, num_vars, lambda_poisson, tree_table, tree_matrix, alpha, beta) {
     .Call(`_bartBMAnew_get_tree_prior`, spike_tree, s_t_hyperprior, p_s_t, a_s_t, b_s_t, num_obs, num_vars, lambda_poisson, tree_table, tree_matrix, alpha, beta)
 }
