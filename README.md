@@ -10,15 +10,13 @@ Hernández, B., Raftery, A. E., Pennington, S. R., & Parnell, A. C. (2018). Baye
 
 ## Installation
 
-You can install the released version of bartBMAnew from [CRAN](https://CRAN.R-project.org) with:
-
 ``` r
-install.packages("bartBMAnew")
+library(devtools)
+install_github("bartBMAnew")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(bartBMAnew)

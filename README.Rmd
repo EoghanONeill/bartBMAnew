@@ -25,6 +25,7 @@ You can install the released version of bartBMAnew from [CRAN](https://CRAN.R-pr
 
 ``` r
 install.packages("bartBMAnew")
+
 ```
 
 And the development version from [GitHub](https://github.com/) with:
