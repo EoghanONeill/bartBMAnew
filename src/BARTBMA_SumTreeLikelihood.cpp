@@ -838,8 +838,13 @@ double get_tree_prior(double spike_tree, int s_t_hyperprior, double p_s_t, doubl
     //int index_count=0;  
     //int index_count2=0;
     arma::uvec internal_nodes_prop=find_internal_nodes(tree_table);
-    NumericVector terminal_nodes_prop_wrapped=find_term_nodes(tree_table);
-    arma::uvec terminal_nodes_prop=as<arma::uvec>(terminal_nodes_prop_wrapped);
+    //NumericVector terminal_nodes_prop_wrapped=find_term_nodes(tree_table);
+    
+    arma::mat tree_table2(tree_table.begin(),tree_table.nrow(),tree_table.ncol(),false);
+    arma::vec colmat=tree_table2.col(4);
+    arma::uvec terminal_nodes_prop=arma::find(colmat==-1)+1;
+
+    //arma::uvec terminal_nodes_prop=as<arma::uvec>(terminal_nodes_prop_wrapped);
     arma::mat tree_matrix2(tree_matrix.begin(),tree_matrix.nrow(),tree_matrix.ncol(),false);
     int count=internal_nodes_prop.size();
     int count_term_nodes=terminal_nodes_prop.size();
@@ -4307,13 +4312,16 @@ List gridCP(arma::vec x, arma::vec y, int gridSize = 10) {
     }
   }
   arma::uvec to_remove=find(no_split ==1);
-  IntegerVector remove_order_index=as<IntegerVector>(wrap(order_(as<NumericVector> (wrap(to_remove)))));
+  //IntegerVector remove_order_index=as<IntegerVector>(wrap(order_(as<NumericVector> (wrap(to_remove)))));
+  //IntegerVector remove_order_index=order_(as<NumericVector> (wrap(arma::conv_to<arma::ivec>::from(to_remove))));
   //IntegerVector remove_order_index=wrap(arma::conv_to<arma::ivec>::from(to_remove));
+  int num_to_remove = to_remove.size()-1;
   
   if(to_remove.size()>0){
-    for(int k=0;k<remove_order_index.size();k++){
-      out.erase(to_remove[remove_order_index[k]-1]);
-      cp_strength.erase(to_remove[remove_order_index[k]-1]);
+    //for(int k=0;k<remove_order_index.size();k++){
+    for(unsigned int k=0;k<to_remove.size();k++){
+      out.erase(to_remove[num_to_remove-k]);
+      cp_strength.erase(to_remove[num_to_remove-k]);
     }
   }
   if(out.size()>0){
@@ -4543,7 +4551,8 @@ List make_pelt_cpmat(NumericMatrix data,NumericVector resp,double pen,int num_cp
     IntegerVector ans = PELT_meanvar_norm2(resp[sorted_var],pen);
     ans=ans-1;
     arma::vec resp_ar=as<arma::vec>(resp);
-    NumericVector allMean(n);
+    //NumericVector allMean(n);
+    arma::vec allMean_ar(n);
     
     if(ans.size()!=1 && ans[0]!=n){
       double meanRight;
@@ -4557,13 +4566,13 @@ List make_pelt_cpmat(NumericMatrix data,NumericVector resp,double pen,int num_cp
       if(unique_sp.size()<split_values.size()){
         //IntegerVector index=match(unique_sp,all_sp);
         IntegerVector index=match(unique_sp,split_values);
-        arma::vec indexarma=as<arma::vec>(index);
+        arma::ivec indexarma=as<arma::ivec>(index);
         IntegerVector t4=ifelse(is_na(index),1,0);
-        arma::vec t4arma=as<arma::vec>(t4);
+        arma::ivec t4arma=as<arma::ivec>(t4);
         arma::uvec t42=find(t4arma==0);
         IntegerVector index2(t42.size());
         
-        arma::vec index3=indexarma.elem(t42);
+        arma::ivec index3=indexarma.elem(t42);
         
         index2=wrap(index3);
         index2=index2-1;
@@ -4592,11 +4601,15 @@ List make_pelt_cpmat(NumericMatrix data,NumericVector resp,double pen,int num_cp
           meanRight = mean(xRight);
           arma::uvec left_ind=find(coli_ar<=splitpoint);
           arma::uvec right_ind=find(coli_ar>splitpoint);
-          NumericVector left_ind2=wrap(left_ind);
-          NumericVector right_ind2=wrap(right_ind);
-          allMean[left_ind2]=meanLeft;
-          allMean[right_ind2]=meanRight;
-          arma::vec allMean_ar=as<arma::vec>(allMean);
+          //NumericVector left_ind2=wrap(left_ind);
+          //NumericVector right_ind2=wrap(right_ind);
+          //allMean[left_ind2]=meanLeft;
+          //allMean[right_ind2]=meanRight;
+          //arma::vec allMean_ar=as<arma::vec>(allMean);
+          
+          allMean_ar.elem(left_ind).fill(meanLeft);
+          allMean_ar.elem(right_ind).fill(meanRight);
+          
           
           double cp_strength;
           cp_strength=as<double>(wrap(trans(resp_ar-allMean_ar)*(resp_ar-allMean_ar)));
@@ -9320,7 +9333,7 @@ List get_termobs_test_data(NumericMatrix test_data,NumericMatrix tree_data) {
       }
       
       //double nodemean=tree_data(terminal_nodes[i]-1,5);
-      IntegerVector predind=as<IntegerVector>(wrap(pred_indices));
+      IntegerVector predind=as<IntegerVector>(wrap(arma::conv_to<arma::ivec>::from(pred_indices)));
       //predictions[predind]= nodemean;
       term_obs[i]=predind;
     } 
@@ -9454,9 +9467,10 @@ arma::field<arma::uvec> get_termobs_test_data_fields(NumericMatrix test_data,Num
       }
       
       //double nodemean=tree_data(terminal_nodes[i]-1,5);
-      IntegerVector predind=as<IntegerVector>(wrap(pred_indices));
+      //IntegerVector predind=as<IntegerVector>(wrap(arma::conv_to<arma::ivec>::from((pred_indices)));
       //predictions[predind]= nodemean;
-      term_obsF(i)=Rcpp::as<arma::uvec>(predind);
+      //term_obsF(i)=Rcpp::as<arma::uvec>(predind);
+      term_obsF(i)=pred_indices;
     } 
   }
   //List ret(1);
